@@ -16,7 +16,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         public static Items_Mjolner? instance { get; private set; }
         public Items_Mjolner(System.IntPtr ptr) : base(ptr) { }
 
-        bool InGame = false;
+        private bool InGame = false;
 
         void Awake()
         {
@@ -40,15 +40,15 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             else if (InGame) { InGame = false; }
         }
         
-        public class Basic
+        private class Basic
         {
-            public static readonly byte base_type = 7;  //Mace
-            public static readonly int base_id = 10;    //Rune hammer
+            internal static readonly byte base_type = 7;  //Mace
+            internal static readonly int base_id = 10;    //Rune hammer
         }
-        public class Unique
+        private class Unique
         {
-            public static readonly ushort unique_id = 421;
-            public static void Update()
+            internal static readonly ushort unique_id = 421;
+            internal static void Update()
             {
                 if ((LastEpoch_Hud.Locales.current != LastEpoch_Hud.Locales.Selected.Unknow) && (!AddedToUniqueList)) { AddToUniqueList(); }
                 if ((LastEpoch_Hud.Locales.current != LastEpoch_Hud.Locales.Selected.Unknow) && (AddedToUniqueList) && (!AddedToDictionary)) { AddToDictionary(); }
@@ -165,9 +165,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
         }
-        public class Icon
+        private class Icon
         {
-            public static void Update()
+            internal static void Update()
             {
                 if (Icon.sprite.IsNullOrDestroyed()) { Icon.Get_UniqueIcon(); }
             }
@@ -192,10 +192,10 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
 
-            public class Hooks
+            private class Hooks
             {
                 [HarmonyPatch(typeof(InventoryItemUI), "SetImageSpritesAndColours")]
-                public class InventoryItemUI_SetImageSpritesAndColours
+                private class InventoryItemUI_SetImageSpritesAndColours
                 {
                     [HarmonyPostfix]
                     static void Postfix(ref Il2Cpp.InventoryItemUI __instance)
@@ -208,7 +208,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
 
                 [HarmonyPatch(typeof(UITooltipItem), "GetItemSprite")]
-                public class UITooltipItem_GetItemSprite
+                private class UITooltipItem_GetItemSprite
                 {
                     [HarmonyPostfix]
                     static void Postfix(ref UnityEngine.Sprite __result, ItemData __0)
@@ -221,9 +221,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
         }
-        public class Locales
+        private class Locales
         {
-            public static string Get_UniqueName()
+            internal static string Get_UniqueName()
             {
                 string name = "";
                 switch (LastEpoch_Hud.Locales.current)
@@ -241,7 +241,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
 
                 return name;
             }
-            public static string Get_UniqueDescription()
+            internal static string Get_UniqueDescription()
             {
                 string description = "";
                 int str_requirement = Save_Manager.instance.data.Items.Mjolner.StrRequirement;
@@ -285,7 +285,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
 
                 return description;
             }
-            public static string Get_UniqueLore()
+            internal static string Get_UniqueLore()
             {
                 string lore = "";
                 switch (LastEpoch_Hud.Locales.current)
@@ -304,16 +304,16 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 return lore;
             }
 
-            public class Keys
+            private class Keys
             {
-                public static string unique_name = "Unique_Name_" + Unique.unique_id;
-                public static string unique_description = "Unique_Tooltip_0_" + Unique.unique_id;
-                public static string unique_lore = "Unique_Lore_" + Unique.unique_id;
+                internal static string unique_name = "Unique_Name_" + Unique.unique_id;
+                internal static string unique_description = "Unique_Tooltip_0_" + Unique.unique_id;
+                internal static string unique_lore = "Unique_Lore_" + Unique.unique_id;
             }
-            public class Hooks
+            private class Hooks
             {
                 [HarmonyPatch(typeof(Localization), "TryGetText")]
-                public class Localization_TryGetText
+                private class Localization_TryGetText
                 {
                     [HarmonyPrefix]
                     static bool Prefix(ref bool __result, string __0) //, Il2CppSystem.String __1)
@@ -331,7 +331,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
 
                 [HarmonyPatch(typeof(Localization), "GetText")]
-                public class Localization_GetText
+                private class Localization_GetText
                 {
                     [HarmonyPrefix]
                     static bool Prefix(ref string __result, string __0)
@@ -372,9 +372,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }            
         }
-        public class Trigger
+        private class Trigger
         {
-            public static void AllSkills(Actor hitActor)
+            internal static void AllSkills(Actor hitActor)
             {
                 if ((!hitActor.IsNullOrDestroyed()) && (!trigger))
                 {
@@ -400,7 +400,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
             }
 
-            public static void Initialize_SocketedSkills()
+            internal static void Initialize_SocketedSkills()
             {
                 if (!Initializing)
                 {
@@ -428,7 +428,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     Initializing = false;
                 }
             }
-            public static void SocketedSkills(Actor hitActor)
+            internal static void SocketedSkills(Actor hitActor)
             {
                 if ((!hitActor.IsNullOrDestroyed()) && (!trigger))
                 {
@@ -462,13 +462,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             private static bool Initializing = false;
             private static bool trigger = false;
         }
-        public class Events
+        private class Events
         {
-            public static void Update()
+            internal static void Update()
             {
                 if (!OnHitEvent_Initialized) { Init_OnHitEvent(); }
             }
-            public static void Reset()
+            internal static void Reset()
             {
                 OnHitEvent_Initialized = false;
             }

@@ -53,15 +53,15 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                             catch { Main.logger_instance.Error("Error when trying to start quest"); }
                         }
 
-                        if (quest.id != 148) //Escape the Draal
-                        {
+                        //if (quest.id != 148) //Escape the Draal
+                        //{
                             try
                             {
                                 quest.completeQuest(Refs_Manager.player_actor);
                                 Main.logger_instance.Msg("Completed");
                             }
                             catch { Main.logger_instance.Error("Error when trying to complete quest"); }
-                        }
+                        //}
 
                         //Unlock all waypoints in this scene
                         int count = 306; //Need to be fix                        

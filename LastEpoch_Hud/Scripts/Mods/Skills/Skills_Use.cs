@@ -99,6 +99,24 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             }
                         }
 
+                        //Judgement                        
+                        if (il2cpp_type.ToString() == "JudgementMutator")
+                        {
+                            if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                            {
+                                __1.TryCast<JudgementMutator>().addedManaCost = 0f;
+                                __1.TryCast<JudgementMutator>().increasedManaCost = 0f;
+                                __1.TryCast<JudgementMutator>().percentCurrentManaConsumed = 0f;
+                            }
+                        }
+                        if (il2cpp_type.ToString() == "JudgementAoEMutator")
+                        {
+                            if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
+                            {
+                                __1.TryCast<JudgementAoEMutator>().increasedManaCost = 0f;
+                            }
+                        }
+
                         //Sigil of Hope : Fix ManaCost
                         if (il2cpp_type.ToString() == "SigilsOfHopeMutator")
                         {
