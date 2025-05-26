@@ -35,6 +35,7 @@ namespace LastEpoch_Hud.Scripts
         public static UniqueList unique_list = null;
         public static SetBonusesList set_bonuses_list = null;
         public static QuestList quest_list = null;
+        public static PlayerQuestListHolder player_quest_list = null;
         public static ItemFilterManager filter_manager = null;
         public static CameraManager camera_manager = null;
         public static CraftingSlotManager craft_slot_manager = null;
@@ -66,7 +67,7 @@ namespace LastEpoch_Hud.Scripts
                 if (SetBonusesList.instance.IsNullOrDestroyed()) { SetBonusesList.getEntry(0); }
                 if (!SetBonusesList.instance.IsNullOrDestroyed()) { set_bonuses_list = SetBonusesList.instance; }
             }
-            if ((quest_list.IsNullOrDestroyed()) && (!QuestList.instance.IsNullOrDestroyed())) { quest_list = QuestList.instance; }
+            if ((quest_list.IsNullOrDestroyed()) && (!QuestList.instance.IsNullOrDestroyed())) { quest_list = QuestList.instance; }            
             if ((scene_list.IsNullOrDestroyed()) && (!SceneList.instance.IsNullOrDestroyed())) { scene_list = SceneList.instance; }
             if ((character_select.IsNullOrDestroyed()) && (!CharacterSelect.instance.IsNullOrDestroyed())) { character_select = CharacterSelect.instance; }
             if ((!character_select.IsNullOrDestroyed()) && (character_select.OnOnlineTabChange.IsNullOrDestroyed())) { character_select.OnOnlineTabChange = Action_SetOnline; }
@@ -110,6 +111,7 @@ namespace LastEpoch_Hud.Scripts
                 if (player_visuals.IsNullOrDestroyed()) { player_visuals = PlayerFinder.getPlayerVisuals(); }
                 if (player_data.IsNullOrDestroyed()) { player_data = PlayerFinder.getPlayerData(); }
                 if (player_data_tracker.IsNullOrDestroyed()) { player_data_tracker = PlayerFinder.getPlayerDataTracker(); }
+                if ((player_quest_list.IsNullOrDestroyed()) && (!player_actor.IsNullOrDestroyed())) { player_quest_list = player_actor.gameObject.GetComponent<PlayerQuestListHolder>(); }
                 if (player_health.IsNullOrDestroyed()) { player_health = PlayerFinder.getLocalPlayerHealth(); }
                 if ((player_moving.IsNullOrDestroyed()) && (!player_actor.IsNullOrDestroyed())) { player_moving = player_actor.gameObject.GetComponent<MovingPlayer>(); }
                 if ((player_protection_class.IsNullOrDestroyed()) && (!player_actor.IsNullOrDestroyed())) { player_protection_class = player_actor.gameObject.GetComponent<ProtectionClass>(); }

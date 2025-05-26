@@ -16,53 +16,33 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                 (!Refs_Manager.player_data.IsNullOrDestroyed()))
             {
                 Refs_Manager.player_data.ReachedTown = true;
-                Main.logger_instance.Msg("Add all Quest to player");
+                Main.logger_instance.Msg("Commplete all Quest to player");
                 foreach (Quest quest in Refs_Manager.quest_list.quests)
                 {
                     if ((quest.mainLineQuest) || (quest.idolUnlockReward > 0) || (quest.passivePointsReward > 0))
                     {
-                        QuestState state = QuestState.NotStarted;
-                        bool found = false;
-                        foreach (Il2CppLE.Data.SavedQuest saved_quest in Refs_Manager.player_data.SavedQuests)
-                        {
-                            if (saved_quest.QuestID == quest.id)
-                            {
-                                state = saved_quest.State;
-                                found = true;
-                                break;
-                            }
-                        }                        
-                        Main.logger_instance.Msg("Quest Name = " + quest.name + " Id = " + quest.id + ", Type = " + quest.questType.ToString() + ", State = " + state.ToString() + ", Chapter = " + quest.chapter);
-                        if (!found)
-                        {                            
-                            Il2CppLE.Data.SavedQuest q = new Il2CppLE.Data.SavedQuest
-                            {
-                                QuestID = quest.id,
-                                State = QuestState.NotStarted
-                            };
-                            Refs_Manager.player_data.SavedQuests.Add(q);
-                            Main.logger_instance.Msg("Added to player");
-                        }
-                        if (state == QuestState.NotStarted)
+                        //Main.logger_instance.Msg("Quest Name = " + quest.name + " Id = " + quest.id + ", Type = " + quest.questType.ToString() + ", Chapter = " + quest.chapter);
+                        
+                        if (quest.id != 148)
                         {
                             try
                             {
                                 quest.startQuest();
-                                Main.logger_instance.Msg("Started");
+                                //Main.logger_instance.Msg("Quest started");
                             }
                             catch { Main.logger_instance.Error("Error when trying to start quest"); }
-                        }
 
-                        //if (quest.id != 148) //Escape the Draal
-                        //{
                             try
                             {
                                 quest.completeQuest(Refs_Manager.player_actor);
-                                Main.logger_instance.Msg("Completed");
+                                //Main.logger_instance.Msg("Completed");
                             }
-                            catch { Main.logger_instance.Error("Error when trying to complete quest"); }
-                        //}
-
+                            catch
+                            {
+                                Main.logger_instance.Error("Error when trying to complete quest");
+                            }
+                        }
+                        
                         //Unlock all waypoints in this scene
                         int count = 306; //Need to be fix                        
                         for (int i = 0; i < count; i++)
@@ -77,7 +57,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                         bool already = Refs_Manager.player_data.UnlockedWaypointScenes.Contains(scene_details.Name);
                                         if (!already)
                                         {
-                                            Main.logger_instance.Msg("Unlock Waypoint Scene = " + scene_details.Name);
+                                            //Main.logger_instance.Msg("Unlock Waypoint Scene = " + scene_details.Name);
                                             Refs_Manager.player_data.UnlockedWaypointScenes.Add(scene_details.Name);
                                         }
                                     }
