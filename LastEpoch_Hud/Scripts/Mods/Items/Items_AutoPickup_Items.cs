@@ -61,6 +61,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 if (CanRun())
                 {
                     if (((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys) && (Item.isKey(__1.itemType))) ||
+                        (__1.itemType == 107) || //107 = Woven Echo
                             ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Materials) && (ItemList.isCraftingItem(__1.itemType))))
                     {
                         bool pickup = ItemContainersManager.Instance.attemptToPickupItem(__1, __0.position());

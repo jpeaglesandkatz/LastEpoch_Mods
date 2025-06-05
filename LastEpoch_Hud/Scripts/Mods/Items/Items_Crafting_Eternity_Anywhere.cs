@@ -78,13 +78,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             [HarmonyPrefix]
             static void Prefix(ref bool __0)
             {
-                Main.logger_instance.Msg("EternityCachePanelUI.Open(bool) Prefix");
+                Main.logger_instance?.Msg("EternityCachePanelUI.Open(bool) Prefix");
                 __0 = true; //isFuture
             }
             [HarmonyPostfix]
             static void Postfix(ref EternityCachePanelUI __instance)
             {
-                Main.logger_instance.Msg("EternityCachePanelUI.Open(bool) Postfix");
+                Main.logger_instance?.Msg("EternityCachePanelUI.Open(bool) Postfix");
                 IsOpen = true;
             }
         }*/

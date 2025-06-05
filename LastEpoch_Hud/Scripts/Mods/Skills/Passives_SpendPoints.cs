@@ -25,7 +25,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             [HarmonyPrefix]
             static void Prefix(LocalTreeData __instance, ref bool __result, CharacterClass __0, byte __1)
             {
-                //Main.logger_instance.Msg("LocalTreeData.tryToSpendPassivePoint() Prefix");
+                //Main.logger_instance?.Msg("LocalTreeData.tryToSpendPassivePoint() Prefix");
                 Added_Level = false;
                 if (CanRun())
                 {
@@ -42,7 +42,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             [HarmonyPostfix]
             static void Postfix(ref LocalTreeData __instance, ref bool __result, CharacterClass __0, byte __1)
             {
-                //Main.logger_instance.Msg("LocalTreeData.tryToSpendPassivePoint() Postfix");
+                //Main.logger_instance?.Msg("LocalTreeData.tryToSpendPassivePoint() Postfix");
                 if (CanRun())
                 {
                     if (Added_Level) { __instance.masteryLevels = backup_masteries_level; }

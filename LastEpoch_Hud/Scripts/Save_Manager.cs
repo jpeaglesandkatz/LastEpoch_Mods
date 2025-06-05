@@ -9,7 +9,8 @@ namespace LastEpoch_Hud.Scripts
     public class Save_Manager : MonoBehaviour
     {
         public Save_Manager(System.IntPtr ptr) : base(ptr) { }
-        public static Save_Manager instance { get; private set; }
+        public static Save_Manager? instance { get; private set; }
+
         public string path = Directory.GetCurrentDirectory() + @"\Mods\" + Main.mod_name + @"\";
         string filename = "Save.json";
         public Data.Mods_Structure data = new Data.Mods_Structure();
@@ -34,24 +35,24 @@ namespace LastEpoch_Hud.Scripts
             bool error = false;
             if (File.Exists(path + filename))
             {
-                Main.logger_instance.Msg("Save Manager : Loading file : " + path + filename);
+                Main.logger_instance?.Msg("Save Manager : Loading file : " + path + filename);
                 try { data = JsonConvert.DeserializeObject<Data.Mods_Structure>(File.ReadAllText(path + filename)); }
                 catch
                 {
-                    Main.logger_instance.Warning("Save Manager : Error when deserializing the file");
+                    Main.logger_instance?.Warning("Save Manager : Error when deserializing the file");
                     error = true;
                 }
             }
             else { error = true; }
             if (error)
             {
-                Main.logger_instance.Msg("Save Manager : Generate default config");
+                Main.logger_instance?.Msg("Save Manager : Generate default config");
                 data = Get_DefaultConfig();
                 Save();
             }
             Check_Update();
             data_duplicate = data; //Use to check for data changed
-            Main.logger_instance.Msg("Save Manager : Data initialized");
+            Main.logger_instance?.Msg("Save Manager : Data initialized");
             initialized = true;
         }
         Data.Mods_Structure Get_DefaultConfig()
@@ -515,7 +516,7 @@ namespace LastEpoch_Hud.Scripts
             {
                 data_duplicate = data;
                 Save();
-                if (!Mods_Manager.instance.IsNullOrDestroyed()) { Mods_Manager.instance.SetActive(Refs_Manager.online); }                
+                Mods_Manager.instance?.SetActive(Refs_Manager.online);             
             }
         }
         public void Save()

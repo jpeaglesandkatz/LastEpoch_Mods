@@ -49,7 +49,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                 if ((!started) && (player_position != Get_PlayerPosition()) && ((Get_PlayerPosition().x != 0f) || (Get_PlayerPosition().y != 0f) || (Get_PlayerPosition().z != 0f)))
                 {
                     player_position = Get_PlayerPosition();
-                    Main.logger_instance.Msg("Player Spawn at Position : " + player_position);
+                    Main.logger_instance?.Msg("Player Spawn at Position : " + player_position);
                     player_start_time = System.DateTime.Now;
                     complete = false;
                     started = true;
@@ -106,25 +106,25 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                             }
                             else if ((!forge_sync.IsNullOrDestroyed()) && (!tp_forge))
                             {
-                                Main.logger_instance.Msg("TP Forge");
+                                Main.logger_instance?.Msg("TP Forge");
                                 tp_forge = MoveTo(forge_sync.gameObject.transform.position, tp_forge);
                             }
                             else if ((!rift_sync.IsNullOrDestroyed()) && (rift_index < tp_rift.Count) && (rift_index < rift_sync.Count))
                             {
                                 if (!tp_rift[rift_index])
                                 {
-                                    Main.logger_instance.Msg("TP Rift");
+                                    Main.logger_instance?.Msg("TP Rift");
                                     tp_rift[rift_index] = MoveTo(rift_sync[rift_index].gameObject.transform.position, tp_rift[rift_index]);
                                 }
                                 else
                                 {
-                                    Main.logger_instance.Msg("Next Rift");
+                                    Main.logger_instance?.Msg("Next Rift");
                                     rift_index++;
                                 }
                             }
                             else if ((!prison_sync.IsNullOrDestroyed()) && (!tp_prison))
                             {
-                                Main.logger_instance.Msg("TP Prison");
+                                Main.logger_instance?.Msg("TP Prison");
                                 prison_started = false;
                                 tp_prison = MoveTo(prison_sync.gameObject.transform.position, tp_prison);
                             }
@@ -137,7 +137,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                             }
                             else if ((!tomb_entrance_logic_sync.IsNullOrDestroyed()) && (!tp_tomb_entrance))
                             {
-                                Main.logger_instance.Msg("TP Tomb Entrance");
+                                Main.logger_instance?.Msg("TP Tomb Entrance");
                                 tp_tomb_entrance = MoveTo(tomb_entrance_logic_sync.gameObject.transform.position, tp_tomb_entrance);
                             }
 
@@ -175,12 +175,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
 
             if ((Get_PlayerPosition() != position) && (!tp) && (position != Vector3.zero))
             {
-                Main.logger_instance.Msg("Try to move Player to : " + position.ToString());
+                Main.logger_instance?.Msg("Try to move Player to : " + position.ToString());
                 if (!Refs_Manager.player_moving.IsNullOrDestroyed()) { Refs_Manager.player_moving.MoveToPointNoChecks(position); }
                 if (!Refs_Manager.player_actor.IsNullOrDestroyed()) { Refs_Manager.player_actor.transform.position = position; }
                 if (Get_PlayerPosition() == position)
                 {
-                    Main.logger_instance.Msg("Move Player Success");
+                    Main.logger_instance?.Msg("Move Player Success");
                     result = true;
                 }
             }
@@ -201,7 +201,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                             if (!dying.IsNullOrDestroyed())
                             {
                                 //dying.gameObject.transform.position = Get_PlayerPosition();
-                                Main.logger_instance.Msg("Kill " + dying.name);
+                                Main.logger_instance?.Msg("Kill " + dying.name);
                                 dying.die();
                                 break;
                             }
@@ -209,7 +209,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
                     }
                 }
             }
-            catch { Main.logger_instance.Error("Error MoveAndKill : " + name); }
+            catch { Main.logger_instance?.Error("Error MoveAndKill : " + name); }
         }
         
         public static bool CanRun()
@@ -232,7 +232,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPrefix]
             static void Prefix(ref MonolithZoneManager __instance, StatefulQuestList __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.initialise() Prefix");
+                Main.logger_instance?.Msg("MonolithZoneManager.initialise() Prefix");
                 
                 started = false;
                 player_position = Get_PlayerPosition();
@@ -255,29 +255,30 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(ref MonolithZoneManager __instance, StatefulQuestList __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.initialise() Postfix");
+                Main.logger_instance?.Msg("MonolithZoneManager.initialise() Postfix");
                 if (CanRun())
                 {
                     if (__instance.isQuestZone)
                     {
-                        Main.logger_instance.Msg("MonolithZoneManager.isQuestZone");
+                        Main.logger_instance?.Msg("MonolithZoneManager.isQuestZone");
                         foreach (Il2Cpp.Quest quest in __instance.questsThatCompleteZone)
                         {
-                            Main.logger_instance.Msg("Complete quest : " + quest.name);
+                            Main.logger_instance?.Msg("Complete quest : " + quest.name);
                             quest.completeQuest(Refs_Manager.player_actor);
                         }
                     }
                     if (__instance.isHarbingerFight)
                     {
-                        Main.logger_instance.Msg("MonolithZoneManager.isHarbingerFight");
+                        Main.logger_instance?.Msg("MonolithZoneManager.isHarbingerFight");
                     }
                     if (__instance.isTimelineBossEncounter)
                     {
-                        Main.logger_instance.Msg("MonolithZoneManager.isTimelineBossEncounter");
+                        Main.logger_instance?.Msg("MonolithZoneManager.isTimelineBossEncounter");
                     }
+                    initialized = true;
                 }
 
-                initialized = true;
+                //initialized = true;
             }
         }
 
@@ -287,7 +288,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(/*ref MonolithZoneManager __instance,*/ ref Il2CppLE.Networking.Monolith.ForgeSync __0)
             { 
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseForge()");
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseForge()");
                 forge_sync = __0;
             }
         }
@@ -298,7 +299,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(/*ref MonolithZoneManager __instance,*/ ref Il2CppLE.Networking.Monolith.UnstableRiftSync __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseRift()");
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseRift()");
                 rift_sync.Add(__0);
                 tp_rift.Add(false);
             }
@@ -310,7 +311,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(ref RunePrison __instance, uint __0)
             {
-                Main.logger_instance.Msg("RunePrison.Initialise() Id = " + __0);
+                Main.logger_instance?.Msg("RunePrison.Initialise() Id = " + __0);
                 prison_sync = __instance;
             }
         }
@@ -321,7 +322,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(ref BeaconSync __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseBeacon()");
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseBeacon()");
             }
         }
 
@@ -331,7 +332,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(MonolithZoneManager __instance, Il2CppLE.Gameplay.Monolith.Frontend.MonolithPulse __result, OneShotCacheGameplayObject __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseCache()");
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseCache()");
             }
         }
 
@@ -341,7 +342,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(MonolithZoneManager __instance, Il2Cpp.OneShotCacheGameplayObject __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseForCache()");
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseForCache()");
             }
         }
 
@@ -351,7 +352,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(MonolithZoneManager __instance, Il2CppLE.Gameplay.Monolith.Frontend.MonolithPulse __result, ShrineSync __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseShrine() ShrineSync");
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseShrine() ShrineSync");
             }
         }
 
@@ -361,7 +362,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(Il2Cpp.MonolithZoneManager __instance, Il2CppLE.Gameplay.Monolith.Frontend.MonolithPulse __result, GameObject __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseShrine() GameObject");
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseShrine() GameObject");
             }
         }
 
@@ -371,7 +372,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(/*MonolithZoneManager __instance, Il2CppLE.Gameplay.Monolith.Frontend.MonolithPulse __result,*/ ref TombEntranceLogic __0)
             {
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseTombEntrance()");
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseTombEntrance()");
                 tomb_entrance_logic_sync = __0;
             }
         }
@@ -382,7 +383,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Monoliths
             [HarmonyPostfix]
             static void Postfix(MonolithZoneManager __instance, Il2Cpp.Actor __0, bool __1) //__1 = showImmediately
             {
-                Main.logger_instance.Msg("MonolithZoneManager.CreatePulseActor() : " + __0.name);
+                Main.logger_instance?.Msg("MonolithZoneManager.CreatePulseActor() : " + __0.name);
             }
         }
 

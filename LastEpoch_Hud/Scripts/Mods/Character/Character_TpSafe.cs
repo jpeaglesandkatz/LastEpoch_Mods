@@ -59,9 +59,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                         waypoint.LoadWaypointScene();
                         Save_Manager.instance.data.Character.Cheats.Enable_WaypointsUnlock = backup_unlock_waypoint;
                     }
-                    else { Main.logger_instance.Error("Waypoint is null"); }
+                    else { Main.logger_instance?.Error("Waypoint is null"); }
                 }
-                else { Main.logger_instance.Error("Map instance is null"); }
+                else { Main.logger_instance?.Error("Map instance is null"); }
             }
             Save_Manager.instance.data.Character.Cheats.Enable_GodMode = backup_godmode;
         }

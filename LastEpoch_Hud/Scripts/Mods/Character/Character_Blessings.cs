@@ -8,13 +8,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
     [RegisterTypeInIl2Cpp]
     public class Character_Blessings : MonoBehaviour
     {
-        public static Character_Blessings instance { get; private set; }
+        public static Character_Blessings? instance { get; private set; }
         public Character_Blessings(System.IntPtr ptr) : base(ptr) { }
 
         private readonly int base_id = 34;
         private readonly int base_container = 33;
-        private InventoryBlessingSlotUI selected_active_slot = null;
-        private InventoryBlessingSlotUI selected_discovered_slot = null;
+        private InventoryBlessingSlotUI? selected_active_slot = null;
+        private InventoryBlessingSlotUI? selected_discovered_slot = null;
 
         void Awake()
         {
@@ -33,7 +33,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                         int blessing_id = selected_discovered_slot.referenceBlessingID;
                         selected_discovered_slot = null;
                         ItemDataUnpacked item = CreateBlessing(blessing_id);
-                        if ((timeline_id > -1) && (IsBlessingDiscovered(blessing_id)) && (!Refs_Manager.player_data_tracker.IsNullOrDestroyed()) && (item != null)) //&& (!active_blessing_slot.lockedSlot.gameObject.active)
+                        if ((timeline_id > -1) && (IsBlessingDiscovered(blessing_id)) && (Refs_Manager.player_data_tracker is not null) && (item != null)) //&& (!active_blessing_slot.lockedSlot.gameObject.active)
                         {
                             bool found = false;
                             ushort container_id = (ushort)(timeline_id + base_container);
@@ -52,7 +52,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                             found = true;
                                             break;
                                         }
-                                        else { Main.logger_instance.Msg("Not a Blessing"); }
+                                        else { Main.logger_instance?.Msg("Not a Blessing"); }
                                         break;
                                     }
                                 }
@@ -61,9 +61,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                             Refs_Manager.player_data_tracker.charData.SaveData();
                         }
                         if (selected_active_slot.lockedSlot.gameObject.active) { selected_active_slot.lockedSlot.gameObject.active = false; }
-                        OneSlotItemContainer one_slot_container = selected_active_slot.blessingUIContainer.container.TryCast<OneSlotItemContainer>();
-                        one_slot_container.Clear();
-                        one_slot_container.TryAddItem(item, 1, Context.DEFAULT);
+                        OneSlotItemContainer? one_slot_container = selected_active_slot.blessingUIContainer.container.TryCast<OneSlotItemContainer>();
+                        one_slot_container?.Clear();
+                        one_slot_container?.TryAddItem(item, 1, Context.DEFAULT);
                         selected_active_slot.blessingUIContainer.forceUpdate = true;
                     }
                 }
@@ -77,40 +77,18 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
         }        
         ItemDataUnpacked CreateBlessing(int blessing_id)
         {
-            ItemDataUnpacked item = null;
-            if (!Refs_Manager.item_list.IsNullOrDestroyed())
+            ItemDataUnpacked item = new ItemDataUnpacked
             {
-                bool ItemList_found = false;
-                int index = 0;
-                foreach (ItemList.BaseEquipmentItem n_item in Refs_Manager.item_list.EquippableItems)
-                {
-                    if (n_item.baseTypeID == base_id) { ItemList_found = true; break; }
-                    index++;
-                }
-                if (ItemList_found)
-                {
-                    foreach (ItemList.EquipmentItem eq_item in Refs_Manager.item_list.EquippableItems[index].subItems)
-                    {
-                        if (eq_item.subTypeID == blessing_id)
-                        {
-                            item = new ItemDataUnpacked
-                            {
-                                LvlReq = 0,
-                                classReq = ItemList.ClassRequirement.Any,
-                                itemType = (byte)base_id,
-                                subType = (ushort)blessing_id,
-                                rarity = (byte)0,
-                                sockets = (byte)0,
-                                uniqueID = (ushort)0
-                            };
-                            item.randomiseImplicitRolls();
-                            item.RefreshIDAndValues();
-                            break;
-                        }
-                    }
-                }
-            }
-            else { Main.logger_instance.Error("Create Blessings"); }
+                LvlReq = 0,
+                classReq = ItemList.ClassRequirement.Any,
+                itemType = (byte)base_id,
+                subType = (ushort)blessing_id,
+                rarity = (byte)0,
+                sockets = (byte)0,
+                uniqueID = (ushort)0
+            };
+            item.randomiseImplicitRolls();
+            item.RefreshIDAndValues();
 
             return item;
         }
@@ -158,7 +136,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
         bool IsBlessingDiscovered(int id)
         {
             bool result = false;
-            if (!Refs_Manager.player_data_tracker.IsNullOrDestroyed())
+            if (Refs_Manager.player_data_tracker is not null)
             {
                 foreach (int discovered_id in Refs_Manager.player_data_tracker.charData.BlessingsDiscovered)
                 {
@@ -171,8 +149,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
 
         private static int timeline_id = -1;
         private static bool adding_blessings = false;
-        private static InventoryBlessingSlotUI temp_selected_active_slot = null;
-        private static InventoryBlessingSlotUI temp_selected_discovered_slot = null;
+        private static InventoryBlessingSlotUI? temp_selected_active_slot = null;
+        private static InventoryBlessingSlotUI? temp_selected_discovered_slot = null;
 
         private static bool CanRun()
         {
@@ -189,7 +167,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
         public static bool IsBlessingOpen()
         {
             bool result = false;
-            if (!Refs_Manager.BlessingsPanel.IsNullOrDestroyed())
+            if (Refs_Manager.BlessingsPanel is not null)
             {
                 result = Refs_Manager.BlessingsPanel.active;
             }
@@ -234,10 +212,10 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                         }
                         ui.active = false;
                     }
-                    else { Main.logger_instance.Error("BlessingRewardPanelManager.instance is null"); }
+                    else { Main.logger_instance?.Error("BlessingRewardPanelManager.instance is null"); }
                 }
                 //Add all blessing
-                if (!Refs_Manager.item_list.IsNullOrDestroyed())
+                if (Refs_Manager.item_list is not null)
                 {
                     int base_id = 34;
                     int index = 0;
@@ -247,7 +225,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                         if (n_item.baseTypeID == base_id) { found = true; break; }
                         index++;
                     }
-                    if ((found) && (!Refs_Manager.player_data_tracker.IsNullOrDestroyed()))
+                    if ((found) && (Refs_Manager.player_data_tracker is not null))
                     {
                         foreach (ItemList.EquipmentItem item in Refs_Manager.item_list.EquippableItems[index].subItems)
                         {
@@ -278,9 +256,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                         }
                         Refs_Manager.player_data_tracker.charData.SaveData();
                     }
-                    else { Main.logger_instance.Error("Blessings not found in itemlist"); }
+                    else { Main.logger_instance?.Error("Blessings not found in itemlist"); }
                 }
-                else { Main.logger_instance.Error("ItemList is null"); }
+                else { Main.logger_instance?.Error("ItemList is null"); }
 
                 
 

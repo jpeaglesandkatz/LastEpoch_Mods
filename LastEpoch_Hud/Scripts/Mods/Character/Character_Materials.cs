@@ -66,7 +66,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                     Refs_Manager.ground_item_manager.dropItemForPlayer(Refs_Manager.player_actor, final_item, Refs_Manager.player_actor.position(), false);
                 }
             }
-            else { Main.logger_instance.Error("Ground Item Manager Not Found"); }
+            else { Main.logger_instance?.Error("Ground Item Manager Not Found"); }
         }
         private static ItemList.BaseNonEquipmentItem GetItemList(int type_id)
         {
@@ -83,9 +83,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                     }
                     index++;
                 }
-                if (result.IsNullOrDestroyed()) { Main.logger_instance.Error("Character_Materials : List with type = " + type_id + " not found"); }
+                if (result.IsNullOrDestroyed()) { Main.logger_instance?.Error("Character_Materials : List with type = " + type_id + " not found"); }
             }
-            else { Main.logger_instance.Error("Character_Materials : Itemlist is null"); }
+            else { Main.logger_instance?.Error("Character_Materials : Itemlist is null"); }
             
             return result;
         }

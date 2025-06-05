@@ -7,34 +7,34 @@ namespace LastEpoch_Hud.Scripts
     public class Mods_Manager : MonoBehaviour
     {
         public Mods_Manager(System.IntPtr ptr) : base(ptr) { }
-        public static Mods_Manager instance { get; private set; }
+        public static Mods_Manager? instance { get; private set; }
 
-        GameObject cosmetics_skins_obj = null;
-        GameObject character_autopotion_obj = null;
-        GameObject character_potionreplenishment_obj = null;
-        GameObject character_blessings_obj = null;
-        GameObject character_godmode_obj = null;
-        GameObject character_lowlife_obj = null;
-        GameObject character_masteries_obj = null;
-        GameObject character_bank_from_anywhere = null;
-        GameObject character_permanentbuffs_obj = null;
-        GameObject character_dps_obj = null;
-        GameObject character_safetp_obj = null;
-        GameObject items_nbsocket_obj = null;
-        GameObject items_autosell_timer_obj = null;
-        GameObject items_headhunter_obj = null;
-        GameObject items_mjolner_obj = null;
-        GameObject items_crafting_obj = null;
-        GameObject items_crafting_eternal = null; //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
-        GameObject minimap_icons_obj = null;
-        GameObject monoliths_complete_objectives_obj = null;
+        GameObject? cosmetics_skins_obj = null;
+        GameObject? character_autopotion_obj = null;
+        GameObject? character_potionreplenishment_obj = null;
+        GameObject? character_blessings_obj = null;
+        GameObject? character_godmode_obj = null;
+        GameObject? character_lowlife_obj = null;
+        GameObject? character_masteries_obj = null;
+        GameObject? character_bank_from_anywhere = null;
+        GameObject? character_permanentbuffs_obj = null;
+        //GameObject? character_dps_obj = null;
+        GameObject? character_safetp_obj = null;
+        GameObject? items_nbsocket_obj = null;
+        GameObject? items_autosell_timer_obj = null;
+        GameObject? items_headhunter_obj = null;
+        GameObject? items_mjolner_obj = null;
+        GameObject? items_crafting_obj = null;
+        GameObject? items_crafting_eternal = null; //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
+        GameObject? minimap_icons_obj = null;
+        GameObject? monoliths_complete_objectives_obj = null;
 
         bool initialized = false;
         
         void Awake()
         {
             instance = this;
-            Main.logger_instance.Msg("Mods Manager : Initialize");
+            Main.logger_instance?.Msg("Mods Manager : Initialize");
             Il2CppSystem.Collections.Generic.List<GameObject> Mods_Objects = new Il2CppSystem.Collections.Generic.List<GameObject>();
 
             cosmetics_skins_obj = Object.Instantiate(new GameObject { name = "Mod_Cosmetics_Skins" }, Vector3.zero, Quaternion.identity);
@@ -77,10 +77,10 @@ namespace LastEpoch_Hud.Scripts
             character_permanentbuffs_obj.AddComponent<Mods.Character.Character_PermanentBuffs>();
             Mods_Objects.Add(character_permanentbuffs_obj);
 
-            character_dps_obj = Object.Instantiate(new GameObject { name = "Mod_Character_Dps" }, Vector3.zero, Quaternion.identity);
+            /*character_dps_obj = Object.Instantiate(new GameObject { name = "Mod_Character_Dps" }, Vector3.zero, Quaternion.identity);
             character_dps_obj.active = false;
             character_dps_obj.AddComponent<Mods.Character.Character_Dps>();
-            Mods_Objects.Add(character_dps_obj);
+            Mods_Objects.Add(character_dps_obj);*/
                         
             character_safetp_obj = Object.Instantiate(new GameObject { name = "Mod_Character_SafeTp" }, Vector3.zero, Quaternion.identity);
             character_safetp_obj.active = false;
@@ -136,59 +136,59 @@ namespace LastEpoch_Hud.Scripts
             Mods_Objects.Clear();
 
             initialized = true;
-            Main.logger_instance.Msg("Mods Manager : Mods initialized");
+            Main.logger_instance?.Msg("Mods Manager : Mods initialized");
         }
         void Enable()
         {
             if (initialized)
             {
-                cosmetics_skins_obj.active = true;
-                character_godmode_obj.active = Save_Manager.instance.data.Character.Cheats.Enable_GodMode;
-                character_lowlife_obj.active = Save_Manager.instance.data.Character.Cheats.Enable_LowLife;
+                cosmetics_skins_obj?.SetActive(true);
+                character_godmode_obj?.SetActive(Save_Manager.instance?.data.Character.Cheats.Enable_GodMode ?? false);
+                character_lowlife_obj?.SetActive(Save_Manager.instance?.data.Character.Cheats.Enable_LowLife ?? false);
                 //character_blessings_obj.active = Save_Manager.instance.data.Character.Cheats.Enable_CanChooseBlessing;
-                character_blessings_obj.active = true; //Don't disable here
-                character_autopotion_obj.active = Save_Manager.instance.data.Character.Cheats.Enable_AutoPot;
-                character_potionreplenishment_obj.active = true;
-                character_bank_from_anywhere.active = true; //Enable/Disable F3 Open/Close Bank
-                character_dps_obj.active = true; //CombatLogs
-                character_safetp_obj.active = true;
-                items_nbsocket_obj.active = true;
-                items_autosell_timer_obj.active = Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_All10Sec;
-                character_masteries_obj.active = true; //Hud
-                character_permanentbuffs_obj.GetComponent<Mods.Character.Character_PermanentBuffs>().Enable();
+                character_blessings_obj?.SetActive(true); //Don't disable here
+                character_autopotion_obj?.SetActive(Save_Manager.instance?.data.Character.Cheats.Enable_AutoPot ?? false);
+                character_potionreplenishment_obj?.SetActive(true);
+                character_bank_from_anywhere?.SetActive(true); //Enable/Disable F3 Open/Close Bank
+                //character_dps_obj?.SetActive(true); //CombatLogs
+                character_safetp_obj?.SetActive(true);
+                items_nbsocket_obj?.SetActive(true);
+                items_autosell_timer_obj?.SetActive(Save_Manager.instance?.data.Items.Pickup.Enable_AutoStore_All10Sec ?? false);
+                character_masteries_obj?.SetActive(true); //Hud
+                character_permanentbuffs_obj?.GetComponent<Mods.Character.Character_PermanentBuffs>().Enable();
                 Mods.Items.Items_Update.Reqs(); //Used to update item req
-                items_headhunter_obj.active = true; //Save_Manager.instance.data.Items.Headhunter.enable;
-                items_mjolner_obj.active = true;
-                items_crafting_obj.active = true;
-                items_crafting_eternal.active = true;
-                minimap_icons_obj.active = true; //Enable/Disable Minimap Icons
-                monoliths_complete_objectives_obj.active = true;
+                items_headhunter_obj?.SetActive(true); //Save_Manager.instance.data.Items.Headhunter.enable;
+                items_mjolner_obj?.SetActive(true);
+                items_crafting_obj?.SetActive(true);
+                items_crafting_eternal?.SetActive(true);
+                minimap_icons_obj?.SetActive(true); //Enable/Disable Minimap Icons
+                monoliths_complete_objectives_obj?.SetActive(true);
             }
         }
         void Disable()
         {
             if (initialized)
             {
-                if (Main.debug) { Main.logger_instance.Msg("Mods Manager : Disable all mods"); }
-                cosmetics_skins_obj.active = false;
-                character_godmode_obj.active = false;
-                character_lowlife_obj.active = false;
-                character_blessings_obj.active = false;
-                character_autopotion_obj.active = false;
-                character_potionreplenishment_obj.active = false;
-                character_bank_from_anywhere.active = false;
-                character_dps_obj.active = false;
-                items_nbsocket_obj.active = false;
-                items_autosell_timer_obj.active = false;
-                character_masteries_obj.active = false;
-                character_permanentbuffs_obj.GetComponent<Mods.Character.Character_PermanentBuffs>().Disable();
-                character_safetp_obj.active = false;
-                items_headhunter_obj.active = false;
-                items_mjolner_obj.active = false;
-                items_crafting_obj.active = false;
-                items_crafting_eternal.active = false;
-                minimap_icons_obj.active = false;
-                monoliths_complete_objectives_obj.active = false;
+                if (Main.debug) { Main.logger_instance?.Msg("Mods Manager : Disable all mods"); }
+                cosmetics_skins_obj?.SetActive(false);
+                character_godmode_obj?.SetActive(false);
+                character_lowlife_obj?.SetActive(false);
+                character_blessings_obj?.SetActive(false);
+                character_autopotion_obj?.SetActive(false);
+                character_potionreplenishment_obj?.SetActive(false);
+                character_bank_from_anywhere?.SetActive(false);
+                //character_dps_obj?.SetActive(false);
+                items_nbsocket_obj?.SetActive(false);
+                items_autosell_timer_obj?.SetActive(false);
+                character_masteries_obj?.SetActive(false);
+                character_permanentbuffs_obj?.GetComponent<Mods.Character.Character_PermanentBuffs>().Disable();
+                character_safetp_obj?.SetActive(false);
+                items_headhunter_obj?.SetActive(false);
+                items_mjolner_obj?.SetActive(false);
+                items_crafting_obj?.SetActive(false);
+                items_crafting_eternal?.SetActive(false);
+                minimap_icons_obj?.SetActive(false);
+                monoliths_complete_objectives_obj?.SetActive(false);
             }
         }
 

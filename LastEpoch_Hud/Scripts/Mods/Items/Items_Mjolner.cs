@@ -134,7 +134,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         Refs_Manager.unique_list.uniques.Add(Item());
                         AddedToUniqueList = true;
                     }
-                    catch { Main.logger_instance.Error("Mjolner Unique List Error"); }
+                    catch { Main.logger_instance?.Error("Mjolner Unique List Error"); }
                 }
             }
             private static void AddToDictionary()
@@ -161,7 +161,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             AddedToDictionary = true;
                         }
                     }
-                    catch { Main.logger_instance.Error("Mjolner Unique Dictionary Error"); }
+                    catch { Main.logger_instance?.Error("Mjolner Unique Dictionary Error"); }
                 }
             }
         }

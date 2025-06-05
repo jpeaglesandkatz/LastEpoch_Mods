@@ -33,9 +33,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             if (!texture.IsNullOrDestroyed())
             {
                 if (sprite.IsNullOrDestroyed()) { sprite = Create_Sprite(texture); }
-                if (sprite.IsNullOrDestroyed()) { Main.logger_instance.Error("Sprite create Fail"); }
+                if (sprite.IsNullOrDestroyed()) { Main.logger_instance?.Error("Sprite create Fail"); }
             }
-            else { Main.logger_instance.Error("Can't create sprite, texture is null"); }
+            else { Main.logger_instance?.Error("Can't create sprite, texture is null"); }
         }
         public static Texture2D Create_Texture(Color color)
         {

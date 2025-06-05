@@ -26,7 +26,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                 {
                     Ability ability = null;
                     try { ability = __1.getAbility(); }
-                    catch { Main.logger_instance.Error("OnAbilityUse Prefix : Can't get Ability"); }
+                    catch { Main.logger_instance?.Error("OnAbilityUse Prefix : Can't get Ability"); }
 
                     if (!ability.IsNullOrDestroyed())
                     {
@@ -62,7 +62,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
 
                     Il2CppSystem.Type il2cpp_type = null;
                     try { il2cpp_type = __1.GetIl2CppType(); }
-                    catch { Main.logger_instance.Error("OnAbilityUse Prefix : Can't get Mutator type"); }
+                    catch { Main.logger_instance?.Error("OnAbilityUse Prefix : Can't get Mutator type"); }
 
                     //Use Switch(il2cpp_type.ToString()) instead of if for better result (== is bad)
 

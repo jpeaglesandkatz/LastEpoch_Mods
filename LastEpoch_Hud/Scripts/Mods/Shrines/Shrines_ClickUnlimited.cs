@@ -31,7 +31,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Shrines
                         Object.Destroy(__instance.gameObject);
                         ShrinePlacementManager shrine_placement_manager = GameObject.FindObjectOfType<ShrinePlacementManager>();
                         if (!shrine_placement_manager.IsNullOrDestroyed()) { shrine_placement_manager.PlaceNewShrine(copy, position); }
-                        else { Main.logger_instance.Error("ShrinePlacementManager not Found"); }
+                        else { Main.logger_instance?.Error("ShrinePlacementManager not Found"); }
                     }
                 }
             }

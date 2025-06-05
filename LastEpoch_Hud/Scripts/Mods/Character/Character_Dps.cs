@@ -11,18 +11,19 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
     [RegisterTypeInIl2Cpp]
     public class Character_Dps : MonoBehaviour
     {
-        public static Character_Dps instance { get; private set; }
+        public static Character_Dps? instance { get; private set; }
         public Character_Dps(System.IntPtr ptr) : base(ptr) { }
 
         public static bool Mod_Enable = false; //Set true if you want this mod to work
-        public static bool ShowDebug = false;
-        public static bool Initialized = false;
+        //public static bool ShowDebug = false;
+        //public static bool Initialized = false;
 
         void Awake()
         {
             instance = this;            
-            SceneManager.add_sceneLoaded(new System.Action<Scene, LoadSceneMode>(OnSceneLoaded));
+            //SceneManager.add_sceneLoaded(new System.Action<Scene, LoadSceneMode>(OnSceneLoaded));
         }
+        /*
         void Update()
         {
             if ((CanRun()) && (Initialized))
@@ -36,12 +37,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
             {
                 CombatLog.Add_Line("--------------------");
                 CombatLog.Add_Line("Scene changed to " + scene.name);
-                if (ShowDebug) { Main.logger_instance.Msg("CombatLog : Scene changed to " + scene.name); }
+                if (ShowDebug) { Main.logger_instance?.Msg("CombatLog : Scene changed to " + scene.name); }
             }
         }
         private static bool CanRun()
         {
-            if (!Save_Manager.instance.IsNullOrDestroyed())
+            if (Save_Manager.instance is not null)
             {
                 if (Save_Manager.instance.data.modsNotInHud.Enable_CombatLog) { return true; }
                 else { return false; }
@@ -52,13 +53,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
         public static void Player_OnHealth(float health_diff, string AbilityName)
         {
             string s = "Player health for " + health_diff + " from " + AbilityName;
-            if (ShowDebug) { Main.logger_instance.Msg(s); }
+            if (ShowDebug) { Main.logger_instance?.Msg(s); }
             CombatLog.Add_Line(s);
         }
         public static void Enemy_OnHealth(Actor enemy, float health_diff, string AbilityName)
         {
             string s = enemy.name + " health for = " + health_diff + " with " + AbilityName;
-            if (ShowDebug) { Main.logger_instance.Msg(s); }
+            if (ShowDebug) { Main.logger_instance?.Msg(s); }
             CombatLog.Add_Line(s);
         }
 
@@ -71,7 +72,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                 {
                     result = actor.gameObject.GetComponent<PlayerHealth>().currentHealth;
                 }
-                else { Main.logger_instance.Error("DamageStatsHolder:applyDamage Prefix : Can't get player health from target : " + actor.name); }
+                else { Main.logger_instance?.Error("DamageStatsHolder:applyDamage Prefix : Can't get player health from target : " + actor.name); }
             }
             else
             {
@@ -79,7 +80,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                 {
                     result = actor.gameObject.GetComponent<UnitHealth>().currentHealth;
                 }
-                else { Main.logger_instance.Error("DamageStatsHolder:applyDamage Prefix : Can't get (enenmy or summoned) health from target : " + actor.name); }
+                else { Main.logger_instance?.Error("DamageStatsHolder:applyDamage Prefix : Can't get (enenmy or summoned) health from target : " + actor.name); }
             }
 
             return result;
@@ -87,7 +88,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
         private static bool Get_IsSummoned(Actor actor)
         {
             bool result = false;
-            if (!Refs_Manager.player_actor.IsNullOrDestroyed())
+            if (Refs_Manager.player_actor is not null)
             {
                 SummonTracker summon_tracker = Refs_Manager.player_actor.gameObject.GetComponent<SummonTracker>();
                 if (!summon_tracker.IsNullOrDestroyed())
@@ -108,7 +109,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
         private static string Get_ActorType(Actor actor)
         {
             string result = "";
-            if (!Refs_Manager.player_actor.IsNullOrDestroyed())
+            if (Refs_Manager.player_actor is not null)
             {
                 if (actor == Refs_Manager.player_actor) { result = "Player"; }
                 else
@@ -126,9 +127,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
             public static bool Hit = false;
             public static bool Critical = false;
             public static bool Kill = false;
-            public static Actor current_source_actor = null;
-            public static Ability current_source_ability = null;
-            public static Actor current_target_actor = null;
+            public static Actor? current_source_actor = null;
+            public static Ability? current_source_ability = null;
+            public static Actor? current_target_actor = null;
             public static float previous_health = -1;
             
             [HarmonyPatch(typeof(DamageStatsHolder), "applyDamage", new System.Type[] { typeof(Actor) })]
@@ -146,7 +147,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                         current_source_actor = null;
                         current_source_ability = null;
                         current_target_actor = null;
-                        if ((Scenes.IsGameScene()) && (!Refs_Manager.player_actor.IsNullOrDestroyed()))
+                        if ((Scenes.IsGameScene()) && (Refs_Manager.player_actor is not null))
                         {
                             current_source_ability = __instance.GetDamageSourceInfo().Item2;
                             current_source_actor = __instance.GetDamageSourceInfo().Item3;
@@ -159,7 +160,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                 [HarmonyPostfix]
                 static void Postfix(ref DamageStatsHolder __instance, ref Actor __0)
                 {
-                    if ((Scenes.IsGameScene()) && (!Refs_Manager.player_actor.IsNullOrDestroyed()) && (CanRun()))
+                    if ((Scenes.IsGameScene()) && (Refs_Manager.player_actor is not null) && (CanRun()))
                     {
                         Il2CppSystem.ValueTuple<Ailment, Ability, Actor, IrregularDamageSourceID> source = __instance.GetDamageSourceInfo();
                         Ailment source_ailment = source.Item1;
@@ -180,7 +181,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                 CombatLog.Add_Line("Ailment = " + source_ailment.name + ", " + source_ailment.displayName);
                             }
                             CombatLog.Add_Line("Damage modifier = " + __instance.getDamageModifier());
-                            if (!__instance.damageStats.IsNullOrDestroyed())
+                            if (__instance.damageStats is not null)
                             {
                                 CombatLog.Add_Line("Critical chance = " + (__instance.damageStats.critChance * 100) + " %");
                                 CombatLog.Add_Line("Critical multiplier = " + (__instance.damageStats.critMultiplier * 100));
@@ -195,7 +196,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                     i++;
                                 }
                                 i = 0;
-                                if (!__instance.damageStats.penetration.IsNullOrDestroyed())
+                                if (__instance.damageStats.penetration is not null)
                                 {
                                     foreach (float pen in __instance.damageStats.penetration.penetration)
                                     {
@@ -215,7 +216,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                             CombatLog.Add_Line(damage_done);
                             float overkill_damage = (__instance.getTotalDamage() - health_diff);
                             if (overkill_damage > 0) { CombatLog.Add_Line("Overkill damage = " + overkill_damage); }
-                            //else if (overkill_damage < 0) { Main.logger_instance.Error("Overkill damage = " + overkill_damage); }                            
+                            //else if (overkill_damage < 0) { Main.logger_instance?.Error("Overkill damage = " + overkill_damage); }                            
                         }
                     }
                 }
@@ -282,7 +283,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                     if (CanRun())
                     {
                         current_health = -1;
-                        if ((Scenes.IsGameScene()) && (!Refs_Manager.player_actor.IsNullOrDestroyed()))
+                        if ((Scenes.IsGameScene()) && (Refs_Manager.player_actor is not null))
                         {
                             if (__1 == Refs_Manager.player_actor)
                             {
@@ -290,7 +291,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                 {
                                     current_health = __1.gameObject.GetComponent<PlayerHealth>().currentHealth;
                                 }
-                                else { Main.logger_instance.Error("AbilityEventListener:HealEvent Prefix : Can't get player health from target : " + __1.name); }
+                                else { Main.logger_instance?.Error("AbilityEventListener:HealEvent Prefix : Can't get player health from target : " + __1.name); }
                             }
                             else
                             {
@@ -298,7 +299,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                 {
                                     current_health = __1.gameObject.GetComponent<UnitHealth>().currentHealth;
                                 }
-                                else { Main.logger_instance.Error("AbilityEventListener:HealEvent Prefix : Can't get enenmy health from target : " + __1.name); }
+                                else { Main.logger_instance?.Error("AbilityEventListener:HealEvent Prefix : Can't get enenmy health from target : " + __1.name); }
                             }
                         }
                     }
@@ -306,7 +307,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                 [HarmonyPostfix]
                 static void Postfix(ref Ability __0, ref Actor __1)
                 {
-                    if ((Scenes.IsGameScene()) && (!Refs_Manager.player_actor.IsNullOrDestroyed()) && (CanRun()))
+                    if ((Scenes.IsGameScene()) && (Refs_Manager.player_actor is not null) && (CanRun()))
                     {
                         float health_diff = 0;
                         if (__1 == Refs_Manager.player_actor)
@@ -317,7 +318,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                 health_diff = (current_health - health);
                                 Player_OnHealth(health_diff, __0.abilityName);
                             }
-                            else { Main.logger_instance.Error("AbilityEventListener:HealEvent Postfix : Can't get player health from target : " + __1.name); }
+                            else { Main.logger_instance?.Error("AbilityEventListener:HealEvent Postfix : Can't get player health from target : " + __1.name); }
                         }
                         else
                         {
@@ -327,7 +328,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                 health_diff = (current_health - health);
                                 Enemy_OnHealth(__1, health_diff, __0.abilityName);
                             }
-                            else { Main.logger_instance.Error("AbilityEventListener:HealEvent Postfix : Can't get enenmy health from target : " + __1.name); }
+                            else { Main.logger_instance?.Error("AbilityEventListener:HealEvent Postfix : Can't get enenmy health from target : " + __1.name); }
                         }
                     }
                 }
@@ -357,12 +358,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                         Add_Line("--------------------");
                         Add_Line("Session Start");
 
-                        if (ShowDebug) { Main.logger_instance.Msg("CombatLog : Session Start"); }
+                        if (ShowDebug) { Main.logger_instance?.Msg("CombatLog : Session Start"); }
 
                     }
                     catch (Exception e)
                     {
-                        if (ShowDebug) { Main.logger_instance.Error(e.ToString()); }
+                        if (ShowDebug) { Main.logger_instance?.Error(e.ToString()); }
                     }
                     initializing = false;
                 }
@@ -379,5 +380,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                 }
             }
         }
+        */
     }
 }

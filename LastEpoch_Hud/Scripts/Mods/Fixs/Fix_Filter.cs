@@ -4,6 +4,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Fixs
 {
     public class Fix_Filter
     {
+        //Fix Exception when filter isn't set
         [HarmonyPatch(typeof(Il2CppItemFiltering.ItemFilterManager), "LoadFilter")]
         public class Il2CppItemFiltering_ItemFilterManager_LoadFilter
         {

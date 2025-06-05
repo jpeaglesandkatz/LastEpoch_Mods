@@ -63,7 +63,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         {
             if ((CanRun()) && (!backup.IsNullOrDestroyed()))
             {
-                Main.logger_instance.Msg("Remove set req");
+                Main.logger_instance?.Msg("Remove set req");
                 foreach (SetBonusesList.Entry set_bonuses in Refs_Manager.set_bonuses_list.entries)
                 {
                     foreach (SetBonus set_bonus in set_bonuses.mods)
@@ -82,7 +82,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         {
             if ((CanRun()) && (!backup.IsNullOrDestroyed()))
             {
-                Main.logger_instance.Msg("Reset set req");
+                Main.logger_instance?.Msg("Reset set req");
                 foreach (SetBonusesList.Entry set_bonuses in Refs_Manager.set_bonuses_list.entries)
                 {
                     bool backup_found = false;

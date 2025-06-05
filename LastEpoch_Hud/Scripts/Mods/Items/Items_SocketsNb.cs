@@ -37,8 +37,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     {
                         if (base_item.baseTypeID < 25) { base_item.maximumAffixes = items_nb_sockets; }
                     }
-                    if (items_nb_sockets == default_items_nb_sockets) { Main.logger_instance.Msg("Items max sockets reset to default value (" + default_items_nb_sockets + ")"); }
-                    else { Main.logger_instance.Msg("Items max sockets set to " + items_nb_sockets); }                    
+                    if (items_nb_sockets == default_items_nb_sockets) { Main.logger_instance?.Msg("Items max sockets reset to default value (" + default_items_nb_sockets + ")"); }
+                    else { Main.logger_instance?.Msg("Items max sockets set to " + items_nb_sockets); }                    
                 }
 
                 if (Save_Manager.instance.data.Items.Drop.Enable_IdolAffixCount)
@@ -53,8 +53,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     {
                         if ((base_item.baseTypeID > 24) && (base_item.baseTypeID < 34)) { base_item.maximumAffixes = idols_nb_sockets; }
                     }
-                    if (idols_nb_sockets == default_idols_nb_sockets) { Main.logger_instance.Msg("Idols max sockets reset to default value (" + default_idols_nb_sockets + ")"); }
-                    else { Main.logger_instance.Msg("Idols max sockets set to " + idols_nb_sockets); }
+                    if (idols_nb_sockets == default_idols_nb_sockets) { Main.logger_instance?.Msg("Idols max sockets reset to default value (" + default_idols_nb_sockets + ")"); }
+                    else { Main.logger_instance?.Msg("Idols max sockets set to " + idols_nb_sockets); }
                 }
             }
         }

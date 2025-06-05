@@ -16,30 +16,30 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                 (!Refs_Manager.player_data.IsNullOrDestroyed()))
             {
                 Refs_Manager.player_data.ReachedTown = true;
-                Main.logger_instance.Msg("Commplete all Quest to player");
+                Main.logger_instance?.Msg("Commplete all Quests");
                 foreach (Quest quest in Refs_Manager.quest_list.quests)
                 {
                     if ((quest.mainLineQuest) || (quest.idolUnlockReward > 0) || (quest.passivePointsReward > 0))
                     {
-                        //Main.logger_instance.Msg("Quest Name = " + quest.name + " Id = " + quest.id + ", Type = " + quest.questType.ToString() + ", Chapter = " + quest.chapter);
+                        Main.logger_instance?.Msg("Quest Name = " + quest.name + " Id = " + quest.id + ", Type = " + quest.questType.ToString() + ", Chapter = " + quest.chapter);
                         
                         if (quest.id != 148)
                         {
                             try
                             {
                                 quest.startQuest();
-                                //Main.logger_instance.Msg("Quest started");
+                                //Main.logger_instance?.Msg("Quest started");
                             }
-                            catch { Main.logger_instance.Error("Error when trying to start quest"); }
+                            catch { Main.logger_instance?.Error("Error when trying to start quest"); }
 
                             try
                             {
                                 quest.completeQuest(Refs_Manager.player_actor);
-                                //Main.logger_instance.Msg("Completed");
+                                //Main.logger_instance?.Msg("Completed");
                             }
                             catch
                             {
-                                Main.logger_instance.Error("Error when trying to complete quest");
+                                Main.logger_instance?.Error("Error when trying to complete quest");
                             }
                         }
                         
@@ -57,7 +57,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                         bool already = Refs_Manager.player_data.UnlockedWaypointScenes.Contains(scene_details.Name);
                                         if (!already)
                                         {
-                                            //Main.logger_instance.Msg("Unlock Waypoint Scene = " + scene_details.Name);
+                                            //Main.logger_instance?.Msg("Unlock Waypoint Scene = " + scene_details.Name);
                                             Refs_Manager.player_data.UnlockedWaypointScenes.Add(scene_details.Name);
                                         }
                                     }
@@ -69,11 +69,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                 }
 
                 //Complete All quest
-                /*Main.logger_instance.Msg("Complete all quest");
+                /*Main.logger_instance?.Msg("Complete all quest");
                 Actor actor = PlayerFinder.getPlayerActor();
                 if (!actor.IsNullOrDestroyed())
                 {
-                    Main.logger_instance.Msg("Player");
+                    Main.logger_instance?.Msg("Player");
                     PlayerQuestListHolder player_component = actor.gameObject.GetComponent<PlayerQuestListHolder>();
                     if (!player_component.IsNullOrDestroyed())
                     {
@@ -86,18 +86,18 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                     StatefulQuest statefulquest = player_component.statefulQuestList.trackedQuests[i];
                                     if (!statefulquest.IsNullOrDestroyed())
                                     {
-                                        try { statefulquest.quest.completeQuest(actor); Main.logger_instance.Msg("Complete quest[" + i + "] : " + statefulquest.quest.name); }
-                                        catch { Main.logger_instance.Error("Complete quest[" + i + "] : " + statefulquest.quest.name); }
+                                        try { statefulquest.quest.completeQuest(actor); Main.logger_instance?.Msg("Complete quest[" + i + "] : " + statefulquest.quest.name); }
+                                        catch { Main.logger_instance?.Error("Complete quest[" + i + "] : " + statefulquest.quest.name); }
                                     }
-                                    else { Main.logger_instance.Error("statefulquest[" + i + "] is null"); }                                    
+                                    else { Main.logger_instance?.Error("statefulquest[" + i + "] is null"); }                                    
                                 }
                             }
-                            else { Main.logger_instance.Error("trackedQuests is null"); }
+                            else { Main.logger_instance?.Error("trackedQuests is null"); }
                         }
-                        else { Main.logger_instance.Error("player_component is null"); }
+                        else { Main.logger_instance?.Error("player_component is null"); }
                     }
 
-                    Main.logger_instance.Msg("Stash");
+                    Main.logger_instance?.Msg("Stash");
                     StashPlayerQuestListHolder stash_component = actor.gameObject.GetComponent<StashPlayerQuestListHolder>();
                     if (!stash_component.IsNullOrDestroyed())
                     {
@@ -108,16 +108,16 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                                 StatefulQuest statefulquest = stash_component.statefulQuestList.trackedQuests[i];
                                 if (!statefulquest.IsNullOrDestroyed())
                                 {
-                                    try { statefulquest.quest.completeQuest(actor); Main.logger_instance.Msg("Complete quest[" + i + "] : " + statefulquest.quest.name); }
-                                    catch { Main.logger_instance.Error("Complete quest[" + i + "] : " + statefulquest.quest.name); }
+                                    try { statefulquest.quest.completeQuest(actor); Main.logger_instance?.Msg("Complete quest[" + i + "] : " + statefulquest.quest.name); }
+                                    catch { Main.logger_instance?.Error("Complete quest[" + i + "] : " + statefulquest.quest.name); }
                                 }
-                                else { Main.logger_instance.Error("statefulquest[" + i + "] is null"); }
+                                else { Main.logger_instance?.Error("statefulquest[" + i + "] is null"); }
                             }
                         }
-                        else { Main.logger_instance.Error("trackedQuests is null"); }
+                        else { Main.logger_instance?.Error("trackedQuests is null"); }
                     }
 
-                    Main.logger_instance.Msg("Monolith");
+                    Main.logger_instance?.Msg("Monolith");
                     PlayerMonolithQuestListHolder monolith_component = actor.gameObject.GetComponent<PlayerMonolithQuestListHolder>();
                     if (!monolith_component.IsNullOrDestroyed())
                     {
@@ -126,45 +126,45 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
                             StatefulQuest statefulquest = monolith_component.statefulQuestList.trackedQuests[i];
                             if (!statefulquest.IsNullOrDestroyed())
                             {
-                                try { statefulquest.quest.completeQuest(actor); Main.logger_instance.Msg("Complete quest[" + i + "] : " + statefulquest.quest.name); }
-                                catch { Main.logger_instance.Error("Complete quest[" + i + "] : " + statefulquest.quest.name); }
+                                try { statefulquest.quest.completeQuest(actor); Main.logger_instance?.Msg("Complete quest[" + i + "] : " + statefulquest.quest.name); }
+                                catch { Main.logger_instance?.Error("Complete quest[" + i + "] : " + statefulquest.quest.name); }
                             }
-                            else { Main.logger_instance.Error("statefulquest[" + i + "] is null"); }
+                            else { Main.logger_instance?.Error("statefulquest[" + i + "] is null"); }
                         }
                     }
                 }*/
 
-                Main.logger_instance.Msg("Unlock Portal");
+                Main.logger_instance?.Msg("Unlock Portal");
                 UnlockPortalInteraction.unlockPortal(Refs_Manager.player_actor.gameObject);
                 bool monolith_waypoint_unlock = Refs_Manager.player_data.UnlockedWaypointScenes.Contains(monolith_scene);
                 if (!monolith_waypoint_unlock) { Refs_Manager.player_data.UnlockedWaypointScenes.Add(monolith_scene); }
                 
-                Main.logger_instance.Msg("Level Character to 58");
+                Main.logger_instance?.Msg("Level Character to 58");
                 Character_Level.LevelUpToLevel(58);             
 
-                Main.logger_instance.Msg("Save Character");
+                Main.logger_instance?.Msg("Save Character");
                 Refs_Manager.player_data.SaveData();
 
                 if (!Refs_Manager.game_uibase.IsNullOrDestroyed())
                 {
-                    Main.logger_instance.Msg("Open Map");
+                    Main.logger_instance?.Msg("Open Map");
                     Refs_Manager.game_uibase.openMap();
                     if (!Refs_Manager.game_uibase.map.instance.IsNullOrDestroyed())
                     {
-                        Main.logger_instance.Msg("Open Era");
+                        Main.logger_instance?.Msg("Open Era");
                         MapPanel map_panel = Refs_Manager.game_uibase.map.instance.GetComponent<MapPanel>();
                         map_panel.OpenEra(map_panel.eras[map_panel.eras.Count - 1].era, false);
 
-                        Main.logger_instance.Msg("Get Waypoint");
+                        Main.logger_instance?.Msg("Get Waypoint");
                         UIWaypointStandard waypoint = GetWaypoint(monolith_scene, 0);
-                        if (waypoint == null) { Main.logger_instance.Error("Waypoint not found for " + monolith_scene + " scene"); }
+                        if (waypoint == null) { Main.logger_instance?.Error("Waypoint not found for " + monolith_scene + " scene"); }
                         else
                         {
-                            Main.logger_instance.Msg("Tp to Waypoint");
+                            Main.logger_instance?.Msg("Tp to Waypoint");
                             waypoint.LoadWaypointScene();
                         }
                     }
-                    else { Main.logger_instance.Error("Map instance is null"); }
+                    else { Main.logger_instance?.Error("Map instance is null"); }
                 }
             }
         }

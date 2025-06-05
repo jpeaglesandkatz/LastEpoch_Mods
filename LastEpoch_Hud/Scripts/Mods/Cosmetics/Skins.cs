@@ -66,7 +66,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             {
                 if (scene_name != Scenes.SceneName) //scene changed
                 {
-                    //Main.logger_instance.Msg("Skins : Scene change to " + Scenes.SceneName);
+                    //Main.logger_instance?.Msg("Skins : Scene change to " + Scenes.SceneName);
                     scene_name = Scenes.SceneName;
                     Visuals.NeedUpdate = true;
                     Panel.Slots.need_update = true;
@@ -154,7 +154,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 {
                     if ((!initialized) && (!initializing))
                     {
-                        //Main.logger_instance.Msg("Intialize CosmeticPanelUI");
+                        //Main.logger_instance?.Msg("Intialize CosmeticPanelUI");
                         initializing = true;
                         instance = __instance.cosmeticPanel;
                         if (!instance.IsNullOrDestroyed())
@@ -231,7 +231,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
 
                 public static void Update()
                 {
-                    //Main.logger_instance.Msg("Skins : Panel.Slots.Update()");
+                    //Main.logger_instance?.Msg("Skins : Panel.Slots.Update()");
                     System.Collections.Generic.List<Save.Data.Structures.saved_skin> saved_skins = new System.Collections.Generic.List<Save.Data.Structures.saved_skin>
                     {
                         Save.Data.UserData.helmet,
@@ -373,7 +373,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
 
             public static void Open()
             {
-                //Main.logger_instance.Msg("Cosmetics_Flyout.Open()");
+                //Main.logger_instance?.Msg("Cosmetics_Flyout.Open()");
                 if (!Panel.instance.IsNullOrDestroyed())
                 {
                     if (!Panel.instance.flyoutWindow.IsNullOrDestroyed())
@@ -397,7 +397,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             }
             public static void Close()
             {
-                //Main.logger_instance.Msg("Cosmetics_Flyout.Close()");
+                //Main.logger_instance?.Msg("Cosmetics_Flyout.Close()");
                 if (!Panel.instance.IsNullOrDestroyed())
                 {
                     if (!Panel.instance.flyoutWindow.IsNullOrDestroyed())
@@ -408,7 +408,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             }
             public static void ResetContent()
             {
-                //Main.logger_instance.Msg("Cosmetics_Flyout.ResetContent()");
+                //Main.logger_instance?.Msg("Cosmetics_Flyout.ResetContent()");
                 if (!flyout_content.IsNullOrDestroyed())
                 {
                     foreach (GameObject g in Functions.GetAllChild(flyout_content))
@@ -431,17 +431,17 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 [HarmonyPostfix]
                 static void Postfix(ref CosmeticsFlyoutSelectionContentNavigable __instance)
                 {
-                    //Main.logger_instance.Msg("CosmeticsFlyoutSelectionContentNavigable.OnEnable()");
+                    //Main.logger_instance?.Msg("CosmeticsFlyoutSelectionContentNavigable.OnEnable()");
                     isOpen = true;
                     if ((!__instance.scrollContent.IsNullOrDestroyed()) && (flyout_content.IsNullOrDestroyed()))
                     {
-                        //Main.logger_instance.Msg("Set cosmetic Flyout Ref");
+                        //Main.logger_instance?.Msg("Set cosmetic Flyout Ref");
                         flyout_content = __instance.scrollContent.gameObject;
                     }
                     if (!flyout_content.IsNullOrDestroyed())
                     {
                         //Clear btn
-                        //Main.logger_instance.Msg("Set cleay button event");
+                        //Main.logger_instance?.Msg("Set cleay button event");
                         GameObject cleat_btn_gameobject = Functions.GetChild(flyout_content, "Remove Button");
                         if (!cleat_btn_gameobject.IsNullOrDestroyed())
                         {
@@ -453,7 +453,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                             }
                         }
                         //Add skins
-                        //Main.logger_instance.Msg("Add Basic Skins");
+                        //Main.logger_instance?.Msg("Add Basic Skins");
                         foreach (ItemList.BaseEquipmentItem item in ItemList.instance.EquippableItems)
                         {
                             if ((item.baseTypeID == selected_slot) ||
@@ -483,7 +483,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                                 }
                             }
                         }
-                        //Main.logger_instance.Msg("Add Unique Skins");
+                        //Main.logger_instance?.Msg("Add Unique Skins");
                         foreach (UniqueList.Entry unique in UniqueList.instance.uniques)
                         {
                             ItemList.EquipmentItem base_item = ItemList.instance.EquippableItems[unique.baseType].subItems[unique.subTypes[0]];
@@ -514,7 +514,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                             }
                         }
                     }
-                    //else { Main.logger_instance.Error("Flyout content is null"); }
+                    //else { Main.logger_instance?.Error("Flyout content is null"); }
                 }
             }
 
@@ -524,7 +524,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 [HarmonyPostfix]
                 static void Postfix()
                 {
-                    //Main.logger_instance.Msg("CosmeticsFlyoutSelectionContentNavigable.OnDisable()");
+                    //Main.logger_instance?.Msg("CosmeticsFlyoutSelectionContentNavigable.OnDisable()");
                     isOpen = false;
                     selected_slot = -1;
                     selected_type = -1;
@@ -597,7 +597,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 else if (Scenes.IsGameScene())
                 {
-                    //Main.logger_instance.Msg("Skins : Visuals.Update()");
+                    //Main.logger_instance?.Msg("Skins : Visuals.Update()");
                     if (!Refs_Manager.player_visuals.IsNullOrDestroyed())
                     {
                         if (!Save.Data.IsEmpty(Save.Data.UserData.helmet))
@@ -626,7 +626,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                         }
                         NeedUpdate = false;
                     }
-                    else { Main.logger_instance.Error("Refs_Manager.player_visuals is null"); }
+                    else { Main.logger_instance?.Error("Refs_Manager.player_visuals is null"); }
                 }
             }
             
@@ -636,7 +636,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 [HarmonyPrefix]
                 static void Prefix(ref CharacterCreationSelection __instance)
                 {
-                    //Main.logger_instance.Msg("CharacterCreationSelection:OnEnable : " + __instance.name);              
+                    //Main.logger_instance?.Msg("CharacterCreationSelection:OnEnable : " + __instance.name);              
                 }
             }*/
             /*[HarmonyPatch(typeof(ActorVisuals), "OnEnable")]
@@ -645,7 +645,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 [HarmonyPrefix]
                 static void Prefix(ref ActorVisuals __instance)
                 {
-                    //Main.logger_instance.Msg("ActorVisuals:OnEnable : " + __instance.name);
+                    //Main.logger_instance?.Msg("ActorVisuals:OnEnable : " + __instance.name);
                 }
             }*/
 
@@ -655,7 +655,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 [HarmonyPrefix]
                 static void Prefix(ref EquipmentVisualsManager __instance, ref EquipmentType __0, ref int __1, ref bool __2, ref ushort __3)
                 {
-                    //Main.logger_instance.Msg("EquipmentVisualsManager:EquipGear");
+                    //Main.logger_instance?.Msg("EquipmentVisualsManager:EquipGear");
                     bool found = false;                    
                     Save.Data.Structures.saved_skin skin = Save.Data.Default.Skin();
                     if (__0 == EquipmentType.HELMET)
@@ -703,7 +703,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 [HarmonyPrefix]
                 static void Prefix(ref EquipmentVisualsManager __instance, ref int __0, ref int __1, ref int __2, ref ushort __3, ref IMSlotType __4, ref WeaponEffect __5)
                 {
-                    //Main.logger_instance.Msg("EquipmentVisualsManager:EquipWeapon");
+                    //Main.logger_instance?.Msg("EquipmentVisualsManager:EquipWeapon");
                     bool found = false;
                     Save.Data.Structures.saved_skin skin = Save.Data.Default.Skin();
                     if (__4 == IMSlotType.MainHand)
@@ -775,7 +775,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                         Flyout.selected_unique = (item_found.Data[10] * 255) + item_found.Data[11];
                         EquipSkin();
                     }
-                    catch { Main.logger_instance.Error("Skin.RemoveSkin() Error ItemLocationPair Data"); }
+                    catch { Main.logger_instance?.Error("Skin.RemoveSkin() Error ItemLocationPair Data"); }
                 }
                 else
                 {
@@ -929,7 +929,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 public static void Load()
                 {
-                    //Main.logger_instance.Msg("Skins : Try to Load : " + Data.path + Data.Character.Character_Name);
+                    //Main.logger_instance?.Msg("Skins : Try to Load : " + Data.path + Data.Character.Character_Name);
                     bool error = false;
                     if (Data.Character.Character_Name != "")
                     {
@@ -938,12 +938,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                             try
                             {
                                 Data.UserData = JsonConvert.DeserializeObject<Structures.UserSkin>(File.ReadAllText(Data.path + Data.Character.Character_Name));
-                                Main.logger_instance.Msg("Skins : Loaded");
+                                Main.logger_instance?.Msg("Skins : Loaded");
                             }
                             catch
                             {
                                 error = true;
-                                Main.logger_instance.Error("Skins : Error loading file : " + Data.Character.Character_Name);
+                                Main.logger_instance?.Error("Skins : Error loading file : " + Data.Character.Character_Name);
                             }
                         }
                         if ((error) || (!File.Exists(Data.path + Data.Character.Character_Name))) { Default.DefaultConfig(); }
@@ -951,7 +951,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 public static void Save()
                 {
-                    //Main.logger_instance.Msg("Save : " + Data.path + Data.Character.Character_Name);
+                    //Main.logger_instance?.Msg("Save : " + Data.path + Data.Character.Character_Name);
                     string jsonString = JsonConvert.SerializeObject(Data.UserData, Newtonsoft.Json.Formatting.Indented);
                     if (!Directory.Exists(Data.path)) { Directory.CreateDirectory(Data.path); }
                     if (File.Exists(Data.path + Data.Character.Character_Name)) { File.Delete(Data.path + Data.Character.Character_Name); }

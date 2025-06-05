@@ -567,7 +567,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 if (slot == 4) { Slot4.AffixName = affix_name_obj.GetComponent<Il2CppTMPro.TextMeshProUGUI>(); }
                 else if (slot == 5) { Slot5.AffixName = affix_name_obj.GetComponent<Il2CppTMPro.TextMeshProUGUI>(); }
 
-                //Main.logger_instance.Msg("Init AffixSlotForge");
+                //Main.logger_instance?.Msg("Init AffixSlotForge");
                 AffixSlotForge asf = slot_obj.GetComponent<AffixSlotForge>();
                 asf.background = affix_desc_obj;
                 asf.countTMP = availables_count_obj.GetComponent<TextMeshProUGUI>();

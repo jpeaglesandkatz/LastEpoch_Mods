@@ -48,7 +48,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         }
                     }
                 }
-                catch { Main.logger_instance.Msg("SkillsPanelManager.openSkillTree() ERROR"); }
+                catch { Main.logger_instance?.Msg("SkillsPanelManager.openSkillTree() ERROR"); }
             }
         }
     }

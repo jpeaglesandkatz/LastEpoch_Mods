@@ -64,7 +64,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         }
                     }
                 }
-                else { Main.logger_instance.Error("UITooltipItem.instance is null"); }
+                else { Main.logger_instance?.Error("UITooltipItem.instance is null"); }
             }
         }
         public class Check

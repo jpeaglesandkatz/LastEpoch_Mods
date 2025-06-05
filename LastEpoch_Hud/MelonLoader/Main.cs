@@ -13,11 +13,11 @@ namespace LastEpoch_Hud
 {
     public class Main : MelonLoader.MelonMod
     {
-        public static MelonLoader.MelonLogger.Instance logger_instance = null;
+        public static MelonLoader.MelonLogger.Instance? logger_instance = null;
         public const string company_name = "Eleventh Hour Games";
         public const string game_name = "Last Epoch";
         public const string mod_name = "LastEpoch_Hud";
-        public const string mod_version = "4.4.1"; //LastEpoch 1.2.4.1
+        public const string mod_version = "4.4.2"; //LastEpoch 1.2.5.2
         public static bool debug = false;
 
         public override void OnInitializeMelon()
@@ -56,10 +56,10 @@ namespace LastEpoch_Hud
         public static Selected current = Selected.Unknow;
         private static string dictionary_path = Application.dataPath + "/../Mods/" + Main.mod_name + "/Locales";
         public static string dictionnary_filename = "";
-        public static Dictionary<string, string> current_dictionary = null;
+        public static Dictionary<string, string>? current_dictionary = null;
         public static bool update = false;
-        public static bool debug_text = false; //used to generate default json from prefab
-        public static List<string> debug_json;
+        //public static bool debug_text = false; //used to generate default json from prefab
+        //public static List<string>? debug_json;
         public static char[] igrone_str = { '+', '%', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         [HarmonyPatch(typeof(Localization), "get_Locale")]
@@ -84,8 +84,8 @@ namespace LastEpoch_Hud
                 }
                 if (current != backup)
                 {
-                    if (backup == Selected.Unknow) { Main.logger_instance.Msg("Locale initialized to " + current.ToString()); }
-                    else { Main.logger_instance.Msg("Locale change to " + current.ToString()); }
+                    if (backup == Selected.Unknow) { Main.logger_instance?.Msg("Locale initialized to " + current.ToString()); }
+                    else { Main.logger_instance?.Msg("Locale change to " + current.ToString()); }
                     update = LoadDictionary();
                 }
             }
@@ -101,8 +101,8 @@ namespace LastEpoch_Hud
             }
             else
             {
-                Main.logger_instance.Error("Dictionnary not found for " + current.ToString() + " (" + full_path + ")");
-                Main.logger_instance.Error("If you want to use locale for hud, copy " + dictionary_path + "/base" + Extensions.json + " to " + dictionnary_filename + Extensions.json + ", then edit this file");
+                Main.logger_instance?.Error("Dictionnary not found for " + current.ToString() + " (" + full_path + ")");
+                Main.logger_instance?.Error("If you want to use locale for hud, copy " + dictionary_path + "/base" + Extensions.json + " to " + dictionnary_filename + Extensions.json + ", then edit this file");
                 return false;
             }
         }
@@ -138,7 +138,7 @@ namespace LastEpoch_Hud
         }
         public static bool IsCharacterSelection()
         {
-            if (!string.IsNullOrWhiteSpace(SceneName) && (!SceneMenuNames.Contains(SceneMenuNames[3]))) { return true; }
+            if (!string.IsNullOrWhiteSpace(SceneName) && (SceneName.Contains(SceneMenuNames[3]))) { return true; }
             else { return false; }
         }
     }
@@ -163,9 +163,9 @@ namespace LastEpoch_Hud
         }
         public static GameObject GetChild(GameObject obj, string name)
         {
-            GameObject result = null;            
-            if (!obj.IsNullOrDestroyed())
-            {
+            GameObject result = new GameObject("NullObject"); //null;            
+            //if (!obj.IsNullOrDestroyed())
+            //{
                 bool found = false;
                 for (int i = 0; i < obj.transform.childCount; i++)
                 {
@@ -178,9 +178,9 @@ namespace LastEpoch_Hud
                     }
                 }
                 string[] no_bug = { "skin", "Modifier Button", "legendary_icon" };
-                if ((!found) && (!no_bug.Contains(name))) { Main.logger_instance.Error("Functions.GetChild, Child : " + name + " not Found"); }
-            }
-            else { Main.logger_instance.Error("Obj is null "); }
+                if ((!found) && (!no_bug.Contains(name))) { Main.logger_instance?.Error("Functions.GetChild, Child : " + name + " not Found"); }
+            //}
+            //else { Main.logger_instance?.Error("Obj is null "); }
             
             return result;
         }
@@ -197,7 +197,7 @@ namespace LastEpoch_Hud
         }
         public static GameObject GetViewportContent(GameObject obj, string panel_name, string panel_content_name)
         {
-            GameObject result = null;
+            GameObject result = new GameObject("NullObject");//null;
             GameObject panel = GetChild(obj, panel_name);
             if (!panel.IsNullOrDestroyed())
             {
@@ -213,7 +213,7 @@ namespace LastEpoch_Hud
         }
         public static Toggle Get_ToggleInPanel(GameObject obj, string panel_name, string obj_name)
         {
-            Toggle result = null;
+            Toggle result = new Toggle(); //null;
             GameObject panel = GetChild(obj, panel_name);
             if (!panel.IsNullOrDestroyed()) { result = Functions.GetChild(panel, obj_name).GetComponent<Toggle>(); }
 
@@ -221,7 +221,7 @@ namespace LastEpoch_Hud
         }
         public static Text Get_TextInPanel(GameObject obj, string panel_name, string obj_name)
         {
-            Text result = null;
+            Text result = new Text(); //null;
             GameObject panel = GetChild(obj, panel_name);
             if (!panel.IsNullOrDestroyed()) { result = Functions.GetChild(panel, obj_name).GetComponent<Text>(); }
 
@@ -229,7 +229,7 @@ namespace LastEpoch_Hud
         }
         public static Slider Get_SliderInPanel(GameObject obj, string panel_name, string obj_name)
         {
-            Slider result = null;
+            Slider result = new Slider(); //null;
             GameObject panel = GetChild(obj, panel_name);
             if (!panel.IsNullOrDestroyed()) { result = Functions.GetChild(panel, obj_name).GetComponent<Slider>(); }
 
@@ -237,7 +237,7 @@ namespace LastEpoch_Hud
         }
         public static Button Get_ButtonInPanel(GameObject obj, string obj_name)
         {
-            Button result = null;
+            Button result = new Button(); //null;
             GameObject panel = GetChild(obj, obj_name);
             if (!panel.IsNullOrDestroyed()) { result = panel.GetComponent<Button>(); }
 
@@ -245,7 +245,7 @@ namespace LastEpoch_Hud
         }
         public static Text Get_TextInToggle(GameObject obj, string panel_name, string toggle_name, string obj_name)
         {
-            Text result = null;
+            Text result = new Text(); //null;
             GameObject panel = GetChild(obj, panel_name);
             if (!panel.IsNullOrDestroyed())
             {
@@ -260,7 +260,7 @@ namespace LastEpoch_Hud
         }
         public static Text Get_TextInButton(GameObject obj, string button_name, string text_name)
         {
-            Text result = null;
+            Text result = new Text(); //null;
             GameObject button = GetChild(obj, button_name);
             if (!button.IsNullOrDestroyed())
             {
@@ -271,7 +271,7 @@ namespace LastEpoch_Hud
         }
         public static Dropdown Get_DopboxInPanel(GameObject obj, string panel_name, string dropdown_name, UnityAction<int> action)
         {
-            Dropdown result = null;
+            Dropdown result = new Dropdown(); //null;
             GameObject panel = GetChild(obj, panel_name);
             if (!panel.IsNullOrDestroyed())
             {
@@ -282,15 +282,15 @@ namespace LastEpoch_Hud
                     result.onValueChanged = new Dropdown.DropdownEvent();
                     result.onValueChanged.AddListener(action);
                 }
-                else { Main.logger_instance.Error("Dropdown : " + dropdown_name + " not found in " + panel_name); }
+                else { Main.logger_instance?.Error("Dropdown : " + dropdown_name + " not found in " + panel_name); }
             }
-            else { Main.logger_instance.Error("Panel : "+ panel_name + " not found"); }
+            else { Main.logger_instance?.Error("Panel : "+ panel_name + " not found"); }
             
             return result;
         }
         public static Toggle Get_ToggleInLabel(GameObject obj, string panel_name, string obj_name, bool makeSureItsActive = false)
         {
-            Toggle result = null;
+            Toggle result = new Toggle(); //null;
             GameObject panel = GetChild(obj, panel_name);
             if (!panel.IsNullOrDestroyed())
             {
@@ -332,9 +332,9 @@ namespace LastEpoch_Hud
         }
         public static Sprite GetItemIcon(ItemDataUnpacked item)
         {
-            Sprite result = null;
+            Sprite result = new Sprite(); //null;
             try { result = UITooltipItem.GetItemSprite(item, ItemUIContext.Default); }
-            catch { Main.logger_instance.Error("Error GetItemIcon"); }
+            catch { Main.logger_instance?.Error("Error GetItemIcon"); }
 
             return result;
         }

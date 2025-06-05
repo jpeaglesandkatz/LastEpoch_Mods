@@ -12,13 +12,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Factions
             [HarmonyPrefix]
             static void Prefix(UnityEngine.Vector3 __0, int __1, float __2, Il2CppSystem.Func<int, float, uint> __3, Il2CppSystem.Func<Il2Cpp.Actor, bool> __4, float __5)
             {
-                Main.logger_instance.Msg("SilkenCocoonData.DropMemoryAmberAfterDelay(position, corruption, quantityModifier, baseQuantity, dropFor, delay) Prefix");
-                //Main.logger_instance.Msg("position = " + __0.ToString());
-                Main.logger_instance.Msg("corruption = " + __1.ToString());
-                Main.logger_instance.Msg("quantityModifier = " + __2.ToString());
-                Main.logger_instance.Msg("baseQuantity = " + __3.ToString() ?? "null");
-                //Main.logger_instance.Msg("dropFor = " + __4.ToString() ?? "null");
-                //Main.logger_instance.Msg("delay = " + __5.ToString());
+                Main.logger_instance?.Msg("SilkenCocoonData.DropMemoryAmberAfterDelay(position, corruption, quantityModifier, baseQuantity, dropFor, delay) Prefix");
+                //Main.logger_instance?.Msg("position = " + __0.ToString());
+                Main.logger_instance?.Msg("corruption = " + __1.ToString());
+                Main.logger_instance?.Msg("quantityModifier = " + __2.ToString());
+                Main.logger_instance?.Msg("baseQuantity = " + __3.ToString() ?? "null");
+                //Main.logger_instance?.Msg("dropFor = " + __4.ToString() ?? "null");
+                //Main.logger_instance?.Msg("delay = " + __5.ToString());
             }
         }
 
@@ -28,11 +28,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Factions
             [HarmonyPrefix]
             static void Prefix(UnityEngine.Vector3 __0, int __1, float __2, Il2CppSystem.Func<Actor, bool> __3)
             {
-                Main.logger_instance.Msg("SilkenCocoonData.DropMemoryAmber(position, corruption, quantityModifier, dropFor) Prefix");
-                //Main.logger_instance.Msg("position = " + __0.ToString());
-                Main.logger_instance.Msg("corruption = " + __1.ToString());
-                Main.logger_instance.Msg("quantityModifier = " + __2.ToString());
-                //Main.logger_instance.Msg("dropFor = " + __3.ToString() ?? "null");
+                Main.logger_instance?.Msg("SilkenCocoonData.DropMemoryAmber(position, corruption, quantityModifier, dropFor) Prefix");
+                //Main.logger_instance?.Msg("position = " + __0.ToString());
+                Main.logger_instance?.Msg("corruption = " + __1.ToString());
+                Main.logger_instance?.Msg("quantityModifier = " + __2.ToString());
+                //Main.logger_instance?.Msg("dropFor = " + __3.ToString() ?? "null");
             }
         }
 
@@ -42,12 +42,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Factions
             [HarmonyPrefix]
             static void Prefix(UnityEngine.Vector3 __0, int __1, float __2, Il2CppSystem.Func<int, float, uint> __3, Il2CppSystem.Func<Actor, bool> __4)
             {
-                Main.logger_instance.Msg("SilkenCocoonData.DropMemoryAmber(position, corruption, quantityModifier, baseQuantity, dropFor) Prefix");
-                //Main.logger_instance.Msg("position = " + __0.ToString());
-                Main.logger_instance.Msg("corruption = " + __1.ToString());
-                Main.logger_instance.Msg("quantityModifier = " + __2.ToString());
-                Main.logger_instance.Msg("baseQuantity = " + __3.ToString() ?? "null");
-                //Main.logger_instance.Msg("dropFor = " + __4.ToString() ?? "null");
+                Main.logger_instance?.Msg("SilkenCocoonData.DropMemoryAmber(position, corruption, quantityModifier, baseQuantity, dropFor) Prefix");
+                //Main.logger_instance?.Msg("position = " + __0.ToString());
+                Main.logger_instance?.Msg("corruption = " + __1.ToString());
+                Main.logger_instance?.Msg("quantityModifier = " + __2.ToString());
+                Main.logger_instance?.Msg("baseQuantity = " + __3.ToString() ?? "null");
+                //Main.logger_instance?.Msg("dropFor = " + __4.ToString() ?? "null");
             }
         }*/
     }

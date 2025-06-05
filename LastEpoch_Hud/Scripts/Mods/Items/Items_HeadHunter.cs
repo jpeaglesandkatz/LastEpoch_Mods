@@ -193,7 +193,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         Refs_Manager.unique_list.uniques.Add(Item());
                         AddedToUniqueList = true;
                     }
-                    catch { Main.logger_instance.Error("HH Unique List Error"); }                   
+                    catch { Main.logger_instance?.Error("HH Unique List Error"); }                   
                 }                
             }      
             public static void AddToDictionary()
@@ -220,7 +220,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             AddedToDictionary = true;
                         }
                     }
-                    catch { Main.logger_instance.Error("HH Unique Dictionary Error"); }
+                    catch { Main.logger_instance?.Error("HH Unique Dictionary Error"); }
                 }
             }
             public static string Get_Unique_Name()
@@ -477,7 +477,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             break;
                         }
                     }
-                    if (!found) { Main.logger_instance.Msg("Error : Property " + random_buff.name + " Not Found"); }
+                    if (!found) { Main.logger_instance?.Msg("Error : Property " + random_buff.name + " Not Found"); }
                     if (random_buff != null)
                     {
                         float old_value = 0;

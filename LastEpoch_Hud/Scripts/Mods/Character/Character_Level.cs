@@ -12,7 +12,7 @@
                     Hud_Manager.Hud_Base.Resume_Click(); //Close Hud
                     Refs_Manager.exp_tracker.LevelUp(true);
                 }
-                else { Main.logger_instance.Msg("Hud Manager : Character already max level"); }
+                else { Main.logger_instance?.Msg("Hud Manager : Character already max level"); }
             }
         }
         public static void LevelUpToLevel(int level)
@@ -25,7 +25,7 @@
                     if (level > max_level) { level = max_level; }
                     for (int i = Refs_Manager.exp_tracker.CurrentLevel; i < level; i++) { Refs_Manager.exp_tracker.LevelUp(true); }
                 }
-                else { Main.logger_instance.Msg("Hud Manager : Character already max level"); }
+                else { Main.logger_instance?.Msg("Hud Manager : Character already max level"); }
             }
         }
         public static void LevelUptoMax()
@@ -37,7 +37,7 @@
                     Hud_Manager.Hud_Base.Resume_Click(); //Close Hud
                     for (int i = Refs_Manager.exp_tracker.CurrentLevel; i < max_level; i++) { Refs_Manager.exp_tracker.LevelUp(true); }
                 }
-                else { Main.logger_instance.Msg("Hud Manager : Character already max level"); }
+                else { Main.logger_instance?.Msg("Hud Manager : Character already max level"); }
             }
         }
 

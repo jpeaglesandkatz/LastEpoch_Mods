@@ -44,8 +44,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             if (ShowDebug)
             {
                 string mod = "Forge : ";
-                if (error) { Main.logger_instance.Error(mod + msg); }
-                else { Main.logger_instance.Msg(mod + msg); }
+                if (error) { Main.logger_instance?.Error(mod + msg); }
+                else { Main.logger_instance?.Msg(mod + msg); }
             }
         }
         
@@ -205,7 +205,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     }
                     else if (affix.type == AffixList.AffixType.SPECIAL)
                     {
-                        Main.logger_instance.Msg(affix.affixName + " is Special");
+                        Main.logger_instance?.Msg(affix.affixName + " is Special");
                         element.affixType = "Special";
                         element.prefixArrow.active = false;
                         element.suffixArrow.active = false;
@@ -250,7 +250,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPrefix]
                 static bool Prefix(ref bool __result, string __0) //, Il2CppSystem.String __1)
                 {
-                    //Main.logger_instance.Msg("Localization:TryGetText key = " + __0);
+                    //Main.logger_instance?.Msg("Localization:TryGetText key = " + __0);
                     bool result = true;
                     if (Enable)
                     {
@@ -274,7 +274,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 [HarmonyPrefix]
                 static bool Prefix(ref string __result, string __0)
                 {
-                    //Main.logger_instance.Msg("Localization:GetText key = " + __0);
+                    //Main.logger_instance?.Msg("Localization:GetText key = " + __0);
                     bool result = true;
                     if (Enable)
                     {
@@ -1977,7 +1977,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                                             else
                                                             {
                                                                 error = true; //Don't increment affix
-                                                                Main.logger_instance.Error("You need " + (max - 1) + " forgin potencial on this item to craft T" + (affix_tier + 2));
+                                                                Main.logger_instance?.Error("You need " + (max - 1) + " forgin potencial on this item to craft T" + (affix_tier + 2));
                                                             }
                                                         }
                                                         if (!error)
@@ -2012,7 +2012,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                                 Current.item.RefreshIDAndValues();
                                                 result = false;
                                             }
-                                            else { Main.logger_instance.Error("Error when upgrading item"); }
+                                            else { Main.logger_instance?.Error("Error when upgrading item"); }
                                         }
                                     }
                                     else //Add Affix
@@ -2077,7 +2077,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                                 */
                                                 result = false;
                                             }
-                                            else { Main.logger_instance.Error("No space for affix"); }
+                                            else { Main.logger_instance?.Error("No space for affix"); }
                                         }
                                     }
                                 }
