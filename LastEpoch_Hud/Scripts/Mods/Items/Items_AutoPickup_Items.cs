@@ -8,22 +8,17 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
     {
         public static bool CanRun()
         {
-            if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()) &&
-                (!Refs_Manager.player_actor.IsNullOrDestroyed()))
+            bool result = false;
+            if ((Scenes.IsGameScene()) && (Save_Manager.instance is not null))
             {
-                if (!Save_Manager.instance.data.IsNullOrDestroyed())
-                {
-                    if ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys) ||
+                if ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys) ||
                         (Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Materials) ||
                         (Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FromFilter))
-                    {
-                        return true;
-                    }
-                    else { return false; }
+                {
+                    result = true;
                 }
-                else { return false; }
             }
-            else { return false; }
+            return result;
         }        
         [HarmonyPatch(typeof(GroundItemManager), "dropItemForPlayer")]
         public class dropItemForPlayer
@@ -58,7 +53,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 }
 
                 bool result = true;
-                if (CanRun())
+                if ((CanRun()) && (Save_Manager.instance is not null))
                 {
                     if (((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys) && (Item.isKey(__1.itemType))) ||
                         (__1.itemType == 107) || //107 = Woven Echo
@@ -74,7 +69,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             result = false;
                         }
                     }
-                    else if ((__1.itemType < 24) && (!Refs_Manager.filter_manager.IsNullOrDestroyed()) &&
+                    else if ((__1.itemType < 34) && (Refs_Manager.filter_manager is not null) &&
                         ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FromFilter) ||
                         (Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide)))
                     {
@@ -100,7 +95,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             }
                             else if ((!FilterShow) && (FilterHide) && (Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide))
                             {
-                                __0.goldTracker.modifyGold(__1.TryCast<ItemDataUnpacked>().VendorSaleValue);
+                                ItemDataUnpacked? item = __1.TryCast<ItemDataUnpacked>();
+                                if (item is not null)
+                                {
+                                    __0.goldTracker.modifyGold(item.VendorSaleValue);
+                                }
                                 result = false;
                             }
                         }
