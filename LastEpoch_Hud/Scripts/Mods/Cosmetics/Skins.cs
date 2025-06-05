@@ -13,7 +13,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
     [RegisterTypeInIl2Cpp]
     public class Skins : MonoBehaviour
     {
-        public static Skins instance { get; private set; }
+        public static Skins? instance { get; private set; }
         public Skins(System.IntPtr ptr) : base(ptr) { }
 
         private string scene_name = "";
@@ -24,7 +24,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
         }
         void Update()
         {
-            if (!Refs_Manager.game_uibase.IsNullOrDestroyed())
+            if (Refs_Manager.game_uibase is not null)
             {
                 if ((Refs_Manager.game_uibase.characterSelectOpen) && (!Refs_Manager.game_uibase.characterSelectPanel.IsNullOrDestroyed()))
                 {
@@ -82,7 +82,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 Panel.Slots.need_update = false;
                 Panel.Slots.Update();
             }
-            if ((!Refs_Manager.player_visuals.IsNullOrDestroyed()) && (Visuals.NeedUpdate))
+            if ((Refs_Manager.player_visuals is not null) && (Visuals.NeedUpdate))
             {
                 Visuals.Update();
             }
@@ -98,7 +98,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 [HarmonyPostfix]
                 static void Postfix(ref InventoryPanelUI __instance)
                 {
-                    if (!Refs_Manager.InventoryPanelUI.IsNullOrDestroyed())
+                    if (Refs_Manager.InventoryPanelUI is not null)
                     {
                         if (tab_element.IsNullOrDestroyed())
                         {
@@ -598,7 +598,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 else if (Scenes.IsGameScene())
                 {
                     //Main.logger_instance?.Msg("Skins : Visuals.Update()");
-                    if (!Refs_Manager.player_visuals.IsNullOrDestroyed())
+                    if (Refs_Manager.player_visuals is not null)
                     {
                         if (!Save.Data.IsEmpty(Save.Data.UserData.helmet))
                         {
@@ -929,7 +929,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 public static void Load()
                 {
-                    //Main.logger_instance?.Msg("Skins : Try to Load : " + Data.path + Data.Character.Character_Name);
+                    Main.logger_instance?.Msg("Skins : Try to Load : " + Data.path + Data.Character.Character_Name);
                     bool error = false;
                     if (Data.Character.Character_Name != "")
                     {
@@ -951,7 +951,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 }
                 public static void Save()
                 {
-                    //Main.logger_instance?.Msg("Save : " + Data.path + Data.Character.Character_Name);
+                    Main.logger_instance?.Msg("Save : " + Data.path + Data.Character.Character_Name);
                     string jsonString = JsonConvert.SerializeObject(Data.UserData, Newtonsoft.Json.Formatting.Indented);
                     if (!Directory.Exists(Data.path)) { Directory.CreateDirectory(Data.path); }
                     if (File.Exists(Data.path + Data.Character.Character_Name)) { File.Delete(Data.path + Data.Character.Character_Name); }
