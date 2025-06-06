@@ -115,7 +115,7 @@ namespace LastEpoch_Hud.Scripts
             {
                 Main.logger_instance?.Msg("Refs Manager : Online = " + result);
                 online = result;
-                if (!Mods_Manager.instance.IsNullOrDestroyed()) { Mods_Manager.instance.SetActive(result); }
+                if (Mods_Manager.instance is not null) { Mods_Manager.instance.SetActive(result); }
             }
         }
     }
