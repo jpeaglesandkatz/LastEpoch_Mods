@@ -102,12 +102,6 @@ namespace LastEpoch_Hud.Scripts
                 }
                 if (asset_name != "")
                 {
-                    //UnityEngine.AddressableAssets
-
-                    if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Register Hud_S"); }
-                    Il2CppInterop.Runtime.Injection.ClassInjector.RegisterTypeInIl2Cpp<LastEpoch_Hud.Unity.Hud_S>();
-                    //LastEpoch_Hud.Unity.Hud_S.guid
-
                     if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Load hud prefab obj"); }
                     UnityEngine.Object obj = asset_bundle.LoadAsset(asset_name);
                     //we need guid in order to load Hus_S
