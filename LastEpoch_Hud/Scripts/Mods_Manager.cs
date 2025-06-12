@@ -153,7 +153,7 @@ namespace LastEpoch_Hud.Scripts
                 //character_dps_obj?.SetActive(true); //CombatLogs
                 character_safetp_obj?.SetActive(true);
                 items_nbsocket_obj?.SetActive(true);
-                items_autosell_timer_obj?.SetActive(Save_Manager.instance?.data.Items.Pickup.Enable_AutoStore_All10Sec ?? false);
+                items_autosell_timer_obj?.SetActive(Save_Manager.instance?.data.Items.Pickup.Enable_AutoStore_Timer ?? false);
                 character_masteries_obj?.SetActive(true); //Hud
                 character_permanentbuffs_obj?.GetComponent<Mods.Character.Character_PermanentBuffs>().Enable();
                 Mods.Items.Items_Update.Reqs(); //Used to update item req
