@@ -507,6 +507,30 @@ namespace LastEpoch_Hud.Scripts
 
         public class Hooks
         {
+            //GUID
+            /*[HarmonyPatch(typeof(UnityEngine.AddressableAssets.AssetReference), "get_AssetGUID")]
+            public class UnityEngine_AddressableAssets_AssetReference
+            {
+                [HarmonyPrefix]
+                static void Prefix(UnityEngine.AddressableAssets.AssetReference __instance, string __result)
+                {
+                    try
+                    {
+                        Main.logger_instance?.Msg("AssetReference.get_AssetGUID(); Prefix : " + __instance?.ToString() ?? "null");
+                    }
+                    catch { }
+                }
+                [HarmonyPostfix]
+                static void Postfix(UnityEngine.AddressableAssets.AssetReference __instance, string __result)
+                {
+                    try
+                    {
+                    Main.logger_instance?.Msg("AssetReference.get_AssetGUID(); Postfix : " + __instance?.ToString() ?? "null" + ", Result = " + __result?.ToString() ?? "null");
+                    }
+                    catch { }
+                }
+            }*/
+
             //Select Shards
             [HarmonyPatch(typeof(Button), "Press")]
             public class Button_Press
@@ -1246,10 +1270,10 @@ namespace LastEpoch_Hud.Scripts
                 if (Refs_Manager.game_uibase is not null)
                 {
                     GameObject Draw_over_login_canvas = Functions.GetChild(UIBase.instance.gameObject, "Draw Over Login Canvas");
-                    if (Draw_over_login_canvas is not null)
+                    if (!Draw_over_login_canvas.IsNullOrDestroyed())
                     {
                         game_pause_menu = Functions.GetChild(Draw_over_login_canvas, "Menu");
-                        if (game_pause_menu is not null)
+                        if (!game_pause_menu.IsNullOrDestroyed())
                         {
                             Default_PauseMenu_Btns = Functions.GetChild(game_pause_menu, "Menu Image");
                             Get_Refs();
