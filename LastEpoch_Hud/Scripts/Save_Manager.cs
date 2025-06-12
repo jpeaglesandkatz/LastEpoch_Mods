@@ -192,10 +192,12 @@ namespace LastEpoch_Hud.Scripts
                         Enable_AutoPickup_Potions = false,
                         Enable_AutoPickup_XpTome = false,
                         Enable_AutoPickup_Materials = false,
+                        Enable_AutoPickup_WovenEchoes = false,
                         Enable_AutoPickup_FromFilter = false,
                         Enable_AutoStore_OnDrop = false,
                         Enable_AutoStore_OnInventoryOpen = false,
-                        Enable_AutoStore_All10Sec = false,
+                        Enable_AutoStore_Timer = false,
+                        AutoStore_Timer = 10,
                         Enable_AutoSell_Hide = false,
                         Enable_RangePickup = false,
                         Enable_HideMaterialsNotifications = false
@@ -700,11 +702,13 @@ namespace LastEpoch_Hud.Scripts
                 public bool Enable_AutoPickup_Potions;
                 public bool Enable_AutoPickup_XpTome;
                 public bool Enable_AutoPickup_Materials;
+                public bool Enable_AutoPickup_WovenEchoes;
                 public bool Enable_AutoPickup_FromFilter;
 
                 public bool Enable_AutoStore_OnDrop;
                 public bool Enable_AutoStore_OnInventoryOpen;
-                public bool Enable_AutoStore_All10Sec;
+                public bool Enable_AutoStore_Timer;
+                public int AutoStore_Timer;
 
                 public bool Enable_AutoSell_Hide;
 

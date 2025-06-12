@@ -631,7 +631,7 @@ namespace LastEpoch_Hud.Scripts
                                     case "Toggle_Items_Pickup_AutoPickup_Filters": { Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FromFilter = __instance.isOn; break; }
                                     case "Toggle_Items_Pickup_AutoStore_OnDrop": { Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop = __instance.isOn; break; }
                                     case "Toggle_Items_Pickup_AutoStore_OnInventoryOpen": { Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnInventoryOpen = __instance.isOn; break; }
-                                    case "Toggle_Items_Pickup_AutoStore_10sec": { Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_All10Sec = __instance.isOn; break; }
+                                    case "Toggle_Items_Pickup_AutoStore_10sec": { Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_Timer = __instance.isOn; break; }
                                     case "Toggle_Items_Pickup_AutoSell_All_Hide": { Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide = __instance.isOn; break; }
                                     
                                     case "Toggle_Items_Pickup_Range_Pickup": { Save_Manager.instance.data.Items.Pickup.Enable_RangePickup = __instance.isOn; break; }
@@ -3011,7 +3011,7 @@ namespace LastEpoch_Hud.Scripts
 
                             Pickup.autostore_materials_ondrop_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop;
                             Pickup.autostore_materials_oninventoryopen_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnInventoryOpen;
-                            Pickup.autostore_materials_all10sec_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_All10Sec;
+                            Pickup.autostore_materials_all10sec_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_Timer;
 
                             Pickup.autosell_hide_toggle.isOn = Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide;                            
 

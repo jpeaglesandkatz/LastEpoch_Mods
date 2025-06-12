@@ -7,7 +7,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
     public class Items_AutoPickup_Items
     {
         [HarmonyPatch(typeof(GroundItemManager), "dropItemForPlayer")]
-        public class dropItemForPlayer
+        public class GroundItemManager_dropItemForPlayer
         {
             [HarmonyPrefix]
             static bool Prefix(ref GroundItemManager __instance, ref Actor __0, ref ItemData __1, ref UnityEngine.Vector3 __2, bool __3)
@@ -26,21 +26,13 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     if ((Save_Manager.instance is not null) && (item is not null))
                     {
                         if (((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys) && (Item.isKey(__1.itemType))) ||
+                            ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_WovenEchoes) && (__1.itemType == 107)) ||
                             ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Materials) && (ItemList.isCraftingItem(__1.itemType))))
                         {
                             bool pickup = ItemContainersManager.Instance.attemptToPickupItem(__1, __0.position());
-                            if (pickup)
-                            {
-                                //We don't need AutoStore anymore
-                                /*if ((Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop) && (ItemList.isCraftingItem(__1.itemType)))
-                                {
-                                    InventoryPanelUI.instance.StoreMaterialsButtonPress();
-                                }*/
-                                result = false;
-                            }
+                            if (pickup) { result = false; }
                         }
-                        // 107 = Woven Echo
-                        else if ((__1.itemType < 34) || (__1.itemType ==107) &&
+                        else if ((__1.itemType < 34) &&
                             (Refs_Manager.filter_manager is not null) &&
                             ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FromFilter) ||
                             (Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide)))
@@ -61,7 +53,6 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                                         }
                                     }
                                 }
-                                if (__1.itemType == 107) { FilterShow = true; }  // 107 = Woven Echo
                                 if ((FilterShow) && (Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FromFilter))
                                 {
                                     bool pickup = ItemContainersManager.Instance.attemptToPickupItem(__1, __0.position());
