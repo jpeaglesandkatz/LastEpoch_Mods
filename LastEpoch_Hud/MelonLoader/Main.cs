@@ -13,7 +13,7 @@ namespace LastEpoch_Hud
 {
     public class Main : MelonLoader.MelonMod
     {
-        public static MelonLoader.MelonLogger.Instance? logger_instance = null;
+        public static MelonLoader.MelonLogger.Instance logger_instance = null;
         public const string company_name = "Eleventh Hour Games";
         public const string game_name = "Last Epoch";
         public const string mod_name = "LastEpoch_Hud";
@@ -56,7 +56,7 @@ namespace LastEpoch_Hud
         public static Selected current = Selected.Unknow;
         private static string dictionary_path = Application.dataPath + "/../Mods/" + Main.mod_name + "/Locales";
         public static string dictionnary_filename = "";
-        public static Dictionary<string, string>? current_dictionary = null;
+        public static Dictionary<string, string> current_dictionary = null;
         public static bool update = false;
         //public static bool debug_text = false; //used to generate default json from prefab
         //public static List<string>? debug_json;
@@ -163,9 +163,9 @@ namespace LastEpoch_Hud
         }
         public static GameObject GetChild(GameObject obj, string name)
         {
-            GameObject result = new GameObject("NullObject"); //null;            
-            //if (!obj.IsNullOrDestroyed())
-            //{
+            GameObject result = null;
+            if (!obj.IsNullOrDestroyed())
+            {
                 bool found = false;
                 for (int i = 0; i < obj.transform.childCount; i++)
                 {
@@ -179,9 +179,9 @@ namespace LastEpoch_Hud
                 }
                 string[] no_bug = { "skin", "Modifier Button", "legendary_icon" };
                 if ((!found) && (!no_bug.Contains(name))) { Main.logger_instance?.Error("Functions.GetChild, Child : " + name + " not Found"); }
-            //}
-            //else { Main.logger_instance?.Error("Obj is null "); }
-            
+            }
+            else { Main.logger_instance?.Error("Obj is null "); }
+
             return result;
         }
         public static List<GameObject> GetAllChild(GameObject obj)
@@ -197,7 +197,7 @@ namespace LastEpoch_Hud
         }
         public static GameObject GetViewportContent(GameObject obj, string panel_name, string panel_content_name)
         {
-            GameObject result = new GameObject("NullObject");//null;
+            GameObject result = null;
             GameObject panel = GetChild(obj, panel_name);
             if (!panel.IsNullOrDestroyed())
             {

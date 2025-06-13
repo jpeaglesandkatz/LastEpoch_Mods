@@ -6,7 +6,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
 	[RegisterTypeInIl2Cpp]
 	public class Character_Bank_Anywhere : MonoBehaviour
 	{
-		public static Character_Bank_Anywhere? instance { get; private set; }
+		public static Character_Bank_Anywhere instance { get; private set; }
 		public Character_Bank_Anywhere(System.IntPtr ptr) : base(ptr) { }
 			
 		void Awake()
@@ -15,7 +15,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
 		}
 		void Update()
 		{
-			if ((Scenes.IsGameScene()) && (Refs_Manager.game_uibase is not null) && (Save_Manager.instance is not null))
+			if ((Scenes.IsGameScene()) && (!Refs_Manager.game_uibase.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
 			{
 				if (Input.GetKeyDown(Save_Manager.instance.data.KeyBinds.BankStashs))
 				{
@@ -27,7 +27,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
 		bool IsOpen()
 		{
 			bool result = false;
-			if (Refs_Manager.game_uibase is not null) { result = Refs_Manager.game_uibase.stashPanel.instance.active; }
+			if (!Refs_Manager.game_uibase.IsNullOrDestroyed()) { result = Refs_Manager.game_uibase.stashPanel.instance.active; }
 
 			return result;
         }

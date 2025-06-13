@@ -10,7 +10,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
             [HarmonyPrefix]
             static void Prefix(ref long __1)
             {
-                if ((Scenes.IsGameScene()) && (Save_Manager.instance is not null))
+                if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
                 {
                     if (Save_Manager.instance.data.Character.Cheats.Enable_AbilityMultiplier)
                     {

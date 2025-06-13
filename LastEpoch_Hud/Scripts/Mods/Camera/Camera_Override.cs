@@ -4,7 +4,7 @@
     {
         public static void Set()
         {
-            if ((Scenes.IsGameScene()) && (Save_Manager.instance?.data is not null) && (Refs_Manager.camera_manager is not null))
+            if ((Scenes.IsGameScene()) && (!Save_Manager.instance.data.IsNullOrDestroyed()) && (!Refs_Manager.camera_manager.IsNullOrDestroyed()))
             {
                 if (Save_Manager.instance.data.Scenes.Camera.Enable_ZoomMinimum) { Refs_Manager.camera_manager.zoomMin = Save_Manager.instance.data.Scenes.Camera.ZoomMinimum; }
                 if (Save_Manager.instance.data.Scenes.Camera.Enable_ZoomPerScroll) { Refs_Manager.camera_manager.zoomPerScroll = Save_Manager.instance.data.Scenes.Camera.ZoomPerScroll; }
@@ -18,7 +18,7 @@
         }
         public static void ResetToDefault()
         {
-            if ((Scenes.IsGameScene()) && (Save_Manager.instance?.data is not null) && (Refs_Manager.camera_manager is not null))
+            if ((Scenes.IsGameScene()) && (!Save_Manager.instance.data.IsNullOrDestroyed()) && (!Refs_Manager.camera_manager.IsNullOrDestroyed()))
             {
                 Save_Manager.instance.data.Scenes.Camera.ZoomMinimum = -7f;
                 Save_Manager.instance.data.Scenes.Camera.ZoomPerScroll = 0.15f;

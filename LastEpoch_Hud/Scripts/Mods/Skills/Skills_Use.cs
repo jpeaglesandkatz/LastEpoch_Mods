@@ -11,14 +11,14 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             [HarmonyPrefix]
             static void Prefix(CharacterMutator __instance, AbilityInfo __0, ref AbilityMutator __1, float __2, UnityEngine.Vector3 __3, bool __4)
             {
-                if ((Scenes.IsGameScene()) && (!__1.IsNullOrDestroyed()) && (Save_Manager.instance is not null))
+                if ((Scenes.IsGameScene()) && (!__1.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
                 {
                     //Ability
-                    Ability? ability = null;
+                    Ability ability = null;
                     try { ability = __1.getAbility(); }
                     catch { Main.logger_instance?.Error("OnAbilityUse Prefix : Can't get Ability"); }
 
-                    if (ability is not null)
+                    if (!ability.IsNullOrDestroyed())
                     {
                         if (Save_Manager.instance.data.Skills.Enable_RemoveChannelCost) { ability.channelCost = 0f; }
                         if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
@@ -50,11 +50,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                     }
 
                     //Mutators
-                    Il2CppSystem.Type? il2cpp_type = null;
+                    Il2CppSystem.Type il2cpp_type = null;
                     try { il2cpp_type = __1.GetIl2CppType(); }
                     catch { Main.logger_instance?.Error("OnAbilityUse Prefix : Can't get Mutator type"); }
                     
-                    if (il2cpp_type is not null)
+                    if (!il2cpp_type.IsNullOrDestroyed())
                     {
                         //Use Switch(il2cpp_type.ToString()) instead of if for better result (== is bad)
 
@@ -64,12 +64,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                             {
                                 var ab = __1.TryCast<ErasingStrikeMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.addedManaCost = 0f;
                                     ab.increasedManaCost = 0f;
-                                    if (ab.abyssalEchoes is not null) { ab.abyssalEchoes.manaCost = 0f; } //AbyssalEchoes
-                                    if (ab.erasingStrikeHit is not null) { ab.erasingStrikeHit.manaCost = 0f; } //Hit
+                                    if (!ab.abyssalEchoes.IsNullOrDestroyed()) { ab.abyssalEchoes.manaCost = 0f; } //AbyssalEchoes
+                                    if (!ab.erasingStrikeHit.IsNullOrDestroyed()) { ab.erasingStrikeHit.manaCost = 0f; } //Hit
                                 }
                             }
                         }
@@ -80,7 +80,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                             {
                                 var ab = __1.TryCast<HolyAuraMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.ability.manaCost = 0f;
                                     ab.ability.minimumManaCost = 0f;
@@ -95,7 +95,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Enable_RemoveChannelCost)
                             {
                                 var ab = __1.TryCast<WarpathMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.addedChannelCost = 0f;
                                     ab.addedChannelCostPerSecond = 0f;
@@ -109,7 +109,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                             {
                                 var ab = __1.TryCast<SmiteMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.addedManaCost = 0f;
                                     ab.increasedManaCost = 0f;
@@ -123,7 +123,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                             {
                                 var ab = __1.TryCast<JudgementMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.addedManaCost = 0f;
                                     ab.increasedManaCost = 0f;
@@ -136,7 +136,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                             {
                                 var ab = __1.TryCast<JudgementAoEMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.increasedManaCost = 0f;
                                 }
@@ -149,7 +149,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                             {
                                 var ab = __1.TryCast<SigilsOfHopeMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.addedManaCost = 0f;
                                     ab.increasedManaCost = 0f;
@@ -163,7 +163,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                             {
                                 var ab = __1.TryCast<MeteorMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.addedManaCost = 0f;
                                 }
@@ -176,7 +176,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Companion.Wolf.Enable_SummonLimit)
                             {
                                 var ab = __1.TryCast<SummonWolfMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.wolfLimit = Save_Manager.instance.data.Skills.Companion.Wolf.SummonLimit;
                                 }
@@ -187,7 +187,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                             if (Save_Manager.instance.data.Skills.Companion.Scorpion.Enable_BabyQuantity)
                             {
                                 var ab = __1.TryCast<SummonScorpionMutator>();
-                                if (ab is not null)
+                                if (!ab.IsNullOrDestroyed())
                                 {
                                     ab.babyScorpionQuantity = Save_Manager.instance.data.Skills.Companion.Scorpion.BabyQuantity;
                                     ab.babyScorpionsToSpawnOnAbilityActivation = Save_Manager.instance.data.Skills.Companion.Scorpion.BabyQuantity;
@@ -200,7 +200,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         else if (il2cpp_type.ToString() == "SummonSkeletonMutator")
                         {
                             var ab = __1.TryCast<SummonSkeletonMutator>();
-                            if (ab is not null)
+                            if (!ab.IsNullOrDestroyed())
                             {
                                 if (Save_Manager.instance.data.Skills.Minions.Skeletons.Enable_additionalSkeletonsFromPassives)
                                 {
@@ -269,7 +269,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         else if (il2cpp_type.ToString() == "SummonWraithMutator")
                         {
                             var ab = __1.TryCast<SummonWraithMutator>();
-                            if (ab is not null)
+                            if (!ab.IsNullOrDestroyed())
                             {
                                 if (Save_Manager.instance.data.Skills.Minions.Wraiths.Enable_additionalMaxWraiths)
                                 {
@@ -296,7 +296,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         else if (il2cpp_type.ToString() == "SummonMageMutator")
                         {
                             var ab = __1.TryCast<SummonMageMutator>();
-                            if (ab is not null)
+                            if (!ab.IsNullOrDestroyed())
                             {
                                 //remove in LastEpoch 1.2
                                 /*if (Save_Manager.instance.data.Skills.Minions.Mages.Enable_additionalSkeletonsFromItems)
@@ -357,7 +357,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         else if (il2cpp_type.ToString() == "SummonBoneGolemMutator")
                         {
                             var ab = __1.TryCast<SummonBoneGolemMutator>();
-                            if (ab is not null)
+                            if (!ab.IsNullOrDestroyed())
                             {
                                 if (Save_Manager.instance.data.Skills.Minions.BoneGolems.Enable_selfResurrectChance)
                                 {
@@ -392,7 +392,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         else if (il2cpp_type.ToString() == "SummonVolatileZombieMutator")
                         {
                             var ab = __1.TryCast<SummonVolatileZombieMutator>();
-                            if (ab is not null)
+                            if (!ab.IsNullOrDestroyed())
                             {
                                 if (Save_Manager.instance.data.Skills.Minions.VolatileZombies.Enable_chanceToCastFromMinionDeath)
                                 {
@@ -411,7 +411,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         else if (il2cpp_type.ToString() == "DreadShadeMutator")
                         {
                             var ab = __1.TryCast<DreadShadeMutator>();
-                            if (ab is not null)
+                            if (!ab.IsNullOrDestroyed())
                             {
                                 if (Save_Manager.instance.data.Skills.Minions.DreadShades.Enable_DisableLimit)
                                 {
@@ -442,7 +442,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
                         else if (il2cpp_type.ToString() == "FlameWardMutator")
                         {
                             var ab = __1.TryCast<FlameWardMutator>();
-                            if (ab is not null)
+                            if (!ab.IsNullOrDestroyed())
                             {
                                 if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                                 {
@@ -457,7 +457,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             [HarmonyPostfix]
             static void PostFix(CharacterMutator __instance, AbilityInfo __0, ref AbilityMutator __1, float __2, UnityEngine.Vector3 __3, bool __4)
             {
-                if ((Scenes.IsGameScene()) && (!__1.IsNullOrDestroyed()) && (Save_Manager.instance is not null))
+                if ((Scenes.IsGameScene()) && (!__1.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
                 {
                     if (Save_Manager.instance.data.Skills.Enable_RemoveCooldown) { __1.RemoveCooldown(); }
                 }
@@ -472,7 +472,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Skills
             //static void Prefix(float __0, Il2Cpp.Actor __1, UnityEngine.Vector3 __2, UnityEngine.Vector3 __3, Il2Cpp.AbilityAnimation __4, int __5, Il2Cpp.AbilityObjectConstructor __6, Il2Cpp.Ability __7, UnityEngine.Vector3 __8, UnityEngine.Vector3 __9, float __10, Il2Cpp.UseType __11, Il2CppSystem.Collections.Generic.List<Il2Cpp.Stats.Stat> __12, byte __13, bool __14, ref bool __15, ref int __16)
             static void Prefix(ref bool __15, ref int __16)
             {
-                if ((Scenes.IsGameScene()) && (Save_Manager.instance is not null))
+                if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()))
                 {
                     if (Save_Manager.instance.data.Skills.Enable_RemoveManaCost)
                     {

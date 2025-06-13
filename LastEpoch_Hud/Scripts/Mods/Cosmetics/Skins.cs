@@ -14,7 +14,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
     [RegisterTypeInIl2Cpp]
     public class Skins : MonoBehaviour
     {
-        public static Skins? instance { get; private set; }
+        public static Skins instance { get; private set; }
         public Skins(System.IntPtr ptr) : base(ptr) { }
 
         private string scene_name = "";
@@ -42,7 +42,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                         Panel.Slots.Update();
                     }
                 }
-                if (Refs_Manager.player_visuals is not null)
+                if (!Refs_Manager.player_visuals.IsNullOrDestroyed())
                 {
                     if (Visuals.NeedUpdate)
                     {
@@ -53,17 +53,17 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             else
             {
                 scene_name = "";
-                if (Refs_Manager.game_uibase is not null)
+                if (!Refs_Manager.game_uibase.IsNullOrDestroyed())
                 {
                     if (Refs_Manager.game_uibase.characterSelectOpen)
                     {
-                        if (Refs_Manager.game_uibase.characterSelectPanel is not null)
+                        if (!Refs_Manager.game_uibase.characterSelectPanel.IsNullOrDestroyed())
                         {
                             GameObject char_selection_game_object = Refs_Manager.game_uibase.characterSelectPanel.instance;
-                            if (char_selection_game_object is not null)
+                            if (!char_selection_game_object.IsNullOrDestroyed())
                             {
                                 CharacterSelect char_select = char_selection_game_object.GetComponent<CharacterSelect>();
-                                if (char_select is not null)
+                                if (!char_select.IsNullOrDestroyed())
                                 {
                                     if (char_select.currentState == CharacterSelect.CharacterSelectState.LoadCharacter)
                                     {
@@ -73,7 +73,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                                             if (index != Save.Data.Character.Character_Index)
                                             {
                                                 LocalCharacterSlots local_slots = char_selection_game_object.GetComponent<LocalCharacterSlots>();
-                                                if (local_slots is not null)
+                                                if (!local_slots.IsNullOrDestroyed())
                                                 {
                                                     if (index < local_slots.characterSlots.Count)
                                                     {
@@ -109,7 +109,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
 
         public class Tabs
         {
-            public static TabUIElement? tab_element = null;
+            public static TabUIElement tab_element = null;
 
             [HarmonyPatch(typeof(InventoryPanelUI), "OnEnable")]
             public class InventoryPanelUI_OnEnable
@@ -117,11 +117,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 [HarmonyPostfix]
                 static void Postfix(ref InventoryPanelUI __instance)
                 {
-                    if (Refs_Manager.InventoryPanelUI is not null)
+                    if (!Refs_Manager.InventoryPanelUI.IsNullOrDestroyed())
                     {
-                        if (tab_element is null)
+                        if (tab_element.IsNullOrDestroyed())
                         {
-                            if (Refs_Manager.InventoryPanelUI.tabController is not null)
+                            if (!Refs_Manager.InventoryPanelUI.tabController.IsNullOrDestroyed())
                             {
                                 foreach (TabUIElement tab in Refs_Manager.InventoryPanelUI.tabController.tabElements)
                                 {
@@ -129,11 +129,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                                 }
                             }
                         }
-                        if (tab_element is not null)
+                        if (!tab_element.IsNullOrDestroyed())
                         {
                             tab_element.isDisabled = false; //Enable Tab
-                            Behaviour? behavior = tab_element.canvasGroup.TryCast<Behaviour>();
-                            if (behavior is not null)
+                            Behaviour behavior = tab_element.canvasGroup.TryCast<Behaviour>();
+                            if (!behavior.IsNullOrDestroyed())
                             {
                                 behavior.enabled = false; //Hide Mask
                             }
@@ -149,26 +149,26 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
 
             public static string[] title_names = { "Noob", "Dev" };
 
-            public static CosmeticPanelUI? instance = null;
-            public static GameObject? player_title = null;
-            public static GameObject? player_title_dropdown = null;
-            public static GameObject? ep = null;
-            public static GameObject? get_points = null;
-            public static GameObject? open_shop = null;
-            public static GameObject? skill_cosmetics = null;
-            public static GameObject? equippables = null;
-            public static GameObject? eq_helmet = null;
-            public static GameObject? eq_chest = null;
-            public static GameObject? eq_mainhand = null;
-            public static GameObject? eq_backslot = null;
-            public static GameObject? eq_gloves = null;
-            public static GameObject? eq_boots = null;
-            public static GameObject? eq_offhand = null;
-            public static GameObject? eq_pet1 = null;
-            public static GameObject? eq_pet2 = null;
-            public static GameObject? eq_portal = null;
-            public static GameObject? eq_profil_image = null;
-            public static GameObject? eq_profil_frame = null;
+            public static CosmeticPanelUI instance = null;
+            public static GameObject player_title = null;
+            public static GameObject player_title_dropdown = null;
+            public static GameObject ep = null;
+            public static GameObject get_points = null;
+            public static GameObject open_shop = null;
+            public static GameObject skill_cosmetics = null;
+            public static GameObject equippables = null;
+            public static GameObject eq_helmet = null;
+            public static GameObject eq_chest = null;
+            public static GameObject eq_mainhand = null;
+            public static GameObject eq_backslot = null;
+            public static GameObject eq_gloves = null;
+            public static GameObject eq_boots = null;
+            public static GameObject eq_offhand = null;
+            public static GameObject eq_pet1 = null;
+            public static GameObject eq_pet2 = null;
+            public static GameObject eq_portal = null;
+            public static GameObject eq_profil_image = null;
+            public static GameObject eq_profil_frame = null;
                   
             public static Il2CppSystem.Collections.Generic.List<TMP_Dropdown.OptionData> Get_Titles()
             {
@@ -203,67 +203,67 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                     if (!initialized)
                     {
                         Main.logger_instance?.Msg("Intialize CosmeticPanelUI");
-                        if (player_title is null) { player_title = Functions.GetChild(__instance.gameObject, "Player Titles"); }
-                        if ((player_title_dropdown is null) && (player_title is not null))
+                        if (player_title.IsNullOrDestroyed()) { player_title = Functions.GetChild(__instance.gameObject, "Player Titles"); }
+                        if ((player_title_dropdown.IsNullOrDestroyed()) && (!player_title.IsNullOrDestroyed()))
                         {
                             player_title_dropdown = Functions.GetChild(player_title, "Title Dropdown");
-                            if (player_title_dropdown.name != "NullObject") //not null
+                            if (!player_title_dropdown.IsNullOrDestroyed()) // != "NullObject") //not null
                             {
                                 TMP_Dropdown dropdown = player_title_dropdown.GetComponent<TMP_Dropdown>();
-                                if (dropdown is not null) { dropdown.options = Get_Titles(); }
+                                if (!dropdown.IsNullOrDestroyed()) { dropdown.options = Get_Titles(); }
                             }
                         }
 
-                        if (ep is null) { ep = Functions.GetChild(__instance.gameObject, "EP"); }
-                        if (ep is not null) { ep.active = false; } //Hide EP
+                        if (ep.IsNullOrDestroyed()) { ep = Functions.GetChild(__instance.gameObject, "EP"); }
+                        if (!ep.IsNullOrDestroyed()) { ep.active = false; } //Hide EP
 
-                        if (get_points is null) { get_points = Functions.GetChild(__instance.gameObject, "GetPoints"); }
-                        if (get_points is not null) { get_points.active = false; } //Hide Get Points Btn
+                        if (get_points.IsNullOrDestroyed()) { get_points = Functions.GetChild(__instance.gameObject, "GetPoints"); }
+                        if (!get_points.IsNullOrDestroyed()) { get_points.active = false; } //Hide Get Points Btn
 
-                        if (open_shop is null) { open_shop = Functions.GetChild(__instance.gameObject, "OpenShop"); }
-                        if (open_shop is not null) { open_shop.active = false; } //Hide Open Shop Btn   
+                        if (open_shop.IsNullOrDestroyed()) { open_shop = Functions.GetChild(__instance.gameObject, "OpenShop"); }
+                        if (!open_shop.IsNullOrDestroyed()) { open_shop.active = false; } //Hide Open Shop Btn   
 
-                        if (skill_cosmetics is null) { skill_cosmetics = Functions.GetChild(__instance.gameObject, "Skill Cosmetics"); }
-                        if (skill_cosmetics is not null) { skill_cosmetics.active = false; } //Hide Skills
+                        if (skill_cosmetics.IsNullOrDestroyed()) { skill_cosmetics = Functions.GetChild(__instance.gameObject, "Skill Cosmetics"); }
+                        if (!skill_cosmetics.IsNullOrDestroyed()) { skill_cosmetics.active = false; } //Hide Skills
 
-                        if (equippables is null) { equippables = Functions.GetChild(__instance.gameObject, "Equippables"); }
-                        if (equippables is not null)
+                        if (equippables.IsNullOrDestroyed()) { equippables = Functions.GetChild(__instance.gameObject, "Equippables"); }
+                        if (!equippables.IsNullOrDestroyed())
                         {
-                            if (eq_helmet is null) { eq_helmet = Functions.GetChild(equippables, "Helmet"); }
-                            if (eq_helmet is not null) { Actions.Set(eq_helmet, Actions.eq_helmet_click); }
+                            if (eq_helmet.IsNullOrDestroyed()) { eq_helmet = Functions.GetChild(equippables, "Helmet"); }
+                            if (!eq_helmet.IsNullOrDestroyed()) { Actions.Set(eq_helmet, Actions.eq_helmet_click); }
 
-                            if (eq_chest is null) { eq_chest = Functions.GetChild(equippables, "Chest"); }
-                            if (eq_chest is not null) { Actions.Set(eq_chest, Actions.eq_chest_click); }
+                            if (eq_chest.IsNullOrDestroyed()) { eq_chest = Functions.GetChild(equippables, "Chest"); }
+                            if (!eq_chest.IsNullOrDestroyed()) { Actions.Set(eq_chest, Actions.eq_chest_click); }
 
-                            if (eq_mainhand is null) { eq_mainhand = Functions.GetChild(equippables, "MainHand"); }
-                            if (eq_mainhand is not null) { Actions.Set(eq_mainhand, Actions.eq_mainhand_click); }
+                            if (eq_mainhand.IsNullOrDestroyed()) { eq_mainhand = Functions.GetChild(equippables, "MainHand"); }
+                            if (!eq_mainhand.IsNullOrDestroyed()) { Actions.Set(eq_mainhand, Actions.eq_mainhand_click); }
 
-                            if (eq_backslot is null) { eq_backslot = Functions.GetChild(equippables, "BackSlot"); }
-                            if (eq_backslot is not null) { eq_backslot.active = false; } //Hide BackSlot
+                            if (eq_backslot.IsNullOrDestroyed()) { eq_backslot = Functions.GetChild(equippables, "BackSlot"); }
+                            if (!eq_backslot.IsNullOrDestroyed()) { eq_backslot.active = false; } //Hide BackSlot
 
-                            if (eq_gloves is null) { eq_gloves = Functions.GetChild(equippables, "Gloves"); }
-                            if (eq_gloves is not null) { Actions.Set(eq_gloves, Actions.eq_gloves_click); }
+                            if (eq_gloves.IsNullOrDestroyed()) { eq_gloves = Functions.GetChild(equippables, "Gloves"); }
+                            if (!eq_gloves.IsNullOrDestroyed()) { Actions.Set(eq_gloves, Actions.eq_gloves_click); }
 
-                            if (eq_boots is null) { eq_boots = Functions.GetChild(equippables, "Boots"); }
-                            if (eq_boots is not null) { Actions.Set(eq_boots, Actions.eq_boots_click); }
+                            if (eq_boots.IsNullOrDestroyed()) { eq_boots = Functions.GetChild(equippables, "Boots"); }
+                            if (!eq_boots.IsNullOrDestroyed()) { Actions.Set(eq_boots, Actions.eq_boots_click); }
 
-                            if (eq_offhand is null) { eq_offhand = Functions.GetChild(equippables, "Offhand"); }
-                            if (eq_offhand is not null) { Actions.Set(eq_offhand, Actions.eq_offhand_click); }
+                            if (eq_offhand.IsNullOrDestroyed()) { eq_offhand = Functions.GetChild(equippables, "Offhand"); }
+                            if (!eq_offhand.IsNullOrDestroyed()) { Actions.Set(eq_offhand, Actions.eq_offhand_click); }
 
-                            if (eq_pet1 is null) { eq_pet1 = Functions.GetChild(equippables, "Pet1"); }
-                            if (eq_pet1 is not null) { eq_pet1.active = false; } //Hide Pet1
+                            if (eq_pet1.IsNullOrDestroyed()) { eq_pet1 = Functions.GetChild(equippables, "Pet1"); }
+                            if (!eq_pet1.IsNullOrDestroyed()) { eq_pet1.active = false; } //Hide Pet1
 
-                            if (eq_pet2 is null) { eq_pet2 = Functions.GetChild(equippables, "Pet2"); }
-                            if (eq_pet2 is not null) { eq_pet2.active = false; } //Hide Pet2
+                            if (eq_pet2.IsNullOrDestroyed()) { eq_pet2 = Functions.GetChild(equippables, "Pet2"); }
+                            if (!eq_pet2.IsNullOrDestroyed()) { eq_pet2.active = false; } //Hide Pet2
 
-                            if (eq_portal is null) { eq_portal = Functions.GetChild(equippables, "Portal"); }
-                            if (eq_portal is not null) { eq_portal.active = false; } //Hide Portal   
+                            if (eq_portal.IsNullOrDestroyed()) { eq_portal = Functions.GetChild(equippables, "Portal"); }
+                            if (!eq_portal.IsNullOrDestroyed()) { eq_portal.active = false; } //Hide Portal   
 
-                            if (eq_profil_image is null) { eq_profil_image = Functions.GetChild(equippables, "ProfileImage"); }
-                            if (eq_profil_image is not null) { eq_profil_image.active = false; } //Hide Profil Image
+                            if (eq_profil_image.IsNullOrDestroyed()) { eq_profil_image = Functions.GetChild(equippables, "ProfileImage"); }
+                            if (!eq_profil_image.IsNullOrDestroyed()) { eq_profil_image.active = false; } //Hide Profil Image
 
-                            if (eq_profil_frame is null) { eq_profil_frame = Functions.GetChild(equippables, "ProfileFrame"); }
-                            if (eq_profil_frame is not null) { eq_profil_frame.active = false; } //Hide Profil Frame 
+                            if (eq_profil_frame.IsNullOrDestroyed()) { eq_profil_frame = Functions.GetChild(equippables, "ProfileFrame"); }
+                            if (!eq_profil_frame.IsNullOrDestroyed()) { eq_profil_frame.active = false; } //Hide Profil Frame 
 
                             Main.logger_instance?.Msg("Intialized");
                             initialized = true;
@@ -313,15 +313,15 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                     }
                     
                 }
-                public static void AddSkin(int slot, Sprite? s)
+                public static void AddSkin(int slot, Sprite s)
                 {
                     //Main.logger_instance?.Msg("AddSkin");
-                    if ((slot == 0) && (eq_helmet is not null)) { SetImage(eq_helmet, s); } //Helm
-                    else if ((slot == 1) && (eq_chest is not null)) { SetImage(eq_chest, s); } //Chest
-                    else if ((slot == 3) && (eq_boots is not null)) { SetImage(eq_boots, s); } //Boots
-                    else if ((slot == 4) && (eq_gloves is not null)) { SetImage(eq_gloves, s); } //Gloves
-                    else if ((slot == 50) && (eq_mainhand is not null)) { SetImage(eq_mainhand, s); } //MainHand
-                    else if ((slot == 99) && (eq_offhand is not null)) { SetImage(eq_offhand, s); } //OffHand
+                    if ((slot == 0) && (!eq_helmet.IsNullOrDestroyed())) { SetImage(eq_helmet, s); } //Helm
+                    else if ((slot == 1) && (!eq_chest.IsNullOrDestroyed())) { SetImage(eq_chest, s); } //Chest
+                    else if ((slot == 3) && (!eq_boots.IsNullOrDestroyed())) { SetImage(eq_boots, s); } //Boots
+                    else if ((slot == 4) && (!eq_gloves.IsNullOrDestroyed())) { SetImage(eq_gloves, s); } //Gloves
+                    else if ((slot == 50) && (!eq_mainhand.IsNullOrDestroyed())) { SetImage(eq_mainhand, s); } //MainHand
+                    else if ((slot == 99) && (!eq_offhand.IsNullOrDestroyed())) { SetImage(eq_offhand, s); } //OffHand
                 }
                 public static void RemoveSkin(int slot)
                 {
@@ -329,22 +329,22 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                     AddSkin(slot, null);
                     Save.Data.Update(slot, -1, -1, -1, -1);
                 }
-                public static void SetImage(GameObject g, Sprite? s)
+                public static void SetImage(GameObject g, Sprite s)
                 {
                     //Main.logger_instance?.Msg("Slots.SetImage()");
                     CosmeticItemSlot slot = g.GetComponent<CosmeticItemSlot>();
                     Vector3 position = Vector3.zero;
                     Vector3 size_delta = Vector3.zero;
-                    if (slot is not null)
+                    if (!slot.IsNullOrDestroyed())
                     {
                         //Main.logger_instance?.Msg("CosmeticItemSlot found");
-                        if (s is null) { slot.paperDollImage.gameObject.active = true; }
+                        if (s.IsNullOrDestroyed()) { slot.paperDollImage.gameObject.active = true; }
                         else { slot.paperDollImage.gameObject.active = false; }
                         position = slot.paperDollImage.gameObject.transform.position;
                         size_delta = slot.paperDollImage.gameObject.GetComponent<RectTransform>().sizeDelta;
                     }
                     GameObject new_g = Functions.GetChild(g, "skin");
-                    if (new_g.name == "NullObject")
+                    if (new_g.IsNullOrDestroyed()) //.name == "NullObject")
                     {
                         //Main.logger_instance?.Msg("Create Image");
                         GameObject skin_obj = new GameObject("skin");
@@ -354,10 +354,10 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                         skin_obj.GetComponent<RectTransform>().sizeDelta = size_delta;
                         new_g = skin_obj;
                     }
-                    if (new_g.name != "NullObject")
+                    if (!new_g.IsNullOrDestroyed()) // != "NullObject")
                     {
                         //Main.logger_instance?.Msg("Set Image");
-                        if (s is null) { new_g.active = false; }
+                        if (s.IsNullOrDestroyed()) { new_g.active = false; }
                         else
                         {
                             new_g.GetComponent<Image>().sprite = s;
@@ -371,7 +371,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 public static void Set(GameObject g, System.Action a)
                 {
                     Button b = g.GetComponent<Button>();
-                    if (b is not null)
+                    if (!b.IsNullOrDestroyed())
                     {
                         b.onClick = new UnityEngine.UI.Button.ButtonClickedEvent();
                         b.onClick.AddListener(a);
@@ -423,7 +423,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
         }
         public class  Flyout
         {
-            public static GameObject? flyout_content = null;
+            public static GameObject flyout_content = null;
             public static bool isOpen = false;
             public static int selected_slot = -1;
             public static int selected_type = -1;
@@ -437,12 +437,12 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             public static void Open()
             {
                 //Main.logger_instance?.Msg("Cosmetics_Flyout.Open()");
-                if (Panel.instance is not null)
+                if (!Panel.instance.IsNullOrDestroyed())
                 {
-                    if (Panel.instance.flyoutWindow is not null)
+                    if (!Panel.instance.flyoutWindow.IsNullOrDestroyed())
                     {
                         GameObject go_title = Functions.GetChild(Panel.instance.flyoutWindow, "Title");
-                        if (go_title is not null)
+                        if (!go_title.IsNullOrDestroyed())
                         {
                             string title = "";
                             if (selected_slot == 0) { title = "Helmet"; }
@@ -461,9 +461,9 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             public static void Close()
             {
                 //Main.logger_instance?.Msg("Cosmetics_Flyout.Close()");
-                if (Panel.instance is not null)
+                if (!Panel.instance.IsNullOrDestroyed())
                 {
-                    if (Panel.instance.flyoutWindow is not null)
+                    if (!Panel.instance.flyoutWindow.IsNullOrDestroyed())
                     {
                         Panel.instance.flyoutWindow.active = false;
                     }
@@ -472,7 +472,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             public static void ResetContent()
             {
                 //Main.logger_instance?.Msg("Cosmetics_Flyout.ResetContent()");
-                if (flyout_content is not null)
+                if (!flyout_content.IsNullOrDestroyed())
                 {
                     foreach (GameObject g in Functions.GetAllChild(flyout_content))
                     {
@@ -496,20 +496,20 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 {
                     //Main.logger_instance?.Msg("CosmeticsFlyoutSelectionContentNavigable.OnEnable()");
                     isOpen = true;
-                    if ((__instance.scrollContent is not null) && (flyout_content is null))
+                    if ((!__instance.scrollContent.IsNullOrDestroyed()) && (flyout_content.IsNullOrDestroyed()))
                     {
                         //Main.logger_instance?.Msg("Set cosmetic Flyout Ref");
                         flyout_content = __instance.scrollContent.gameObject;
                     }
-                    if (flyout_content is not null)
+                    if (!flyout_content.IsNullOrDestroyed())
                     {
                         //Clear btn
                         //Main.logger_instance?.Msg("Set cleay button event");
                         GameObject cleat_btn_gameobject = Functions.GetChild(flyout_content, "Remove Button");
-                        if (cleat_btn_gameobject is not null)
+                        if (!cleat_btn_gameobject.IsNullOrDestroyed())
                         {
                             Button b = cleat_btn_gameobject.GetComponent<Button>();
-                            if (b is not null)
+                            if (!b.IsNullOrDestroyed())
                             {
                                 b.onClick = new Button.ButtonClickedEvent();
                                 b.onClick.AddListener(ClearAction);
@@ -517,7 +517,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                         }
                         //Add skins
                         //Main.logger_instance?.Msg("Add Basic Skins");
-                        if ((Refs_Manager.exp_tracker is not null) && (Refs_Manager.player_data is not null))
+                        if ((!Refs_Manager.exp_tracker.IsNullOrDestroyed()) && (!Refs_Manager.player_data.IsNullOrDestroyed()))
                         {
                             foreach (ItemList.BaseEquipmentItem item in ItemList.instance.EquippableItems)
                             {
@@ -664,7 +664,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                 else if (Scenes.IsGameScene())
                 {
                     //Main.logger_instance?.Msg("Skins : Visuals.Update()");
-                    if (Refs_Manager.player_visuals is not null)
+                    if (!Refs_Manager.player_visuals.IsNullOrDestroyed())
                     {
                         if (!Save.Data.IsEmpty(Save.Data.UserData.helmet))
                         {
@@ -817,8 +817,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
             }
             public static void RemoveSkin(int slot)
             {
-                ItemLocationPair? item_found = null;
-                if (Refs_Manager.player_data is not null)
+                ItemLocationPair item_found = null;
+                if (!Refs_Manager.player_data.IsNullOrDestroyed())
                 {
                     foreach (ItemLocationPair item in Refs_Manager.player_data.SavedItems)
                     {
@@ -834,7 +834,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Cosmetics
                         }
                     }
                 }
-                if (item_found is not null)
+                if (!item_found.IsNullOrDestroyed())
                 {
                     try
                     {

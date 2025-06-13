@@ -11,7 +11,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
     [RegisterTypeInIl2Cpp]
     public class Character_Dps : MonoBehaviour
     {
-        public static Character_Dps? instance { get; private set; }
+        public static Character_Dps instance { get; private set; }
         public Character_Dps(System.IntPtr ptr) : base(ptr) { }
 
         public static bool Mod_Enable = false; //Set true if you want this mod to work
