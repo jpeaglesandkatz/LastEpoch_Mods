@@ -6,7 +6,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
     [RegisterTypeInIl2Cpp]
     public class Items_AutoStore_WithTimer : MonoBehaviour
     {
-        public static Items_AutoStore_WithTimer? instance { get; private set; }
+        public static Items_AutoStore_WithTimer instance { get; private set; }
         public Items_AutoStore_WithTimer(System.IntPtr ptr) : base(ptr) { }
 
         public static System.DateTime StartTime;
@@ -19,7 +19,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
         }
         void Update()
         {
-            if ((Scenes.IsGameScene()) && (Save_Manager.instance is not null) && (Refs_Manager.InventoryPanelUI is not null))
+            if ((Scenes.IsGameScene()) && (!Save_Manager.instance.IsNullOrDestroyed()) && (!Refs_Manager.InventoryPanelUI.IsNullOrDestroyed()))
             {
                 if (Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_Timer)
                 {
@@ -30,7 +30,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                     }
                     if (running)
                     {
-                        if ((GetElapsedTime() > Save_Manager.instance.data.Items.Pickup.AutoStore_Timer) && (Refs_Manager.InventoryPanelUI is not null))
+                        if ((GetElapsedTime() > Save_Manager.instance.data.Items.Pickup.AutoStore_Timer) && (!Refs_Manager.InventoryPanelUI.IsNullOrDestroyed()))
                         {
                             Refs_Manager.InventoryPanelUI.StoreMaterialsButtonPress();
                             running = false;

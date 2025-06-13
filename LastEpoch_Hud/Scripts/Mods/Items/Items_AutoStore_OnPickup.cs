@@ -12,7 +12,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
             [HarmonyPostfix]
             static void Postfix(ref ItemContainersManager __instance, bool __result, ItemData __0, UnityEngine.Vector3 __1)
             {
-                if ((__result) && (Save_Manager.instance is not null) && (Refs_Manager.InventoryPanelUI is not null))
+                if ((__result) && (!Save_Manager.instance.IsNullOrDestroyed()) && (!Refs_Manager.InventoryPanelUI.IsNullOrDestroyed()))
                 {
                     if ((Save_Manager.instance.data.Items.Pickup.Enable_AutoStore_OnDrop) &&
                         ((ItemList.isCraftingItem(__0.itemType)) || (Item.isKey(__0.itemType)) || (__0.itemType == 107)))

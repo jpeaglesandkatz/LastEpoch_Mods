@@ -14,16 +14,16 @@ namespace LastEpoch_Hud.Scripts
     public class Hud_Manager : MonoBehaviour
     {
         public Hud_Manager(System.IntPtr ptr) : base(ptr) { }
-        public static Hud_Manager? instance;
+        public static Hud_Manager instance;
 
-        public static AssetBundle? asset_bundle;
-        public static GameObject? hud_object = null;
+        public static AssetBundle asset_bundle;
+        public static GameObject hud_object = null;
         public bool data_initialized = false;
 
         private string asset_path = Application.dataPath + "/../Mods/" + Main.mod_name + "/Assets";
-        private static Canvas? game_canvas = null;
-        public static GameObject? game_pause_menu = null;
-        private static Canvas? hud_canvas = null;
+        private static Canvas game_canvas = null;
+        public static GameObject game_pause_menu = null;
+        private static Canvas hud_canvas = null;
         private readonly string asset_bundle_name = "lastepochmods"; //Name of asset file
         private bool hud_initializing = false;
         private bool asset_bundle_initializing = false;
@@ -44,7 +44,7 @@ namespace LastEpoch_Hud.Scripts
             Update_Refs();
             Update_Locale();
 
-            if (hud_object is not null)
+            if (!hud_object.IsNullOrDestroyed())
             {
                 if ((!data_initialized) && (!data_initializing)) { Init_UserData(); } //set once
                 if ((IsPauseOpen()) && (!updating))
@@ -53,7 +53,7 @@ namespace LastEpoch_Hud.Scripts
                     Update_Hud_Content();
                     hud_object.active = true;
                     Content.Set_Active();
-                    if ((Refs_Manager.epoch_input_manager is not null) && (Hud_Base.Btn_Resume is not null))
+                    if ((!Refs_Manager.epoch_input_manager.IsNullOrDestroyed()) && (!Hud_Base.Btn_Resume.IsNullOrDestroyed()))
                     {
                         if (Input.GetKeyDown(KeyCode.Escape)) { exit = true; }
                         if ((Input.GetKeyUp(KeyCode.Escape)) && (exit)) { Hud_Base.Btn_Resume.onClick.Invoke(); exit = false; }
@@ -65,7 +65,7 @@ namespace LastEpoch_Hud.Scripts
                 {
                     updating = true;
                     hud_object.active = false;
-                    if (Refs_Manager.epoch_input_manager is not null) { Refs_Manager.epoch_input_manager.forceDisableInput = false; }
+                    if (!Refs_Manager.epoch_input_manager.IsNullOrDestroyed()) { Refs_Manager.epoch_input_manager.forceDisableInput = false; }
                     Content.Character.need_update = true;
                     updating = false;
                 }
@@ -75,57 +75,57 @@ namespace LastEpoch_Hud.Scripts
         void Init_AssetsBundle()
         {
             asset_bundle_initializing = true;
-            if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Initialize assets bundle"); }
+            if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize assets bundle"); }
             if ((Directory.Exists(asset_path)) && (File.Exists(Path.Combine(asset_path, asset_bundle_name))))
             {
                 asset_bundle = AssetBundle.LoadFromFile(Path.Combine(asset_path, asset_bundle_name));
                 Object.DontDestroyOnLoad(asset_bundle);
             }
-            else { Main.logger_instance?.Error("Hud Manager : " + asset_bundle_name + " Not Found in Assets directory"); }
+            else { Main.logger_instance.Error("Hud Manager : " + asset_bundle_name + " Not Found in Assets directory"); }
             asset_bundle_initializing = false;
         }
         void Init_Hud()
         {
             hud_initializing = true;
-            if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Load hud object in assets"); }
-            if (asset_bundle is not null)
+            if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Load hud object in assets"); }
+            if (!asset_bundle.IsNullOrDestroyed())
             {
                 string asset_name = "";
                 foreach (string name in asset_bundle.GetAllAssetNames())
                 {
                     if ((Functions.Check_Prefab(name)) && (name.Contains("/hud/")) && (name.Contains("hud.prefab")))
                     {
-                        if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Dhud prefab found"); }
+                        if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Dhud prefab found"); }
                         asset_name = name;
                         break;
                     }
                 }
                 if (asset_name != "")
                 {
-                    if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Load hud prefab obj"); }
+                    if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Load hud prefab obj"); }
                     UnityEngine.Object obj = asset_bundle.LoadAsset(asset_name);
                     //we need guid in order to load Hus_S
 
                     //GameObject prefab_object = asset_bundle.LoadAsset<GameObject>(asset_name);
-                    if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Convert to GameObject"); }
-                    GameObject? prefab_object = obj.TryCast<GameObject>();
+                    if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Convert to GameObject"); }
+                    GameObject prefab_object = obj.TryCast<GameObject>();
 
                     //GameObject prefab_object = asset_bundle.LoadAsset(asset_name).TryCast<GameObject>();                
-                    if (prefab_object is not null)
+                    if (!prefab_object.IsNullOrDestroyed())
                     {
-                        if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Initialize hud prefab"); }
+                        if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize hud prefab"); }
                         prefab_object.active = false; //Hide
                                                       //prefab_object.AddComponent<Hud_S>(); //try to load unity script
                         prefab_object.AddComponent<UIMouseListener>(); //Block Mouse
                         prefab_object.AddComponent<WindowFocusManager>();
 
                         //Instantiate
-                        if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Instantiate hud prefab"); }
+                        if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Instantiate hud prefab"); }
                         hud_object = Object.Instantiate(prefab_object, Vector3.zero, Quaternion.identity);
                         Object.DontDestroyOnLoad(hud_object);
                         //Init_Hud_Refs();
 
-                        if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Initialize hud refs"); }
+                        if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize hud refs"); }
                         Hud_Menu.Set_Events();
 
                         Content.content_obj = Functions.GetChild(hud_object, "Content");
@@ -151,7 +151,7 @@ namespace LastEpoch_Hud.Scripts
                         Content.Headhunter.Get_Refs();
                         Content.Headhunter.Set_Active(false);
                     }
-                    else { Main.logger_instance?.Error("Hud Manager : Hud Prefab not found"); }
+                    else { Main.logger_instance.Error("Hud Manager : Hud Prefab not found"); }
                 }
 
                 //Shard prefab
@@ -166,23 +166,23 @@ namespace LastEpoch_Hud.Scripts
                 }
                 if (asset_name != "")
                 {
-                    GameObject? shard_prefab = asset_bundle.LoadAsset(asset_name).TryCast<GameObject>();
-                    if (shard_prefab is not null)
+                    GameObject shard_prefab = asset_bundle.LoadAsset(asset_name).TryCast<GameObject>();
+                    if (!shard_prefab.IsNullOrDestroyed())
                     {
-                        if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Instantiate shard prefab"); }
+                        if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Instantiate shard prefab"); }
                         Content.OdlForceDrop.shard_prefab = Object.Instantiate(shard_prefab, Vector3.zero, Quaternion.identity);
                         Object.DontDestroyOnLoad(Content.OdlForceDrop.shard_prefab);
                     }
-                    else { Main.logger_instance?.Error("Hud Manager : Shard Prefab not found"); }
+                    else { Main.logger_instance.Error("Hud Manager : Shard Prefab not found"); }
                 }
-                else { Main.logger_instance?.Error("Hud Manager : Shard Prefab name not found"); }
+                else { Main.logger_instance.Error("Hud Manager : Shard Prefab name not found"); }
             }
 
             hud_initializing = false;
         }
         /*void Init_Hud_Refs()
         {
-            if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Initialize hud refs"); }            
+            if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize hud refs"); }            
             Hud_Menu.Set_Events();
 
             Content.content_obj = Functions.GetChild(hud_object, "Content");
@@ -211,9 +211,9 @@ namespace LastEpoch_Hud.Scripts
         void Init_UserData()
         {
             data_initializing = true;
-            if (Save_Manager.instance is not null)
+            if (!Save_Manager.instance.IsNullOrDestroyed())
             {
-                if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Initialize user config"); }
+                if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialize user config"); }
                 bool character = Content.Character.Init_UserData();
                 bool items = Content.Items.Init_UserData();
                 bool scenes = Content.Scenes.Init_UserData();
@@ -221,7 +221,7 @@ namespace LastEpoch_Hud.Scripts
                 bool headhunter = Content.Headhunter.Init_Data();
                 if ((character) && (items) && (scenes) && (skills)) // && (headhunter))
                 {
-                    if (Main.debug) { Main.logger_instance?.Msg("Hud Manager : Initialized"); }
+                    if (Main.debug) { Main.logger_instance.Msg("Hud Manager : Initialized"); }
                     data_initialized = true;
                 }
             }
@@ -229,27 +229,27 @@ namespace LastEpoch_Hud.Scripts
         }
         void Update_Refs()
         {
-            if ((hud_canvas is null) && (hud_object is not null)) { hud_canvas = hud_object.GetComponent<Canvas>(); }            
-            if ((asset_bundle is null) && (!asset_bundle_initializing)) { Init_AssetsBundle(); }
-            if (Refs_Manager.game_uibase is not null)
+            if ((hud_canvas.IsNullOrDestroyed()) && (!hud_object.IsNullOrDestroyed())) { hud_canvas = hud_object.GetComponent<Canvas>(); }            
+            if ((asset_bundle.IsNullOrDestroyed()) && (!asset_bundle_initializing)) { Init_AssetsBundle(); }
+            if (!Refs_Manager.game_uibase.IsNullOrDestroyed())
             {
-                if ((game_canvas is null) && (Refs_Manager.game_uibase.canvases.Count > 0)) { game_canvas = Refs_Manager.game_uibase.canvases[0]; }
-                if ((game_pause_menu is null) || (Hud_Base.Default_PauseMenu_Btns is null)) { Hud_Base.Get_DefaultPauseMenu(); }
-                if ((!Hud_Base.initiliazed_events) && (game_pause_menu is not null) && (Hud_Base.Default_PauseMenu_Btns is not null)) { Hud_Base.Set_Events(); }
+                if ((game_canvas.IsNullOrDestroyed()) && (Refs_Manager.game_uibase.canvases.Count > 0)) { game_canvas = Refs_Manager.game_uibase.canvases[0]; }
+                if ((game_pause_menu.IsNullOrDestroyed()) || (Hud_Base.Default_PauseMenu_Btns.IsNullOrDestroyed())) { Hud_Base.Get_DefaultPauseMenu(); }
+                if ((!Hud_Base.initiliazed_events) && (!game_pause_menu.IsNullOrDestroyed()) && (!Hud_Base.Default_PauseMenu_Btns.IsNullOrDestroyed())) { Hud_Base.Set_Events(); }
                 if (Hud_Base.Get_DefaultPauseMenu_Open()) { Hud_Base.Toogle_DefaultPauseMenu(false); }
             }
-            if ((asset_bundle is not null) && (hud_object is null) && (!hud_initializing)) { Init_Hud(); }
+            if (!(asset_bundle.IsNullOrDestroyed()) && (hud_object.IsNullOrDestroyed()) && (!hud_initializing)) { Init_Hud(); }
         }
         void Update_Hud_Scale()
         {
-            if ((Refs_Manager.game_uibase is not null) && (game_canvas is not null) && (hud_canvas is not null))
+            if ((!Refs_Manager.game_uibase.IsNullOrDestroyed()) && (!game_canvas.IsNullOrDestroyed()) && (!hud_canvas.IsNullOrDestroyed()))
             {
                 if (hud_canvas.scaleFactor != game_canvas.scaleFactor) { hud_canvas.scaleFactor = game_canvas.scaleFactor; }
             }
         }
         void Update_Locale()
         {
-            if ((Locales.update) && (hud_object is not null))
+            if ((Locales.update) && (!hud_object.IsNullOrDestroyed()))
             {
                 Locales.update = false;
                 /*if (Locales.debug_text)
@@ -304,8 +304,8 @@ namespace LastEpoch_Hud.Scripts
                         json += s;
                     }
 
-                    Main.logger_instance?.Msg("Copy to " + Locales.dictionnary_filename + Extensions.json);
-                    Main.logger_instance?.Msg(json);
+                    Main.logger_instance.Msg("Copy to " + Locales.dictionnary_filename + Extensions.json);
+                    Main.logger_instance.Msg(json);
                 }*/
             }
         }
@@ -333,7 +333,7 @@ namespace LastEpoch_Hud.Scripts
                         if (Locales.current_dictionary != null)
                         {
                             if (Locales.current_dictionary.ContainsKey(label.text)) { label.text = Locales.current_dictionary[label.text]; }
-                            //else { Main.logger_instance?.Error(label.text + ", not found in dictionnary"); }
+                            //else { Main.logger_instance.Error(label.text + ", not found in dictionnary"); }
                         }
                     }
                 }
@@ -384,7 +384,7 @@ namespace LastEpoch_Hud.Scripts
                         {
                             Content.OdlForceDrop.seal_select_text.text = Content.OdlForceDrop.seal_name;
                         }
-                        else { Main.logger_instance?.Error("seal_select_text NULLLLL"); }                            
+                        else { Main.logger_instance.Error("seal_select_text NULLLLL"); }                            
                     }
                     else { Content.OdlForceDrop.seal_id = -1; }
                     
@@ -422,32 +422,32 @@ namespace LastEpoch_Hud.Scripts
                         {
                             Content.OdlForceDrop.affix_0_select_text.text = Content.OdlForceDrop.affix_0_name;
                         }
-                        else { Main.logger_instance?.Error("affix_0_select_text NULLLLL"); }
+                        else { Main.logger_instance.Error("affix_0_select_text NULLLLL"); }
                         if (!Content.OdlForceDrop.affix_1_select_text.IsNullOrDestroyed())
                         {
                             Content.OdlForceDrop.affix_1_select_text.text = Content.OdlForceDrop.affix_1_name;
                         }
-                        else { Main.logger_instance?.Error("affix_1_select_text NULLLLL"); }
+                        else { Main.logger_instance.Error("affix_1_select_text NULLLLL"); }
                         if (!Content.OdlForceDrop.affix_2_select_text.IsNullOrDestroyed())
                         {
                             Content.OdlForceDrop.affix_2_select_text.text = Content.OdlForceDrop.affix_2_name;
                         }
-                        else { Main.logger_instance?.Error("affix_2_select_text NULLLLL"); }
+                        else { Main.logger_instance.Error("affix_2_select_text NULLLLL"); }
                         if (!Content.OdlForceDrop.affix_3_select_text.IsNullOrDestroyed())
                         {
                             Content.OdlForceDrop.affix_3_select_text.text = Content.OdlForceDrop.affix_3_name;
                         }
-                        else { Main.logger_instance?.Error("affix_3_select_text NULLLLL"); }
+                        else { Main.logger_instance.Error("affix_3_select_text NULLLLL"); }
                         if (!Content.OdlForceDrop.affix_4_select_text.IsNullOrDestroyed())
                         {
                             Content.OdlForceDrop.affix_4_select_text.text = Content.OdlForceDrop.affix_4_name;
                         }
-                        else { Main.logger_instance?.Error("affix_4_select_text NULLLLL"); }
+                        else { Main.logger_instance.Error("affix_4_select_text NULLLLL"); }
                         if (!Content.OdlForceDrop.affix_5_select_text.IsNullOrDestroyed())
                         {
                             Content.OdlForceDrop.affix_5_select_text.text = Content.OdlForceDrop.affix_5_name;
                         }
-                        else { Main.logger_instance?.Error("affix_5_select_text NULLLLL"); }
+                        else { Main.logger_instance.Error("affix_5_select_text NULLLLL"); }
                     }
                     else
                     {
@@ -494,14 +494,14 @@ namespace LastEpoch_Hud.Scripts
                     {
                         Content.OdlForceDrop.quantity_text.text = System.Convert.ToInt32(Content.OdlForceDrop.forcedrop_quantity_slider.value).ToString();
                     }
-                    else { Main.logger_instance?.Error("affix_5_select_text NULLLLL"); }
+                    else { Main.logger_instance.Error("affix_5_select_text NULLLLL"); }
                 }
             }
         }
         
         public static bool IsPauseOpen()
         {
-            if (game_pause_menu is not null) { return game_pause_menu.active; }
+            if (!game_pause_menu.IsNullOrDestroyed()) { return game_pause_menu.active; }
             else { return false; }
         }
 
@@ -565,19 +565,19 @@ namespace LastEpoch_Hud.Scripts
                 [HarmonyPostfix]
                 static void Postfix(ref Toggle __instance, UnityEngine.EventSystems.PointerEventData __0)
                 {
-                    if ((hud_object is not null) && (Save_Manager.instance is not null) && (Refs_Manager.player_data is not null))
+                    if ((!hud_object.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()) && (!Refs_Manager.player_data.IsNullOrDestroyed()))
                     {
-                        if (hud_object.active) //&& (Save_Manager.instance.data is not null))
+                        if (hud_object.active) //&& (!Save_Manager.instance.data.IsNullOrDestroyed()))
                         {
                             if (__instance.name.Contains("Toggle_Character_"))
                             {
                                 switch (__instance.name)
                                 {
-                                    case "Toggle_Character_Data_Died": { if ((Refs_Manager.player_data is not null) && (Content.Character.Data.died_toggle is not null)) { Refs_Manager.player_data.Died = Content.Character.Data.died_toggle.isOn; } break; }
-                                    case "Toggle_Character_Data_Hardcore": { if ((Refs_Manager.player_data is not null) && (Content.Character.Data.hardcore_toggle is not null)) { Refs_Manager.player_data.Hardcore = Content.Character.Data.hardcore_toggle.isOn; } break; }
-                                    case "Toggle_Character_Data_Masochist": { if ((Refs_Manager.player_data is not null) && (Content.Character.Data.masochist_toggle is not null)) { Refs_Manager.player_data.Masochist = Content.Character.Data.masochist_toggle.isOn; } break; }
-                                    case "Toggle_Character_Data_Portal": { if ((Refs_Manager.player_data is not null) && (Content.Character.Data.portal_toggle is not null)) { Refs_Manager.player_data.PortalUnlocked = Content.Character.Data.portal_toggle.isOn; } break; }
-                                    case "Toggle_Character_Data_SoloChallenge": { if ((Refs_Manager.player_data is not null) && (Content.Character.Data.solo_toggle is not null)) { Refs_Manager.player_data.SoloChallenge = Content.Character.Data.solo_toggle.isOn; } break; }
+                                    case "Toggle_Character_Data_Died": { if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Content.Character.Data.died_toggle.IsNullOrDestroyed())) { Refs_Manager.player_data.Died = Content.Character.Data.died_toggle.isOn; } break; }
+                                    case "Toggle_Character_Data_Hardcore": { if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Content.Character.Data.hardcore_toggle.IsNullOrDestroyed())) { Refs_Manager.player_data.Hardcore = Content.Character.Data.hardcore_toggle.isOn; } break; }
+                                    case "Toggle_Character_Data_Masochist": { if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Content.Character.Data.masochist_toggle.IsNullOrDestroyed())) { Refs_Manager.player_data.Masochist = Content.Character.Data.masochist_toggle.isOn; } break; }
+                                    case "Toggle_Character_Data_Portal": { if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Content.Character.Data.portal_toggle.IsNullOrDestroyed())) { Refs_Manager.player_data.PortalUnlocked = Content.Character.Data.portal_toggle.isOn; } break; }
+                                    case "Toggle_Character_Data_SoloChallenge": { if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Content.Character.Data.solo_toggle.IsNullOrDestroyed())) { Refs_Manager.player_data.SoloChallenge = Content.Character.Data.solo_toggle.isOn; } break; }
 
                                     case "Toggle_Character_Buffs_Enable": { Save_Manager.instance.data.Character.PermanentBuffs.Enable_Mod = __instance.isOn; break; }
                                     case "Toggle_Character_Buffs_MoveSpeed": { Save_Manager.instance.data.Character.PermanentBuffs.Enable_MoveSpeed_Buff = __instance.isOn; break; }
@@ -804,9 +804,9 @@ namespace LastEpoch_Hud.Scripts
                 [HarmonyPostfix]
                 static void Postfix(ref Slider __instance, float __0)
                 {
-                    if ((hud_object is not null) && (Save_Manager.instance is not null))
+                    if (!(hud_object.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
                     {
-                        if ((hud_object.active) && (Refs_Manager.player_data is not null))
+                        if ((hud_object.active) && (!Refs_Manager.player_data.IsNullOrDestroyed()))
                         {
                             if (__instance.name.Contains("Slider_Character_"))
                             {
@@ -1225,13 +1225,13 @@ namespace LastEpoch_Hud.Scripts
                                 btn.onClick = new Button.ButtonClickedEvent();
                                 btn.onClick.AddListener(action);
                             }
-                            else { Main.logger_instance?.Error("Set_Base_Button_Event Can't found button"); }
+                            else { Main.logger_instance.Error("Set_Base_Button_Event Can't found button"); }
                         }
-                        else { Main.logger_instance?.Error("Set_Base_Button_Event Can't found GameObject button " + btn_name); }
+                        else { Main.logger_instance.Error("Set_Base_Button_Event Can't found GameObject button " + btn_name); }
                     }
-                    else { Main.logger_instance?.Error("Set_Base_Button_Event Can't found " + child + " in base_obj"); }
+                    else { Main.logger_instance.Error("Set_Base_Button_Event Can't found " + child + " in base_obj"); }
                 }
-                else { Main.logger_instance?.Error("Set_Base_Button_Event base_obj is null"); }
+                else { Main.logger_instance.Error("Set_Base_Button_Event base_obj is null"); }
             }
             public static void Set_Button_Event(Button btn, UnityEngine.Events.UnityAction action)
             {
@@ -1254,20 +1254,20 @@ namespace LastEpoch_Hud.Scripts
             public static bool Initialized = false;
             public static bool Initializing = false;
             public static bool initiliazed_events = false;
-            public static GameObject? Default_PauseMenu_Btns = null;
-            public static Button? Btn_Resume;
-            public static Button? Btn_Settings;
-            public static Button? Btn_GameGuide;
-            public static Button? Btn_LeaveGame;
-            public static Button? Btn_ExitDesktop;
-            public static GameObject? ChapterInfo = null;
-            public static GameObject? Menu_Fade_Background = null;
-            public static GameObject? Chapter_Fade_Background = null;
+            public static GameObject Default_PauseMenu_Btns = null;
+            public static Button Btn_Resume;
+            public static Button Btn_Settings;
+            public static Button Btn_GameGuide;
+            public static Button Btn_LeaveGame;
+            public static Button Btn_ExitDesktop;
+            public static GameObject ChapterInfo = null;
+            public static GameObject Menu_Fade_Background = null;
+            public static GameObject Chapter_Fade_Background = null;
                         
             public static bool Get_DefaultPauseMenu()
             {
                 bool result = false;
-                if (Refs_Manager.game_uibase is not null)
+                if (!Refs_Manager.game_uibase.IsNullOrDestroyed())
                 {
                     GameObject Draw_over_login_canvas = Functions.GetChild(UIBase.instance.gameObject, "Draw Over Login Canvas");
                     if (!Draw_over_login_canvas.IsNullOrDestroyed())
@@ -1280,30 +1280,30 @@ namespace LastEpoch_Hud.Scripts
                             //Set_Events();
                             result = true;
                         }
-                        else { Main.logger_instance?.Msg("Get_DefaultPauseMenu : game_pause_menu NOT FOUND"); }                        
+                        else { Main.logger_instance.Msg("Get_DefaultPauseMenu : game_pause_menu NOT FOUND"); }                        
                     }
-                    else { Main.logger_instance?.Msg("Get_DefaultPauseMenu : Draw_over_login_canvas NOT FOUND"); }
+                    else { Main.logger_instance.Msg("Get_DefaultPauseMenu : Draw_over_login_canvas NOT FOUND"); }
                 }
 
                 return result;
             }
             public static void Set_ChapterInfo(bool show)
             {
-                if ((Refs_Manager.game_uibase is not null) && (game_pause_menu is not null))
+                if ((!Refs_Manager.game_uibase.IsNullOrDestroyed()) && (!game_pause_menu.IsNullOrDestroyed()))
                 {
-                    if (ChapterInfo is null) { ChapterInfo = Functions.GetChild(game_pause_menu, "ChapterInfo"); }
-                    if (ChapterInfo is not null) { ChapterInfo.active = show; }
+                    if (ChapterInfo.IsNullOrDestroyed()) { ChapterInfo = Functions.GetChild(game_pause_menu, "ChapterInfo"); }
+                    if (!ChapterInfo.IsNullOrDestroyed()) { ChapterInfo.active = show; }
 
-                    if (Menu_Fade_Background is null) { Menu_Fade_Background = Functions.GetChild(game_pause_menu, "Menu_Fade_Background"); }
-                    if (Menu_Fade_Background is not null) { Menu_Fade_Background.active = show; }
+                    if (Menu_Fade_Background.IsNullOrDestroyed()) { Menu_Fade_Background = Functions.GetChild(game_pause_menu, "Menu_Fade_Background"); }
+                    if (!Menu_Fade_Background.IsNullOrDestroyed()) { Menu_Fade_Background.active = show; }
 
-                    if (Chapter_Fade_Background is null) { Chapter_Fade_Background = Functions.GetChild(game_pause_menu, "Chapter_Fade_Background"); }
-                    if (Chapter_Fade_Background is not null) { Chapter_Fade_Background.active = show; }
+                    if (Chapter_Fade_Background.IsNullOrDestroyed()) { Chapter_Fade_Background = Functions.GetChild(game_pause_menu, "Chapter_Fade_Background"); }
+                    if (!Chapter_Fade_Background.IsNullOrDestroyed()) { Chapter_Fade_Background.active = show; }
                 }
             }                        
             public static bool Get_DefaultPauseMenu_Open()
             {
-                if (Default_PauseMenu_Btns is not null)
+                if (!Default_PauseMenu_Btns.IsNullOrDestroyed())
                 {
                      return Default_PauseMenu_Btns.active;
                 }
@@ -1311,7 +1311,7 @@ namespace LastEpoch_Hud.Scripts
             }
             public static void Toogle_DefaultPauseMenu(bool show)
             {
-                if (Default_PauseMenu_Btns is not null)
+                if (!Default_PauseMenu_Btns.IsNullOrDestroyed())
                 {
                     Default_PauseMenu_Btns.active = show;
                 }
@@ -1319,7 +1319,7 @@ namespace LastEpoch_Hud.Scripts
             
             public static void Get_Refs()
             {
-                if (Default_PauseMenu_Btns is not null)
+                if (!Default_PauseMenu_Btns.IsNullOrDestroyed())
                 {
                     GameObject Btns = Functions.GetChild(Default_PauseMenu_Btns, "Buttons");
                     if (!Btns.IsNullOrDestroyed())
@@ -1334,7 +1334,7 @@ namespace LastEpoch_Hud.Scripts
             }            
             public static void Set_Events()
             {
-                if ((Default_PauseMenu_Btns is not null) && (hud_object is not null))
+                if ((!Default_PauseMenu_Btns.IsNullOrDestroyed()) && (!hud_object.IsNullOrDestroyed()))
                 {
                     Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_Resume", Resume_OnClick_Action);
                     Events.Set_Base_Button_Event(hud_object, "Base", "Btn_Base_Settings", Settings_OnClick_Action);
@@ -1348,19 +1348,19 @@ namespace LastEpoch_Hud.Scripts
             private static readonly System.Action Resume_OnClick_Action = new System.Action(Resume_Click);
             public static void Resume_Click()
             {
-                if (Btn_Resume is not null) { Btn_Resume.onClick.Invoke(); }
+                if (!Btn_Resume.IsNullOrDestroyed()) { Btn_Resume.onClick.Invoke(); }
             }
 
             private static readonly System.Action Settings_OnClick_Action = new System.Action(Settings_Click);
             public static void Settings_Click()
             {
-                if (Btn_Settings is not null) { Btn_Settings.onClick.Invoke(); }
+                if (!Btn_Settings.IsNullOrDestroyed()) { Btn_Settings.onClick.Invoke(); }
             }
 
             private static readonly System.Action GameGuide_OnClick_Action = new System.Action(GameGuide_Click);
             public static void GameGuide_Click()
             {
-                if (Btn_GameGuide is not null) { Btn_GameGuide.onClick.Invoke(); }
+                if (!Btn_GameGuide.IsNullOrDestroyed()) { Btn_GameGuide.onClick.Invoke(); }
             }
 
             private static readonly System.Action LeaveGame_OnClick_Action = new System.Action(LeaveGame_Click);
@@ -1376,7 +1376,7 @@ namespace LastEpoch_Hud.Scripts
             private static readonly System.Action ExitDesktop_OnClick_Action = new System.Action(ExitDesktop_Click);
             public static void ExitDesktop_Click()
             {
-                if (Btn_ExitDesktop is not null)
+                if (!Btn_ExitDesktop.IsNullOrDestroyed())
                 {
                     Content.Close_AllContent();
                     Btn_ExitDesktop.onClick.Invoke();
@@ -1387,7 +1387,7 @@ namespace LastEpoch_Hud.Scripts
         {
             public static void Set_Events()
             {
-                if (hud_object is not null)
+                if (!hud_object.IsNullOrDestroyed())
                 {
                     Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_Character", Character_OnClick_Action);
                     Events.Set_Base_Button_Event(hud_object, "Menu", "Btn_Menu_Items", Items_OnClick_Action);
@@ -1466,10 +1466,10 @@ namespace LastEpoch_Hud.Scripts
         }                
         public class Content
         {
-            public static GameObject? content_obj = null;
+            public static GameObject content_obj = null;
             public static void Set_Active()
             {
-                if (content_obj is not null)
+                if (!content_obj.IsNullOrDestroyed())
                 {
                     bool show = false;
                     if ((Character.enable) || (Items.enable) || (Scenes.enable) || (Skills.enable) ||
@@ -1489,14 +1489,14 @@ namespace LastEpoch_Hud.Scripts
 
             public class Character
             {
-                public static GameObject? content_obj = null;
+                public static GameObject content_obj = null;
                 public static bool controls_initialized = false;
                 public static bool enable = false;
                 public static bool need_update = true;
 
                 public static void Get_Refs()
                 {
-                    if (Content.content_obj is not null)
+                    if (!Content.content_obj.IsNullOrDestroyed())
                     {
                         content_obj = Functions.GetChild(Content.content_obj, "Character_Content");
                         if (!content_obj.IsNullOrDestroyed())
@@ -1557,13 +1557,13 @@ namespace LastEpoch_Hud.Scripts
                                 Cheats.add_shards_button = Functions.GetChild(character_cheats_content, "Btn_Character_Cheats_AddAffixs").GetComponent<Button>();
                                 Cheats.discover_blessings_button = Functions.GetChild(character_cheats_content, "Btn_Character_Cheats_DicoverAllBlessings").GetComponent<Button>();
                             }
-                            else { Main.logger_instance?.Error("Hud Manager : character_cheats_content is null"); }
+                            else { Main.logger_instance.Error("Hud Manager : character_cheats_content is null"); }
 
                             //Data
                             GameObject character_data_content = Functions.GetViewportContent(content_obj, "Character_Data", "Character_Data_Content");
                             if (!character_data_content.IsNullOrDestroyed())
                             {
-                                Data.class_dropdown = Functions.Get_DopboxInPanel(character_data_content, "Classe", "Dropdown_Character_Data_Classes", new System.Action<int>((_) => { if ((Refs_Manager.player_data is not null) && (Data.class_dropdown is not null)) { Refs_Manager.player_data.CharacterClass = Data.class_dropdown.value; } }));
+                                Data.class_dropdown = Functions.Get_DopboxInPanel(character_data_content, "Classe", "Dropdown_Character_Data_Classes", new System.Action<int>((_) => { if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Data.class_dropdown.IsNullOrDestroyed())) { Refs_Manager.player_data.CharacterClass = Data.class_dropdown.value; } }));
 
                                 Data.died_toggle = Functions.Get_ToggleInPanel(character_data_content, "Died", "Toggle_Character_Data_Died");
                                 Data.hardcore_toggle = Functions.Get_ToggleInPanel(character_data_content, "Hardcore", "Toggle_Character_Data_Hardcore");
@@ -1615,7 +1615,7 @@ namespace LastEpoch_Hud.Scripts
                                 Data.monolith_dropdown.options.Add(new Dropdown.OptionData { text = "Spirits_Of_Fire" });
                                 Data.monolith_dropdown.m_CurrentIndex = 0;
                             }
-                            else { Main.logger_instance?.Error("Hud Manager : character_data_content is null"); }
+                            else { Main.logger_instance.Error("Hud Manager : character_data_content is null"); }
 
                             GameObject char_data = Functions.GetChild(content_obj, "Character_Data");
                             if (!char_data.IsNullOrDestroyed())
@@ -1697,125 +1697,125 @@ namespace LastEpoch_Hud.Scripts
                                 Buffs.att_text = Functions.Get_TextInToggle(character_buffs_content, "Attunement", "Toggle_Character_Buffs_Attunement", "Value");
                                 Buffs.att_slider = Functions.Get_SliderInPanel(character_buffs_content, "Attunement", "Slider_Character_Buffs_Attunement");
                             }
-                            else { Main.logger_instance?.Error("Hud Manager : character_buffs_content is null"); }
+                            else { Main.logger_instance.Error("Hud Manager : character_buffs_content is null"); }
                         }
-                        else { Main.logger_instance?.Error("Hud Manager : Character_Content is null"); }
+                        else { Main.logger_instance.Error("Hud Manager : Character_Content is null"); }
                     }
                 }
                 public static void Set_Events()
                 {
-                    if (Cheats.godmode_toggle is not null)
+                    if (!Cheats.godmode_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.godmode_toggle, Cheats.Godmode_Toggle_Action);
                     }
-                    if (Cheats.lowlife_toggle is not null)
+                    if (!Cheats.lowlife_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.lowlife_toggle, Cheats.Lowlife_Toggle_Action);
                     }
-                    if (Cheats.allow_choosing_blessing is not null)
+                    if (!Cheats.allow_choosing_blessing.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.allow_choosing_blessing, Cheats.AllowChooseBlessings_Toggle_Action);
                     }
-                    if (Cheats.unlock_all_idols is not null)
+                    if (!Cheats.unlock_all_idols.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.unlock_all_idols, Cheats.UnlockAllIdols_Toggle_Action);
                     }
-                    if (Cheats.autoPot_toggle is not null)
+                    if (!Cheats.autoPot_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.autoPot_toggle, Cheats.AutoPot_Toggle_Action);
                     }
-                    if (Cheats.density_toggle is not null)
+                    if (!Cheats.density_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.density_toggle, Cheats.Density_Toggle_Action);
                     }
-                    if (Cheats.experience_toggle is not null)
+                    if (!Cheats.experience_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.experience_toggle, Cheats.Experience_Toggle_Action);
                     }
-                    if (Cheats.ability_toggle is not null)
+                    if (!Cheats.ability_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.ability_toggle, Cheats.Ability_Toggle_Action);
                     }
-                    if (Cheats.favor_toggle is not null)
+                    if (!Cheats.favor_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.favor_toggle, Cheats.Favor_Toggle_Action);
                     }
-                    if (Cheats.itemdropmultiplier_toggle is not null)
+                    if (!Cheats.itemdropmultiplier_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.itemdropmultiplier_toggle, Cheats.ItemDropMulti_Toggle_Action);
                     }
-                    if (Cheats.itemdropchance_toggle is not null)
+                    if (!Cheats.itemdropchance_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.itemdropchance_toggle, Cheats.ItemDropChance_Toggle_Action);
                     }
-                    if (Cheats.golddropmultiplier_toggle is not null)
+                    if (!Cheats.golddropmultiplier_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.golddropmultiplier_toggle, Cheats.GoldMulti_Toggle_Action);
                     }
-                    if (Cheats.golddropchance_toggle is not null)
+                    if (!Cheats.golddropchance_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.golddropchance_toggle, Cheats.GoldChance_Toggle_Action);
                     }
-                    if (Cheats.waypoints_toggle is not null)
+                    if (!Cheats.waypoints_toggle.IsNullOrDestroyed())
                     {
                         Events.Set_Toggle_Event(Cheats.waypoints_toggle, Cheats.Waypoints_Toggle_Action);
                     }
-                    if (Cheats.level_once_button is not null)
+                    if (!Cheats.level_once_button.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Cheats.level_once_button, Cheats.LevelUpOnce_OnClick_Action);
                     }
-                    if (Cheats.level_max_button is not null)
+                    if (!Cheats.level_max_button.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Cheats.level_max_button, Cheats.LevelUpMax_OnClick_Action);
                     }
-                    if (Cheats.complete_quest_button is not null)
+                    if (!Cheats.complete_quest_button.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Cheats.complete_quest_button, Cheats.CompleteQuest_OnClick_Action);
                     }
-                    if (Cheats.masterie_buttons is not null)
+                    if (!Cheats.masterie_buttons.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Cheats.masterie_buttons, Cheats.Masteries_OnClick_Action);
                     }
-                    if (Cheats.add_runes_button is not null)
+                    if (!Cheats.add_runes_button.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Cheats.add_runes_button, Cheats.AddRunes_OnClick_Action);
                     }
-                    if (Cheats.add_glyphs_button is not null)
+                    if (!Cheats.add_glyphs_button.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Cheats.add_glyphs_button, Cheats.AddGlyphs_OnClick_Action);
                     }
-                    if (Cheats.add_shards_button is not null)
+                    if (!Cheats.add_shards_button.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Cheats.add_shards_button, Cheats.AddAffixs_OnClick_Action);
                     }
-                    if (Cheats.discover_blessings_button is not null)
+                    if (!Cheats.discover_blessings_button.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Cheats.discover_blessings_button, Cheats.DiscoverAllBlessings_OnClick_Action);
                     }
-                    if (Data.monolith_stability_basic_slider is not null)
+                    if (!Data.monolith_stability_basic_slider.IsNullOrDestroyed())
                     {
                         Events.Set_Slider_Event(Data.monolith_stability_basic_slider, Data.monolith_stability_basic_slider_Action);
                     }
-                    if (Data.monolith_stability_empower_slider is not null)
+                    if (!Data.monolith_stability_empower_slider.IsNullOrDestroyed())
                     {
                         Events.Set_Slider_Event(Data.monolith_stability_empower_slider, Data.monolith_stability_empower_slider_Action);
                     }
-                    if (Data.monolith_corruption_slider is not null)
+                    if (!Data.monolith_corruption_slider.IsNullOrDestroyed())
                     {
                         Events.Set_Slider_Event(Data.monolith_corruption_slider, Data.monolith_corruption_slider_Action);
                     }
-                    if (Data.monolith_gaze_slider is not null)
+                    if (!Data.monolith_gaze_slider.IsNullOrDestroyed())
                     {
                         Events.Set_Slider_Event(Data.monolith_gaze_slider, Data.monolith_gaze_slider_Action);
                     }
-                    if (Data.save_button is not null)
+                    if (!Data.save_button.IsNullOrDestroyed())
                     {
                         Events.Set_Button_Event(Data.save_button, Data.Save_OnClick_Action);
                     }
                 }
                 public static void Set_Active(bool show)
                 {
-                    if (content_obj is not null)
+                    if (!content_obj.IsNullOrDestroyed())
                     {
                         content_obj.active = show;
                         enable = show;
@@ -1823,7 +1823,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void Toggle_Active()
                 {
-                    if (content_obj is not null)
+                    if (!content_obj.IsNullOrDestroyed())
                     {
                         bool show = !content_obj.active;
                         content_obj.active = show;
@@ -1833,209 +1833,209 @@ namespace LastEpoch_Hud.Scripts
                 public static bool Init_UserData()
                 {
                     bool result = false;
-                    if (Save_Manager.instance is not null)
+                    if (!Save_Manager.instance.IsNullOrDestroyed())
                     {
                         if (Save_Manager.instance.initialized)
                         {
                             //Content.Character.Cheats
-                            if (Cheats.godmode_toggle is not null)
+                            if (!Cheats.godmode_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.godmode_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_GodMode;
                             }
-                            if (Cheats.lowlife_toggle is not null)
+                            if (!Cheats.lowlife_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.lowlife_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_LowLife;
                             }
-                            if (Cheats.allow_choosing_blessing is not null)
+                            if (!Cheats.allow_choosing_blessing.IsNullOrDestroyed())
                             {
                                 Cheats.allow_choosing_blessing.isOn = Save_Manager.instance.data.Character.Cheats.Enable_CanChooseBlessing;
                             }
-                            if (Cheats.unlock_all_idols is not null)
+                            if (!Cheats.unlock_all_idols.IsNullOrDestroyed())
                             {
                                 Cheats.unlock_all_idols.isOn = Save_Manager.instance.data.Character.Cheats.Enable_UnlockAllIdolsSlots;
                             }
-                            if (Cheats.autoPot_toggle is not null)
+                            if (!Cheats.autoPot_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.autoPot_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_AutoPot;
                             }
-                            if (Cheats.autopot_slider is not null)
+                            if (!Cheats.autopot_slider.IsNullOrDestroyed())
                             {
                                 Cheats.autopot_slider.value = Save_Manager.instance.data.Character.Cheats.autoPot;
                             }
-                            if (Cheats.density_toggle is not null)
+                            if (!Cheats.density_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.density_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_DensityMultiplier;
                             }
-                            if (Cheats.density_slider is not null)
+                            if (!Cheats.density_slider.IsNullOrDestroyed())
                             {
                                 Cheats.density_slider.value = Save_Manager.instance.data.Character.Cheats.DensityMultiplier;
                             }
-                            if (Cheats.experience_toggle is not null)
+                            if (!Cheats.experience_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.experience_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_ExperienceMultiplier;
                             }
-                            if (Cheats.experience_slider is not null)
+                            if (!Cheats.experience_slider.IsNullOrDestroyed())
                             {
                                 Cheats.experience_slider.value = Save_Manager.instance.data.Character.Cheats.ExperienceMultiplier;
                             }
-                            if (Cheats.ability_toggle is not null)
+                            if (!Cheats.ability_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.ability_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_AbilityMultiplier;
                             }
-                            if (Cheats.ability_slider is not null)
+                            if (!Cheats.ability_slider.IsNullOrDestroyed())
                             {
                                 Cheats.ability_slider.value = Save_Manager.instance.data.Character.Cheats.AbilityMultiplier;
                             }
-                            if (Cheats.favor_toggle is not null)
+                            if (!Cheats.favor_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.favor_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_FavorMultiplier;
                             }
-                            if (Cheats.favor_slider is not null)
+                            if (!Cheats.favor_slider.IsNullOrDestroyed())
                             {
                                 Cheats.favor_slider.value = Save_Manager.instance.data.Character.Cheats.FavorMultiplier;
                             }
-                            if (Cheats.itemdropmultiplier_toggle is not null)
+                            if (!Cheats.itemdropmultiplier_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.itemdropmultiplier_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_ItemDropMultiplier;
                             }
-                            if (Cheats.itemdropmultiplier_slider is not null)
+                            if (!Cheats.itemdropmultiplier_slider.IsNullOrDestroyed())
                             {
                                 Cheats.itemdropmultiplier_slider.value = Save_Manager.instance.data.Character.Cheats.ItemDropMultiplier;
                             }
-                            if (Cheats.itemdropchance_toggle is not null)
+                            if (!Cheats.itemdropchance_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.itemdropchance_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_ItemDropChance;
                             }
-                            if (Cheats.itemdropchance_slider is not null)
+                            if (!Cheats.itemdropchance_slider.IsNullOrDestroyed())
                             {
                                 Cheats.itemdropchance_slider.value = Save_Manager.instance.data.Character.Cheats.ItemDropChance;
                             }
-                            if (Cheats.golddropmultiplier_toggle is not null)
+                            if (!Cheats.golddropmultiplier_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.golddropmultiplier_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_GoldDropMultiplier;
                             }
-                            if (Cheats.golddropmultiplier_slider is not null)
+                            if (!Cheats.golddropmultiplier_slider.IsNullOrDestroyed())
                             {
                                 Cheats.golddropmultiplier_slider.value = Save_Manager.instance.data.Character.Cheats.GoldDropMultiplier;
                             }
-                            if (Cheats.golddropchance_toggle is not null)
+                            if (!Cheats.golddropchance_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.golddropchance_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_GoldDropChance;
                             }
-                            if (Cheats.golddropchance_slider is not null)
+                            if (!Cheats.golddropchance_slider.IsNullOrDestroyed())
                             {
                                 Cheats.golddropchance_slider.value = Save_Manager.instance.data.Character.Cheats.GoldDropChance;
                             }
-                            if (Cheats.waypoints_toggle is not null)
+                            if (!Cheats.waypoints_toggle.IsNullOrDestroyed())
                             {
                                 Cheats.waypoints_toggle.isOn = Save_Manager.instance.data.Character.Cheats.Enable_WaypointsUnlock;
                             }
                             //Content.Character.Buffs
-                            if (Buffs.enable_mod is not null)
+                            if (!Buffs.enable_mod.IsNullOrDestroyed())
                             {
                                 Buffs.enable_mod.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Mod;
                             }
-                            if (Buffs.movespeed_toggle is not null)
+                            if (!Buffs.movespeed_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.movespeed_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_MoveSpeed_Buff;
                             }
-                            if (Buffs.movespeed_slider is not null)
+                            if (!Buffs.movespeed_slider.IsNullOrDestroyed())
                             {
                                 Buffs.movespeed_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.MoveSpeed_Buff_Value;
                             }
-                            if (Buffs.damage_toggle is not null)
+                            if (!Buffs.damage_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.damage_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Damage_Buff;
                             }
-                            if (Buffs.damage_slider is not null)
+                            if (!Buffs.damage_slider.IsNullOrDestroyed())
                             {
                                 Buffs.damage_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.Damage_Buff_Value;
                             }
-                            if (Buffs.attackspeed_toggle is not null)
+                            if (!Buffs.attackspeed_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.attackspeed_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_AttackSpeed_Buff;
                             }
-                            if (Buffs.attackspeed_slider is not null)
+                            if (!Buffs.attackspeed_slider.IsNullOrDestroyed())
                             {
                                 Buffs.attackspeed_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.AttackSpeed_Buff_Value;
                             }
-                            if (Buffs.castingspeed_toggle is not null)
+                            if (!Buffs.castingspeed_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.castingspeed_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_CastSpeed_Buff;
                             }
-                            if (Buffs.castingspeed_slider is not null)
+                            if (!Buffs.castingspeed_slider.IsNullOrDestroyed())
                             {
                                 Buffs.castingspeed_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.CastSpeed_Buff_Value;
                             }
-                            if (Buffs.criticalchance_toggle is not null)
+                            if (!Buffs.criticalchance_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.criticalchance_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_CriticalChance_Buff;
                             }
-                            if (Buffs.criticalchance_slider is not null)
+                            if (!Buffs.criticalchance_slider.IsNullOrDestroyed())
                             {
                                 Buffs.criticalchance_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.CriticalChance_Buff_Value;
                             }
-                            if (Buffs.criticalmultiplier_toggle is not null)
+                            if (!Buffs.criticalmultiplier_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.criticalmultiplier_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_CriticalMultiplier_Buff;
                             }
-                            if (Buffs.criticalmultiplier_slider is not null)
+                            if (!Buffs.criticalmultiplier_slider.IsNullOrDestroyed())
                             {
                                 Buffs.criticalmultiplier_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.CriticalMultiplier_Buff_Value;
                             }
-                            if (Buffs.healthregen_toggle is not null)
+                            if (!Buffs.healthregen_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.healthregen_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_HealthRegen_Buff;
                             }
-                            if (Buffs.healthregen_slider is not null)
+                            if (!Buffs.healthregen_slider.IsNullOrDestroyed())
                             {
                                 Buffs.healthregen_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.HealthRegen_Buff_Value;
                             }
-                            if (Buffs.manaregen_toggle is not null)
+                            if (!Buffs.manaregen_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.manaregen_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_ManaRegen_Buff;
                             }
-                            if (Buffs.manaregen_slider is not null)
+                            if (!Buffs.manaregen_slider.IsNullOrDestroyed())
                             {
                                 Buffs.manaregen_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.ManaRegen_Buff_Value;
                             }
-                            if (Buffs.str_toggle is not null)
+                            if (!Buffs.str_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.str_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Str_Buff;
                             }
-                            if (Buffs.str_slider is not null)
+                            if (!Buffs.str_slider.IsNullOrDestroyed())
                             {
                                 Buffs.str_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.Str_Buff_Value;
                             }
-                            if (Buffs.int_toggle is not null)
+                            if (!Buffs.int_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.int_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Int_Buff;
                             }
-                            if (Buffs.int_slider is not null)
+                            if (!Buffs.int_slider.IsNullOrDestroyed())
                             {
                                 Buffs.int_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.Int_Buff_Value;
                             }
-                            if (Buffs.dex_toggle is not null)
+                            if (!Buffs.dex_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.dex_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Dex_Buff;
                             }
-                            if (Buffs.dex_slider is not null)
+                            if (!Buffs.dex_slider.IsNullOrDestroyed())
                             {
                                 Buffs.dex_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.Dex_Buff_Value;
                             }
-                            if (Buffs.vit_toggle is not null)
+                            if (!Buffs.vit_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.vit_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Vit_Buff;
                             }
-                            if (Buffs.vit_slider is not null)
+                            if (!Buffs.vit_slider.IsNullOrDestroyed())
                             {
                                 Buffs.vit_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.Vit_Buff_Value;
                             }
-                            if (Buffs.att_toggle is not null)
+                            if (!Buffs.att_toggle.IsNullOrDestroyed())
                             {
                                 Buffs.att_toggle.isOn = Save_Manager.instance.data.Character.PermanentBuffs.Enable_Att_Buff;
                             }
-                            if (Buffs.att_slider is not null)
+                            if (!Buffs.att_slider.IsNullOrDestroyed())
                             {
                                 Buffs.att_slider.value = Save_Manager.instance.data.Character.PermanentBuffs.Att_Buff_Value;
                             }
@@ -2049,59 +2049,59 @@ namespace LastEpoch_Hud.Scripts
                 public static void Update_PlayerData()
                 {
                     need_update = false;
-                    if ((Refs_Manager.player_treedata is not null) && (Refs_Manager.character_class_list is not null) && (Refs_Manager.player_data is not null))
+                    if ((!Refs_Manager.player_treedata.IsNullOrDestroyed()) && (!Refs_Manager.character_class_list.IsNullOrDestroyed()) && (!Refs_Manager.player_data.IsNullOrDestroyed()))
                     {
                         Il2CppSystem.Collections.Generic.List<Dropdown.OptionData> options = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
                         foreach (CharacterClass char_class in Refs_Manager.character_class_list.classes)
                         {
                             options.Add(new Dropdown.OptionData { text = char_class.className });
                         }
-                        if (Data.class_dropdown is not null)
+                        if (!Data.class_dropdown.IsNullOrDestroyed())
                         {
                             Data.class_dropdown.options = options;
                             Data.class_dropdown.value = Refs_Manager.player_data.CharacterClass;
                         }
-                        if (Data.died_toggle is not null)
+                        if (!Data.died_toggle.IsNullOrDestroyed())
                         {
                             Data.died_toggle.isOn = Refs_Manager.player_data.Died;
                         }
-                        if (Data.deaths_slider is not null)
+                        if (!Data.deaths_slider.IsNullOrDestroyed())
                         {
                             Data.deaths_slider.value = Refs_Manager.player_data.Deaths;
                         }
-                        if (Data.deaths_text is not null)
+                        if (!Data.deaths_text.IsNullOrDestroyed())
                         {
                             Data.deaths_text.text = Refs_Manager.player_data.Deaths.ToString();
                         }
-                        if (Data.hardcore_toggle is not null)
+                        if (!Data.hardcore_toggle.IsNullOrDestroyed())
                         {
                             Data.hardcore_toggle.isOn = Refs_Manager.player_data.Hardcore;
                         }
-                        if (Data.masochist_toggle is not null)
+                        if (!Data.masochist_toggle.IsNullOrDestroyed())
                         {
                             Data.masochist_toggle.isOn = Refs_Manager.player_data.Masochist;
                         }
-                        if (Data.portal_toggle is not null)
+                        if (!Data.portal_toggle.IsNullOrDestroyed())
                         {
                             Data.portal_toggle.isOn = Refs_Manager.player_data.PortalUnlocked;
                         }
-                        if (Data.solo_toggle is not null)
+                        if (!Data.solo_toggle.IsNullOrDestroyed())
                         {
                             Data.solo_toggle.isOn = Refs_Manager.player_data.SoloChallenge;
                         }
-                        if (Data.lantern_slider is not null)
+                        if (!Data.lantern_slider.IsNullOrDestroyed())
                         {
                             Data.lantern_slider.value = Refs_Manager.player_data.LanternLuminance;
                         }
-                        if (Data.lantern_text is not null)
+                        if (!Data.lantern_text.IsNullOrDestroyed())
                         {
                             Data.lantern_text.text = Refs_Manager.player_data.LanternLuminance.ToString();
                         }
-                        if (Data.soul_slider is not null)
+                        if (!Data.soul_slider.IsNullOrDestroyed())
                         {
                             Data.soul_slider.value = Refs_Manager.player_data.SoulEmbers;
                         }
-                        if (Data.soul_text is not null)
+                        if (!Data.soul_text.IsNullOrDestroyed())
                         {
                             Data.soul_text.text = Refs_Manager.player_data.SoulEmbers.ToString();
                         }
@@ -2109,19 +2109,19 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void Update_Monoliths_Data()
                 {                    
-                    if ((Refs_Manager.player_data is not null) && (Data.monolith_dropdown is not null)
-                        && (Data.monolith_stability_basic_go is not null)
-                        && (Data.monolith_stability_basic_slider is not null)
-                        && (Data.monolith_stability_basic_text is not null)
-                        && (Data.monolith_stability_empower_go is not null)
-                        && (Data.monolith_stability_empower_slider is not null)
-                        && (Data.monolith_stability_empower_text is not null)
-                        && (Data.monolith_corruption_go is not null)
-                        && (Data.monolith_corruption_slider is not null)
-                        && (Data.monolith_corruption_text is not null)
-                        && (Data.monolith_gaze_go is not null)
-                        && (Data.monolith_gaze_slider is not null)
-                        && (Data.monolith_gaze_text is not null))
+                    if ((!Refs_Manager.player_data.IsNullOrDestroyed()) && (!Data.monolith_dropdown.IsNullOrDestroyed())
+                        && (!Data.monolith_stability_basic_go.IsNullOrDestroyed())
+                        && (!Data.monolith_stability_basic_slider.IsNullOrDestroyed())
+                        && (!Data.monolith_stability_basic_text.IsNullOrDestroyed())
+                        && (!Data.monolith_stability_empower_go.IsNullOrDestroyed())
+                        && (!Data.monolith_stability_empower_slider.IsNullOrDestroyed())
+                        && (!Data.monolith_stability_empower_text.IsNullOrDestroyed())
+                        && (!Data.monolith_corruption_go.IsNullOrDestroyed())
+                        && (!Data.monolith_corruption_slider.IsNullOrDestroyed())
+                        && (!Data.monolith_corruption_text.IsNullOrDestroyed())
+                        && (!Data.monolith_gaze_go.IsNullOrDestroyed())
+                        && (!Data.monolith_gaze_slider.IsNullOrDestroyed())
+                        && (!Data.monolith_gaze_text.IsNullOrDestroyed()))
                     {                        
                         int index = Data.monolith_dropdown.value;
                         if (index < 1)
@@ -2145,8 +2145,8 @@ namespace LastEpoch_Hud.Scripts
                         }
                         else
                         {
-                            SavedMonolithRun? basic = null;
-                            SavedMonolithRun? empower = null;
+                            SavedMonolithRun basic = null;
+                            SavedMonolithRun empower = null;
                             foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
                             {
                                 if (run.TimelineID == index)
@@ -2156,7 +2156,7 @@ namespace LastEpoch_Hud.Scripts
                                 }
                             }
 
-                            if (basic is not null)
+                            if (!basic.IsNullOrDestroyed())
                             {
                                 Data.monolith_stability_basic_go.active = true;
                                 int value = basic.Stability;
@@ -2171,7 +2171,7 @@ namespace LastEpoch_Hud.Scripts
                                 Data.monolith_stability_basic_text.text = value.ToString();
                             }
 
-                            if (empower is not null)
+                            if (!empower.IsNullOrDestroyed())
                             {
                                 Data.monolith_stability_empower_go.active = true;
                                 int value = empower.Stability;
@@ -2214,60 +2214,60 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void UpdateVisuals()
                 {
-                    if ((Save_Manager.instance is not null) && (controls_initialized))
+                    if ((!Save_Manager.instance.IsNullOrDestroyed()) && (controls_initialized))
                     {
                         if (Save_Manager.instance.initialized)
                         {
-                            if (Cheats.autopot_text is not null)
+                            if (!Cheats.autopot_text.IsNullOrDestroyed())
                             {
                                 Cheats.autopot_text.text = (int)((Save_Manager.instance.data.Character.Cheats.autoPot / 255) * 100) + " %";
                             }
-                            if (Cheats.density_text is not null)
+                            if (!Cheats.density_text.IsNullOrDestroyed())
                             {
                                 Cheats.density_text.text = "x " + (int)(Save_Manager.instance.data.Character.Cheats.DensityMultiplier);
                             }
-                            if (Cheats.experience_text is not null)
+                            if (!Cheats.experience_text.IsNullOrDestroyed())
                             {
                                 Cheats.experience_text.text = "x " + (int)(Save_Manager.instance.data.Character.Cheats.ExperienceMultiplier);
                             }
-                            if (Cheats.ability_text is not null)
+                            if (!Cheats.ability_text.IsNullOrDestroyed())
                             {
                                 Cheats.ability_text.text = "x " + (int)(Save_Manager.instance.data.Character.Cheats.AbilityMultiplier);
                             }
-                            if (Cheats.favor_text is not null)
+                            if (!Cheats.favor_text.IsNullOrDestroyed())
                             {
                                 Cheats.favor_text.text = "x " + (int)(Save_Manager.instance.data.Character.Cheats.FavorMultiplier);
                             }
-                            if (Cheats.itemdropmultiplier_text is not null)
+                            if (!Cheats.itemdropmultiplier_text.IsNullOrDestroyed())
                             {
                                 Cheats.itemdropmultiplier_text.text = "x " + (int)(Save_Manager.instance.data.Character.Cheats.ItemDropMultiplier);
                             }
-                            if (Cheats.itemdropchance_text is not null)
+                            if (!Cheats.itemdropchance_text.IsNullOrDestroyed())
                             {
                                 Cheats.itemdropchance_text.text = "+ " + (int)((Save_Manager.instance.data.Character.Cheats.ItemDropChance / 255) * 100) + " %";
                             }
-                            if (Cheats.golddropmultiplier_text is not null)
+                            if (!Cheats.golddropmultiplier_text.IsNullOrDestroyed())
                             {
                                 Cheats.golddropmultiplier_text.text = "x " + (int)(Save_Manager.instance.data.Character.Cheats.GoldDropMultiplier);
                             }
-                            if (Cheats.golddropchance_text is not null)
+                            if (!Cheats.golddropchance_text.IsNullOrDestroyed())
                             {
                                 Cheats.golddropchance_text.text = "+ " + (int)((Save_Manager.instance.data.Character.Cheats.GoldDropChance / 255) * 100) + " %";
                             }
 
-                            if (Buffs.movespeed_text is not null)
+                            if (!Buffs.movespeed_text.IsNullOrDestroyed())
                             {
                                 Buffs.movespeed_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.MoveSpeed_Buff_Value * 100) + " %";
                             }
-                            if (Buffs.damage_text is not null)
+                            if (!Buffs.damage_text.IsNullOrDestroyed())
                             {
                                 Buffs.damage_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.Damage_Buff_Value * 100) + " %";
                             }
-                            if (Buffs.attackspeed_text is not null)
+                            if (!Buffs.attackspeed_text.IsNullOrDestroyed())
                             {
                                 Buffs.attackspeed_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.AttackSpeed_Buff_Value * 100) + " %";
                             }
-                            if (Buffs.castingspeed_text is not null)
+                            if (!Buffs.castingspeed_text.IsNullOrDestroyed())
                             {
                                 Buffs.castingspeed_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.CastSpeed_Buff_Value * 100) + " %";
                             }
@@ -2277,39 +2277,39 @@ namespace LastEpoch_Hud.Scripts
                             {
                                 crit_chance = (int)(Save_Manager.instance.data.Character.PermanentBuffs.CriticalChance_Buff_Value * 100) + 1;
                             }
-                            if (Buffs.criticalchance_text is not null)
+                            if (!Buffs.criticalchance_text.IsNullOrDestroyed())
                             {
                                 Buffs.criticalchance_text.text = "+ " + crit_chance + " %";
                             }
-                            if (Buffs.criticalmultiplier_text is not null)
+                            if (!Buffs.criticalmultiplier_text.IsNullOrDestroyed())
                             {
                                 Buffs.criticalmultiplier_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.CriticalMultiplier_Buff_Value * 100) + " %";
                             }
-                            if (Buffs.healthregen_text is not null)
+                            if (!Buffs.healthregen_text.IsNullOrDestroyed())
                             {
                                 Buffs.healthregen_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.HealthRegen_Buff_Value * 100) + " %";
                             }
-                            if (Buffs.manaregen_text is not null)
+                            if (!Buffs.manaregen_text.IsNullOrDestroyed())
                             {
                                 Buffs.manaregen_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.ManaRegen_Buff_Value * 100) + " %";
                             }
-                            if (Buffs.str_text is not null)
+                            if (!Buffs.str_text.IsNullOrDestroyed())
                             {
                                 Buffs.str_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.Str_Buff_Value) + " %";
                             }
-                            if (Buffs.int_text is not null)
+                            if (!Buffs.int_text.IsNullOrDestroyed())
                             {
                                 Buffs.int_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.Int_Buff_Value) + " %";
                             }
-                            if (Buffs.dex_text is not null)
+                            if (!Buffs.dex_text.IsNullOrDestroyed())
                             {
                                 Buffs.dex_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.Dex_Buff_Value) + " %";
                             }
-                            if (Buffs.vit_text is not null)
+                            if (!Buffs.vit_text.IsNullOrDestroyed())
                             {
                                 Buffs.vit_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.Vit_Buff_Value) + " %";
                             }
-                            if (Buffs.att_text is not null)
+                            if (!Buffs.att_text.IsNullOrDestroyed())
                             {
                                 Buffs.att_text.text = "+ " + (int)(Save_Manager.instance.data.Character.PermanentBuffs.Att_Buff_Value) + " %";
                             }
@@ -2320,216 +2320,216 @@ namespace LastEpoch_Hud.Scripts
                 public class Cheats
                 {
                     // BUG: For some reason the game always return true in action delegates
-                    public static Toggle? godmode_toggle = null;
+                    public static Toggle godmode_toggle = null;
                     public static readonly System.Action<bool> Godmode_Toggle_Action = new System.Action<bool>(Set_Godmode_Enable);
                     private static void Set_Godmode_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (godmode_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!godmode_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_GodMode = godmode_toggle.isOn;
                         }                        
                     }
 
-                    public static Toggle? lowlife_toggle = null;
+                    public static Toggle lowlife_toggle = null;
                     public static readonly System.Action<bool> Lowlife_Toggle_Action = new System.Action<bool>(Set_Lowlife_Enable);
                     private static void Set_Lowlife_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (lowlife_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!lowlife_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_LowLife = lowlife_toggle.isOn;
                         }
                     }
 
-                    public static Toggle? allow_choosing_blessing = null;
+                    public static Toggle allow_choosing_blessing = null;
                     public static readonly System.Action<bool> AllowChooseBlessings_Toggle_Action = new System.Action<bool>(Set_AllowChooseBlessings_Enable);
                     private static void Set_AllowChooseBlessings_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (allow_choosing_blessing is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!allow_choosing_blessing.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_CanChooseBlessing = allow_choosing_blessing.isOn;
                         }
                     }
 
-                    public static Toggle? unlock_all_idols = null;
+                    public static Toggle unlock_all_idols = null;
                     public static readonly System.Action<bool> UnlockAllIdols_Toggle_Action = new System.Action<bool>(Set_UnlockAllIdols_Enable);
                     private static void Set_UnlockAllIdols_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (unlock_all_idols is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!unlock_all_idols.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_UnlockAllIdolsSlots = unlock_all_idols.isOn;
                             Mods.Character.Character_UnlockAllIdols.Update();
                         }
                     }
 
-                    public static Toggle? autoPot_toggle = null;
+                    public static Toggle autoPot_toggle = null;
                     public static readonly System.Action<bool> AutoPot_Toggle_Action = new System.Action<bool>(Set_AutoPot_Enable);
                     private static void Set_AutoPot_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (autoPot_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!autoPot_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_AutoPot = autoPot_toggle.isOn;
                         }
                     }
-                    public static Text? autopot_text = null;
-                    public static Slider? autopot_slider = null;
+                    public static Text autopot_text = null;
+                    public static Slider autopot_slider = null;
                                         
-                    public static Toggle? density_toggle = null;
+                    public static Toggle density_toggle = null;
                     public static readonly System.Action<bool> Density_Toggle_Action = new System.Action<bool>(Set_Density_Enable);
                     private static void Set_Density_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (density_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!density_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_DensityMultiplier = density_toggle.isOn;
                         }
                     }
-                    public static Text? density_text = null;
-                    public static Slider? density_slider = null;
+                    public static Text density_text = null;
+                    public static Slider density_slider = null;
                     
-                    public static Toggle? experience_toggle = null;
+                    public static Toggle experience_toggle = null;
                     public static readonly System.Action<bool> Experience_Toggle_Action = new System.Action<bool>(Set_Experience_Enable);
                     private static void Set_Experience_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (experience_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!experience_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_ExperienceMultiplier = experience_toggle.isOn;
                         }
                     }
-                    public static Text? experience_text = null;
-                    public static Slider? experience_slider = null;
+                    public static Text experience_text = null;
+                    public static Slider experience_slider = null;
                     
-                    public static Toggle? ability_toggle = null;
+                    public static Toggle ability_toggle = null;
                     public static readonly System.Action<bool> Ability_Toggle_Action = new System.Action<bool>(Set_Ability_Enable);
                     private static void Set_Ability_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (ability_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!ability_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_AbilityMultiplier = ability_toggle.isOn;
                         }
                     }
-                    public static Text? ability_text = null;
-                    public static Slider? ability_slider = null;
+                    public static Text ability_text = null;
+                    public static Slider ability_slider = null;
                     
-                    public static Toggle? favor_toggle = null;
+                    public static Toggle favor_toggle = null;
                     public static readonly System.Action<bool> Favor_Toggle_Action = new System.Action<bool>(Set_Favor_Enable);
                     private static void Set_Favor_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (favor_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!favor_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_FavorMultiplier = favor_toggle.isOn;
                         }
                     }
-                    public static Text? favor_text = null;
-                    public static Slider? favor_slider = null;
+                    public static Text favor_text = null;
+                    public static Slider favor_slider = null;
                     
-                    public static Toggle? itemdropmultiplier_toggle = null;
+                    public static Toggle itemdropmultiplier_toggle = null;
                     public static readonly System.Action<bool> ItemDropMulti_Toggle_Action = new System.Action<bool>(Set_ItemDropMulti_Enable);
                     private static void Set_ItemDropMulti_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (itemdropmultiplier_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!itemdropmultiplier_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_ItemDropMultiplier = itemdropmultiplier_toggle.isOn;
                         }
                     }
-                    public static Text? itemdropmultiplier_text = null;
-                    public static Slider? itemdropmultiplier_slider = null;
+                    public static Text itemdropmultiplier_text = null;
+                    public static Slider itemdropmultiplier_slider = null;
                     
-                    public static Toggle? itemdropchance_toggle = null;
+                    public static Toggle itemdropchance_toggle = null;
                     public static readonly System.Action<bool> ItemDropChance_Toggle_Action = new System.Action<bool>(Set_ItemDropChance_Enable);
                     private static void Set_ItemDropChance_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (itemdropchance_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!itemdropchance_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_ItemDropChance = itemdropchance_toggle.isOn;
                         }
                     }
-                    public static Text? itemdropchance_text = null;
-                    public static Slider? itemdropchance_slider = null;
+                    public static Text itemdropchance_text = null;
+                    public static Slider itemdropchance_slider = null;
                     
-                    public static Toggle? golddropmultiplier_toggle = null;
+                    public static Toggle golddropmultiplier_toggle = null;
                     public static readonly System.Action<bool> GoldMulti_Toggle_Action = new System.Action<bool>(Set_GoldMulti_Enable);
                     private static void Set_GoldMulti_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (golddropmultiplier_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!golddropmultiplier_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_GoldDropMultiplier = golddropmultiplier_toggle.isOn;
                         }
                     }
-                    public static Text? golddropmultiplier_text = null;
-                    public static Slider? golddropmultiplier_slider = null;
+                    public static Text golddropmultiplier_text = null;
+                    public static Slider golddropmultiplier_slider = null;
                     
-                    public static Toggle? golddropchance_toggle = null;
+                    public static Toggle golddropchance_toggle = null;
                     public static readonly System.Action<bool> GoldChance_Toggle_Action = new System.Action<bool>(Set_GoldChance_Enable);
                     private static void Set_GoldChance_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (golddropchance_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!golddropchance_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_GoldDropChance = golddropchance_toggle.isOn;
                         }
                     }
-                    public static Text? golddropchance_text = null;
-                    public static Slider? golddropchance_slider = null;
+                    public static Text golddropchance_text = null;
+                    public static Slider golddropchance_slider = null;
 
-                    public static Toggle? waypoints_toggle = null;
+                    public static Toggle waypoints_toggle = null;
                     public static readonly System.Action<bool> Waypoints_Toggle_Action = new System.Action<bool>(Set_Waypoints_Enable);
                     private static void Set_Waypoints_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (waypoints_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!waypoints_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Character.Cheats.Enable_WaypointsUnlock = waypoints_toggle.isOn;
                         }
                     }
 
-                    public static Button? level_once_button = null;
+                    public static Button level_once_button = null;
                     public static readonly System.Action LevelUpOnce_OnClick_Action = new System.Action(LevelUpOnce_Click);
                     public static void LevelUpOnce_Click()
                     {
                         Mods.Character.Character_Level.LevelUpOnce();
                     }
 
-                    public static Button? level_max_button = null;
+                    public static Button level_max_button = null;
                     public static readonly System.Action LevelUpMax_OnClick_Action = new System.Action(LevelUpMax_Click);
                     public static void LevelUpMax_Click()
                     {
                         Mods.Character.Character_Level.LevelUptoMax();
                     }
 
-                    public static Button? complete_quest_button = null;
+                    public static Button complete_quest_button = null;
                     public static readonly System.Action CompleteQuest_OnClick_Action = new System.Action(CompleteQuest_Click);
                     public static void CompleteQuest_Click()
                     {
                         Mods.Character.Character_MainQuest.Complete();
                     }
 
-                    public static Button? masterie_buttons = null;
+                    public static Button masterie_buttons = null;
                     public static readonly System.Action Masteries_OnClick_Action = new System.Action(Masteries_Click);
                     public static void Masteries_Click()
                     {
                         Mods.Character.Character_Masteries.ResetChooseMasterie();
                     }
-                    public static Text? masterie_text = null;
+                    public static Text masterie_text = null;
 
-                    public static Button? add_runes_button = null;
+                    public static Button add_runes_button = null;
                     public static readonly System.Action AddRunes_OnClick_Action = new System.Action(AddRunes_Click);
                     public static void AddRunes_Click()
                     {
                         Mods.Character.Character_Materials.GetAllRunesX99();
                     }
 
-                    public static Button? add_glyphs_button = null;
+                    public static Button add_glyphs_button = null;
                     public static readonly System.Action AddGlyphs_OnClick_Action = new System.Action(AddGlyphs_Click);
                     public static void AddGlyphs_Click()
                     {
                         Mods.Character.Character_Materials.GetAllGlyphsX99();
                     }
 
-                    public static Button? add_shards_button = null;
+                    public static Button add_shards_button = null;
                     public static readonly System.Action AddAffixs_OnClick_Action = new System.Action(AddAffixs_Click);
                     public static void AddAffixs_Click()
                     {
                         Mods.Character.Character_Materials.GetAllShardsX10();
                     }
 
-                    public static Button? discover_blessings_button = null;
+                    public static Button discover_blessings_button = null;
                     public static readonly System.Action DiscoverAllBlessings_OnClick_Action = new System.Action(DiscoverAllBlessings_Click);
                     public static void DiscoverAllBlessings_Click()
                     {
@@ -2538,31 +2538,31 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public class Data
                 {
-                    public static Dropdown? class_dropdown = null;
-                    public static Toggle? died_toggle = null;
-                    public static Toggle? hardcore_toggle = null;
-                    public static Toggle? masochist_toggle = null;
-                    public static Toggle? portal_toggle = null;
-                    public static Toggle? solo_toggle = null;
-                    public static Text? deaths_text = null;
-                    public static Slider? deaths_slider = null;
-                    public static Text? lantern_text = null;
-                    public static Slider? lantern_slider = null;
-                    public static Text? soul_text = null;
-                    public static Slider? soul_slider = null;
+                    public static Dropdown class_dropdown = null;
+                    public static Toggle died_toggle = null;
+                    public static Toggle hardcore_toggle = null;
+                    public static Toggle masochist_toggle = null;
+                    public static Toggle portal_toggle = null;
+                    public static Toggle solo_toggle = null;
+                    public static Text deaths_text = null;
+                    public static Slider deaths_slider = null;
+                    public static Text lantern_text = null;
+                    public static Slider lantern_slider = null;
+                    public static Text soul_text = null;
+                    public static Slider soul_slider = null;
 
-                    public static Dropdown? monolith_dropdown = null;
-                    public static GameObject? monolith_stability_basic_go = null;
-                    public static Text? monolith_stability_basic_text = null;
-                    public static Slider? monolith_stability_basic_slider = null;
+                    public static Dropdown monolith_dropdown = null;
+                    public static GameObject monolith_stability_basic_go = null;
+                    public static Text monolith_stability_basic_text = null;
+                    public static Slider monolith_stability_basic_slider = null;
                     public static readonly System.Action<float> monolith_stability_basic_slider_Action = new System.Action<float>(Set_monolith_stability_basic);
                     public static void Set_monolith_stability_basic(float f)
                     {
-                        if ((monolith_stability_basic_slider is not null) && (monolith_stability_basic_text is not null) && (monolith_dropdown is not null))
+                        if ((!monolith_stability_basic_slider.IsNullOrDestroyed()) && (!monolith_stability_basic_text.IsNullOrDestroyed()) && (!monolith_dropdown.IsNullOrDestroyed()))
                         {
                             int result = System.Convert.ToInt32(monolith_stability_basic_slider.value);
                             int index = monolith_dropdown.value;
-                            if (Refs_Manager.player_data is not null)
+                            if (!Refs_Manager.player_data.IsNullOrDestroyed())
                             {
                                 foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
                                 {
@@ -2577,17 +2577,17 @@ namespace LastEpoch_Hud.Scripts
                         }
                     }
 
-                    public static GameObject? monolith_stability_empower_go = null;
-                    public static Text? monolith_stability_empower_text = null;
-                    public static Slider? monolith_stability_empower_slider = null;
+                    public static GameObject monolith_stability_empower_go = null;
+                    public static Text monolith_stability_empower_text = null;
+                    public static Slider monolith_stability_empower_slider = null;
                     public static readonly System.Action<float> monolith_stability_empower_slider_Action = new System.Action<float>(Set_monolith_stability_empower);
                     public static void Set_monolith_stability_empower(float f)
                     {
-                        if ((monolith_stability_empower_slider is not null) && (monolith_stability_empower_text is not null) && (monolith_dropdown is not null))
+                        if ((!monolith_stability_empower_slider.IsNullOrDestroyed()) && (!monolith_stability_empower_text.IsNullOrDestroyed()) && (!monolith_dropdown.IsNullOrDestroyed()))
                         {
                             int result = System.Convert.ToInt32(monolith_stability_empower_slider.value);
                             int index = monolith_dropdown.value;
-                            if (Refs_Manager.player_data is not null)
+                            if (!Refs_Manager.player_data.IsNullOrDestroyed())
                             {
                                 foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
                                 {
@@ -2602,17 +2602,17 @@ namespace LastEpoch_Hud.Scripts
                         }
                     }
 
-                    public static GameObject? monolith_corruption_go = null;
-                    public static Text? monolith_corruption_text = null;
-                    public static Slider? monolith_corruption_slider = null;
+                    public static GameObject monolith_corruption_go = null;
+                    public static Text monolith_corruption_text = null;
+                    public static Slider monolith_corruption_slider = null;
                     public static readonly System.Action<float> monolith_corruption_slider_Action = new System.Action<float>(Set_monolith_corruption_empower);
                     public static void Set_monolith_corruption_empower(float f)
                     {
-                        if ((monolith_corruption_slider is not null) && (monolith_corruption_text is not null) && (monolith_dropdown is not null))
+                        if ((!monolith_corruption_slider.IsNullOrDestroyed()) && (!monolith_corruption_text.IsNullOrDestroyed()) && (!monolith_dropdown.IsNullOrDestroyed()))
                         {
                             int result = System.Convert.ToInt32(monolith_corruption_slider.value);
                             int index = monolith_dropdown.value;
-                            if (Refs_Manager.player_data is not null)
+                            if (!Refs_Manager.player_data.IsNullOrDestroyed())
                             {
                                 foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
                                 {
@@ -2630,17 +2630,17 @@ namespace LastEpoch_Hud.Scripts
                         }
                     }
 
-                    public static GameObject? monolith_gaze_go = null;
-                    public static Text? monolith_gaze_text = null;
-                    public static Slider? monolith_gaze_slider = null;
+                    public static GameObject monolith_gaze_go = null;
+                    public static Text monolith_gaze_text = null;
+                    public static Slider monolith_gaze_slider = null;
                     public static readonly System.Action<float> monolith_gaze_slider_Action = new System.Action<float>(Set_monolith_gaze_empower);
                     public static void Set_monolith_gaze_empower(float f)
                     {
-                        if ((monolith_gaze_slider is not null) && (monolith_gaze_text is not null) && (monolith_dropdown is not null))
+                        if ((!monolith_gaze_slider.IsNullOrDestroyed()) && (!monolith_gaze_text.IsNullOrDestroyed()) && (!monolith_dropdown.IsNullOrDestroyed()))
                         {
                             int result = System.Convert.ToInt32(monolith_gaze_slider.value);
                             int index = monolith_dropdown.value;
-                            if (Refs_Manager.player_data is not null)
+                            if (!Refs_Manager.player_data.IsNullOrDestroyed())
                             {
                                 foreach (SavedMonolithRun run in Refs_Manager.player_data.MonolithRuns)
                                 {
@@ -2658,86 +2658,86 @@ namespace LastEpoch_Hud.Scripts
                         }
                     }
 
-                    public static Button? save_button = null;
+                    public static Button save_button = null;
 
                     public static readonly System.Action Save_OnClick_Action = new System.Action(Save_Click);
                     public static void Save_Click()
                     {
-                        if (Refs_Manager.player_data is not null) { Refs_Manager.player_data.SaveData(); }
+                        if (!Refs_Manager.player_data.IsNullOrDestroyed()) { Refs_Manager.player_data.SaveData(); }
                     }
                 }
                 public class Buffs
                 {
-                    public static Toggle? enable_mod = null;
+                    public static Toggle enable_mod = null;
 
-                    public static Toggle? movespeed_toggle = null;
-                    public static Text? movespeed_text = null;
-                    public static Slider? movespeed_slider = null;
+                    public static Toggle movespeed_toggle = null;
+                    public static Text movespeed_text = null;
+                    public static Slider movespeed_slider = null;
 
-                    public static Toggle? damage_toggle = null;
-                    public static Text? damage_text = null;
-                    public static Slider? damage_slider = null;
+                    public static Toggle damage_toggle = null;
+                    public static Text damage_text = null;
+                    public static Slider damage_slider = null;
 
-                    public static Toggle? attackspeed_toggle = null;
-                    public static Text? attackspeed_text = null;
-                    public static Slider? attackspeed_slider = null;
+                    public static Toggle attackspeed_toggle = null;
+                    public static Text attackspeed_text = null;
+                    public static Slider attackspeed_slider = null;
 
-                    public static Toggle? castingspeed_toggle = null;
-                    public static Text? castingspeed_text = null;
-                    public static Slider? castingspeed_slider = null;
+                    public static Toggle castingspeed_toggle = null;
+                    public static Text castingspeed_text = null;
+                    public static Slider castingspeed_slider = null;
 
-                    public static Toggle? criticalchance_toggle = null;
-                    public static Text? criticalchance_text = null;
-                    public static Slider? criticalchance_slider = null;
+                    public static Toggle criticalchance_toggle = null;
+                    public static Text criticalchance_text = null;
+                    public static Slider criticalchance_slider = null;
 
-                    public static Toggle? criticalmultiplier_toggle = null;
-                    public static Text? criticalmultiplier_text = null;
-                    public static Slider? criticalmultiplier_slider = null;
+                    public static Toggle criticalmultiplier_toggle = null;
+                    public static Text criticalmultiplier_text = null;
+                    public static Slider criticalmultiplier_slider = null;
 
-                    public static Toggle? healthregen_toggle = null;
-                    public static Text? healthregen_text = null;
-                    public static Slider? healthregen_slider = null;
+                    public static Toggle healthregen_toggle = null;
+                    public static Text healthregen_text = null;
+                    public static Slider healthregen_slider = null;
 
-                    public static Toggle? manaregen_toggle = null;
-                    public static Text? manaregen_text = null;
-                    public static Slider? manaregen_slider = null;
+                    public static Toggle manaregen_toggle = null;
+                    public static Text manaregen_text = null;
+                    public static Slider manaregen_slider = null;
 
-                    public static Toggle? str_toggle = null;
-                    public static Text? str_text = null;
-                    public static Slider? str_slider = null;
+                    public static Toggle str_toggle = null;
+                    public static Text str_text = null;
+                    public static Slider str_slider = null;
 
-                    public static Toggle? int_toggle = null;
-                    public static Text? int_text = null;
-                    public static Slider? int_slider = null;
+                    public static Toggle int_toggle = null;
+                    public static Text int_text = null;
+                    public static Slider int_slider = null;
 
-                    public static Toggle? dex_toggle = null;
-                    public static Text? dex_text = null;
-                    public static Slider? dex_slider = null;
+                    public static Toggle dex_toggle = null;
+                    public static Text dex_text = null;
+                    public static Slider dex_slider = null;
 
-                    public static Toggle? vit_toggle = null;
-                    public static Text? vit_text = null;
-                    public static Slider? vit_slider = null;
+                    public static Toggle vit_toggle = null;
+                    public static Text vit_text = null;
+                    public static Slider vit_slider = null;
 
-                    public static Toggle? att_toggle = null;
-                    public static Text? att_text = null;
-                    public static Slider? att_slider = null;
+                    public static Toggle att_toggle = null;
+                    public static Text att_text = null;
+                    public static Slider att_slider = null;
                 }
             }
             public class Items
             {
-                public static GameObject? content_obj = null;
+                public static GameObject content_obj = null;
                 public static bool controls_initialized = false;
                 public static bool enable = false;
 
                 public static void Get_Refs()
                 {
-                    if (Content.content_obj is not null)
+                    if (!Content.content_obj.IsNullOrDestroyed())
                     {
                         content_obj = Functions.GetChild(Content.content_obj, "Items_Content");
-                        if (content_obj is not null)
+                        if (!content_obj.IsNullOrDestroyed())
                         {
                             GameObject items_drop_content = Functions.GetViewportContent(content_obj, "Items_Drop", "Items_Data_Content");
-                            if (items_drop_content is not null)
+                            if (!items_drop_content.IsNullOrDestroyed())
                             {
                                 Drop.force_unique_toggle = Functions.Get_ToggleInPanel(items_drop_content, "ForceUnique", "Toggle_Items_Drop_ForceUnique");
                                 Drop.force_set_toggle = Functions.Get_ToggleInPanel(items_drop_content, "ForceSet", "Toggle_Items_Drop_ForceSet");
@@ -2799,7 +2799,7 @@ namespace LastEpoch_Hud.Scripts
                             }
 
                             GameObject items_pickup_content = Functions.GetViewportContent(content_obj, "Items_Pickup", "Items_Pickup_Content");
-                            if (items_pickup_content is not null)
+                            if (!items_pickup_content.IsNullOrDestroyed())
                             {
                                 Pickup.autopickup_gold_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoPickup_Gold", "Toggle_Items_Pickup_AutoPickup_Gold");
                                 Pickup.autopickup_keys_toggle = Functions.Get_ToggleInPanel(items_pickup_content, "AutoPickup_Keys", "Toggle_Items_Pickup_AutoPickup_Keys");
@@ -2819,16 +2819,16 @@ namespace LastEpoch_Hud.Scripts
                             }
 
                             GameObject items_req_content = Functions.GetViewportContent(content_obj, "Items_Pickup", "Items_Req_Content");
-                            if (items_req_content is not null)
+                            if (!items_req_content.IsNullOrDestroyed())
                             {
                                 Requirements.class_req_toggle = Functions.Get_ToggleInPanel(items_req_content, "RemoveReq_Class", "Toggle_RemoveReq_Class");
                                 Requirements.level_req_toggle = Functions.Get_ToggleInPanel(items_req_content, "RemoveReq_Level", "Toggle_RemoveReq_Level");
                                 Requirements.set_req_toggle = Functions.Get_ToggleInPanel(items_req_content, "RemoveReq_Set", "Toggle_RemoveReq_Set");
                             }
-                            else { Main.logger_instance?.Error("Requirements"); }
+                            else { Main.logger_instance.Error("Requirements"); }
 
                             GameObject items_forcedrop_content = Functions.GetViewportContent(content_obj, "Items_Pickup", "Items_ForceDrop_Content");
-                            if (items_forcedrop_content is not null)
+                            if (!items_forcedrop_content.IsNullOrDestroyed())
                             {
                                 ForceDrop.forcedrop_type_dropdown = Functions.Get_DopboxInPanel(items_forcedrop_content, "Type", "Dropdown_Items_ForceDrop_Type", new System.Action<int>((_) => { Content.Items.ForceDrop.SelectType(); }));
                                 ForceDrop.forcedrop_rarity_dropdown = Functions.Get_DopboxInPanel(items_forcedrop_content, "Rarity", "Dropdown_Items_ForceDrop_Rarity", new System.Action<int>((_) => { Content.Items.ForceDrop.SelectRarity(); }));
@@ -2841,11 +2841,11 @@ namespace LastEpoch_Hud.Scripts
                                     ForceDrop.forcedrop_drop_button = Functions.Get_ButtonInPanel(new_obj, "Btn_Items_ForceDrop_Drop");
                                 }
                             }
-                            else { Main.logger_instance?.Error("Forcedrop"); }
+                            else { Main.logger_instance.Error("Forcedrop"); }
 
                             CraftingSlot.enable_mod = Functions.Get_ToggleInLabel(content_obj, "Items_Craft", "Toggle_Items_Craft_Enable", makeSureItsActive: true);
                             GameObject items_craft_content = Functions.GetViewportContent(content_obj, "Items_Craft", "Items_Craft_Content");
-                            if (items_craft_content is not null)
+                            if (!items_craft_content.IsNullOrDestroyed())
                             {
                                 CraftingSlot.forgin_potencial_toggle = Functions.Get_ToggleInPanel(items_craft_content, "ForginPotencial", "Toggle_Items_Craft_ForginPotencial");
                                 CraftingSlot.forgin_potencial_text = Functions.Get_TextInToggle(items_craft_content, "ForginPotencial", "Toggle_Items_Craft_ForginPotencial", "Value");
@@ -2956,7 +2956,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void Set_Active(bool show)
                 {
-                    if (content_obj is not null)
+                    if (!content_obj.IsNullOrDestroyed())
                     {
                         content_obj.active = show;
                         enable = show;
@@ -2964,7 +2964,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void Toggle_Active()
                 {
-                    if (content_obj is not null)
+                    if (!content_obj.IsNullOrDestroyed())
                     {
                         bool show = !content_obj.active;
                         content_obj.active = show;
@@ -2974,7 +2974,7 @@ namespace LastEpoch_Hud.Scripts
                 public static bool Init_UserData()
                 {
                     bool result = false;
-                    if (Save_Manager.instance is not null)
+                    if (!Save_Manager.instance.IsNullOrDestroyed())
                     {
                         if ((Save_Manager.instance.initialized) && (!Save_Manager.instance.data.IsNullOrDestroyed()))
                         {
@@ -3130,7 +3130,7 @@ namespace LastEpoch_Hud.Scripts
                 }                
                 public static void UpdateVisuals()
                 {
-                    if ((Save_Manager.instance is not null) && (controls_initialized))
+                    if ((!Save_Manager.instance.IsNullOrDestroyed()) && (controls_initialized))
                     {
                         if ((Save_Manager.instance.initialized) && (!Save_Manager.instance.data.IsNullOrDestroyed()))
                         {
@@ -3180,106 +3180,106 @@ namespace LastEpoch_Hud.Scripts
 
                 public class Drop
                 {
-                    public static Toggle? force_unique_toggle = null;
-                    public static Toggle? force_set_toggle = null;
-                    public static Toggle? force_legendary_toggle = null;
+                    public static Toggle force_unique_toggle = null;
+                    public static Toggle force_set_toggle = null;
+                    public static Toggle force_legendary_toggle = null;
 
-                    public static Toggle? implicits_toggle = null;
-                    public static Text? implicits_text = null;
-                    public static Slider? implicits_slider_min = null;
-                    public static Slider? implicits_slider_max = null;
+                    public static Toggle implicits_toggle = null;
+                    public static Text implicits_text = null;
+                    public static Slider implicits_slider_min = null;
+                    public static Slider implicits_slider_max = null;
 
-                    public static Toggle? forgin_potencial_toggle = null;
-                    public static Text? forgin_potencial_text = null;
-                    public static Slider? forgin_potencial_slider_min = null;
-                    public static Slider? forgin_potencial_slider_max = null;
+                    public static Toggle forgin_potencial_toggle = null;
+                    public static Text forgin_potencial_text = null;
+                    public static Slider forgin_potencial_slider_min = null;
+                    public static Slider forgin_potencial_slider_max = null;
 
-                    public static Toggle? force_seal_toggle = null;
+                    public static Toggle force_seal_toggle = null;
 
-                    public static Toggle? seal_tier_toggle = null;
-                    public static Text? seal_tier_text = null;
-                    public static Slider? seal_tier_slider_min = null;
-                    public static Slider? seal_tier_slider_max = null;
+                    public static Toggle seal_tier_toggle = null;
+                    public static Text seal_tier_text = null;
+                    public static Slider seal_tier_slider_min = null;
+                    public static Slider seal_tier_slider_max = null;
 
-                    public static Toggle? seal_value_toggle = null;
-                    public static Text? seal_value_text = null;
-                    public static Slider? seal_value_slider_min = null;
-                    public static Slider? seal_value_slider_max = null;
+                    public static Toggle seal_value_toggle = null;
+                    public static Text seal_value_text = null;
+                    public static Slider seal_value_slider_min = null;
+                    public static Slider seal_value_slider_max = null;
 
-                    public static Toggle? affix_count_toggle = null;
-                    public static Text? affix_count_text = null;
-                    public static Slider? affix_count_slider_min = null;
-                    public static Slider? affix_count_slider_max = null;
+                    public static Toggle affix_count_toggle = null;
+                    public static Text affix_count_text = null;
+                    public static Slider affix_count_slider_min = null;
+                    public static Slider affix_count_slider_max = null;
 
-                    public static Toggle? affix_tiers_toggle = null;
-                    public static Text? affix_tiers_text = null;
-                    public static Slider? affix_tiers_slider_min = null;
-                    public static Slider? affix_tiers_slider_max = null;
+                    public static Toggle affix_tiers_toggle = null;
+                    public static Text affix_tiers_text = null;
+                    public static Slider affix_tiers_slider_min = null;
+                    public static Slider affix_tiers_slider_max = null;
 
-                    public static Toggle? affix_values_toggle = null;
-                    public static Text? affix_values_text = null;
-                    public static Slider? affix_values_slider_min = null;
-                    public static Slider? affix_values_slider_max = null;
+                    public static Toggle affix_values_toggle = null;
+                    public static Text affix_values_text = null;
+                    public static Slider affix_values_slider_min = null;
+                    public static Slider affix_values_slider_max = null;
 
-                    public static Toggle? unique_mods_toggle = null;
-                    public static Text? unique_mods_text = null;
-                    public static Slider? unique_mods_slider_min = null;
-                    public static Slider? unique_mods_slider_max = null;
+                    public static Toggle unique_mods_toggle = null;
+                    public static Text unique_mods_text = null;
+                    public static Slider unique_mods_slider_min = null;
+                    public static Slider unique_mods_slider_max = null;
 
-                    public static Toggle? legendary_potencial_toggle = null;
-                    public static Text? legendary_potencial_text = null;
-                    public static Slider? legendary_potencial_slider_min = null;
-                    public static Slider? legendary_potencial_slider_max = null;
+                    public static Toggle legendary_potencial_toggle = null;
+                    public static Text legendary_potencial_text = null;
+                    public static Slider legendary_potencial_slider_min = null;
+                    public static Slider legendary_potencial_slider_max = null;
 
-                    public static Toggle? weaver_will_toggle = null;
-                    public static Text? weaver_will_text = null;
-                    public static Slider? weaver_will_slider_min = null;
-                    public static Slider? weaver_will_slider_max = null;
+                    public static Toggle weaver_will_toggle = null;
+                    public static Text weaver_will_text = null;
+                    public static Slider weaver_will_slider_min = null;
+                    public static Slider weaver_will_slider_max = null;
                 }
                 public class Pickup
                 {
-                    public static Toggle? autopickup_gold_toggle = null;
-                    public static Toggle? autopickup_keys_toggle = null;
-                    public static Toggle? autopickup_potions_toggle = null;
-                    public static Toggle? autopickup_xptome_toggle = null;
-                    public static Toggle? autopickup_materials_toggle = null;
-                    public static Toggle? autopickup_fromfilter_toggle = null;
-                    public static Toggle? autostore_materials_ondrop_toggle = null;
-                    public static Toggle? autostore_materials_oninventoryopen_toggle = null;
-                    public static Toggle? autostore_materials_all10sec_toggle = null;
-                    public static Toggle? autosell_hide_toggle = null;
-                    public static Toggle? range_pickup_toggle = null;
-                    public static Toggle? hide_materials_notifications_toggle = null;
+                    public static Toggle autopickup_gold_toggle = null;
+                    public static Toggle autopickup_keys_toggle = null;
+                    public static Toggle autopickup_potions_toggle = null;
+                    public static Toggle autopickup_xptome_toggle = null;
+                    public static Toggle autopickup_materials_toggle = null;
+                    public static Toggle autopickup_fromfilter_toggle = null;
+                    public static Toggle autostore_materials_ondrop_toggle = null;
+                    public static Toggle autostore_materials_oninventoryopen_toggle = null;
+                    public static Toggle autostore_materials_all10sec_toggle = null;
+                    public static Toggle autosell_hide_toggle = null;
+                    public static Toggle range_pickup_toggle = null;
+                    public static Toggle hide_materials_notifications_toggle = null;
                 }
                 public class Requirements
                 {
                     // BUG: For some reason the game always return true in action delegates
-                    public static Toggle? class_req_toggle = null;
+                    public static Toggle class_req_toggle = null;
                     public static readonly System.Action<bool> Class_Toggle_Action = new System.Action<bool>(Class_Enable);
                     private static void Class_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (class_req_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!class_req_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Items.Req.classe = class_req_toggle.isOn;
                         }
                         //Items_Req_Class.Enable();
                     }
                     
-                    public static Toggle? level_req_toggle = null;
+                    public static Toggle level_req_toggle = null;
                     public static readonly System.Action<bool> Level_Toggle_Action = new System.Action<bool>(Level_Enable);
                     private static void Level_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (level_req_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!level_req_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Items.Req.level = level_req_toggle.isOn;
                         }
                     }
 
-                    public static Toggle? set_req_toggle = null;
+                    public static Toggle set_req_toggle = null;
                     public static readonly System.Action<bool> Set_Toggle_Action = new System.Action<bool>(Set_Enable);
                     private static void Set_Enable(bool enable)
                     {
-                        if ((Save_Manager.instance is not null) && (set_req_toggle is not null))
+                        if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!set_req_toggle.IsNullOrDestroyed()))
                         {
                             Save_Manager.instance.data.Items.Req.set = set_req_toggle.isOn;
                             //Items_Req_Set.Enable();
@@ -3288,12 +3288,12 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public class ForceDrop
                 {
-                    public static Dropdown? forcedrop_type_dropdown = null;
-                    public static Dropdown? forcedrop_rarity_dropdown = null;
-                    public static Dropdown? forcedrop_items_dropdown = null;
-                    public static Text? forcedrop_quantity_text = null;
-                    public static Slider? forcedrop_quantity_slider = null;
-                    public static Button? forcedrop_drop_button = null;
+                    public static Dropdown forcedrop_type_dropdown = null;
+                    public static Dropdown forcedrop_rarity_dropdown = null;
+                    public static Dropdown forcedrop_items_dropdown = null;
+                    public static Text forcedrop_quantity_text = null;
+                    public static Slider forcedrop_quantity_slider = null;
+                    public static Button forcedrop_drop_button = null;
                     public static int item_type = -1;                    
                     public static int item_rarity = -1;
                     public static int item_subtype = -1;
@@ -3307,10 +3307,10 @@ namespace LastEpoch_Hud.Scripts
                         if ((enable) && (LastEpoch_Hud.Scenes.IsGameScene()) &&
                             (!Type_Initialized) &&
                             (!Initializing_type) &&
-                            (Refs_Manager.item_list is not null) &&
-                            (forcedrop_type_dropdown is not null) &&
-                            (forcedrop_rarity_dropdown is not null) &&
-                            (forcedrop_items_dropdown is not null))
+                            (!Refs_Manager.item_list.IsNullOrDestroyed()) &&
+                            (!forcedrop_type_dropdown.IsNullOrDestroyed()) &&
+                            (!forcedrop_rarity_dropdown.IsNullOrDestroyed()) &&
+                            (!forcedrop_items_dropdown.IsNullOrDestroyed()))
                         {
                             Initializing_type = true;
                             forcedrop_type_dropdown.ClearOptions();
@@ -3341,13 +3341,13 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static void SelectType()
                     {
-                        if ((Type_Initialized) && (forcedrop_type_dropdown is not null))
+                        if ((Type_Initialized) && (!forcedrop_type_dropdown.IsNullOrDestroyed()))
                         {
                             int index = forcedrop_type_dropdown.value;
                             if (index < forcedrop_type_dropdown.options.Count)
                             {
                                 string type_str = forcedrop_type_dropdown.options[forcedrop_type_dropdown.value].text;
-                                //Main.logger_instance?.Msg("Select : Type = " + type_str);
+                                //Main.logger_instance.Msg("Select : Type = " + type_str);
                                 item_type = -1;
                                 bool found = false;
                                 foreach (ItemList.BaseEquipmentItem item in ItemList.get().EquippableItems)
@@ -3381,11 +3381,11 @@ namespace LastEpoch_Hud.Scripts
                     public static void UpdateRarity()
                     {
                         if ((enable) && (LastEpoch_Hud.Scenes.IsGameScene()) &&
-                            (Refs_Manager.item_list is not null) &&
+                            (!Refs_Manager.item_list.IsNullOrDestroyed()) &&
                             (Type_Initialized) &&
-                            (forcedrop_type_dropdown is not null) &&
-                            (forcedrop_rarity_dropdown is not null) &&
-                            (forcedrop_items_dropdown is not null))
+                            (!forcedrop_type_dropdown.IsNullOrDestroyed()) &&
+                            (!forcedrop_rarity_dropdown.IsNullOrDestroyed()) &&
+                            (!forcedrop_items_dropdown.IsNullOrDestroyed()))
                         {
                             forcedrop_rarity_dropdown.ClearOptions();
                             Il2CppSystem.Collections.Generic.List<Dropdown.OptionData> options = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
@@ -3419,7 +3419,7 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static void SelectRarity()
                     {
-                        if ((Type_Initialized) && (forcedrop_rarity_dropdown is not null))
+                        if ((Type_Initialized) && (!forcedrop_rarity_dropdown.IsNullOrDestroyed()))
                         {
                             int index = forcedrop_rarity_dropdown.value;
                             if (index < forcedrop_rarity_dropdown.options.Count)
@@ -3429,7 +3429,7 @@ namespace LastEpoch_Hud.Scripts
                                 if (rarity_str == "Base Item") { item_rarity = 0; }
                                 else if (rarity_str == "Unique") { item_rarity = 7; }
                                 else if (rarity_str == "Set") { item_rarity = 8; }
-                                //Main.logger_instance?.Msg("Select : Rarity = " + rarity_str);
+                                //Main.logger_instance.Msg("Select : Rarity = " + rarity_str);
                                 UpdateItems();
                                 UpdateButton();
                             }
@@ -3438,13 +3438,13 @@ namespace LastEpoch_Hud.Scripts
                     public static void UpdateItems()
                     {
                         if ((enable) && (LastEpoch_Hud.Scenes.IsGameScene()) &&
-                            (Refs_Manager.item_list is not null) &&
+                            (!Refs_Manager.item_list.IsNullOrDestroyed()) &&
                             (Type_Initialized) &&
                             //(!forcedrop_type_dropdown.IsNullOrDestroyed()) &&
                             //(!forcedrop_rarity_dropdown.IsNullOrDestroyed()) &&
-                            (forcedrop_items_dropdown is not null))
+                            (!forcedrop_items_dropdown.IsNullOrDestroyed()))
                         {
-                            //Main.logger_instance?.Msg("Update Items : Type = " + item_type + ", Rarity = " + item_rarity);
+                            //Main.logger_instance.Msg("Update Items : Type = " + item_type + ", Rarity = " + item_rarity);
                             forcedrop_items_dropdown.ClearOptions();
 
                             Il2CppSystem.Collections.Generic.List<Dropdown.OptionData> options = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
@@ -3512,13 +3512,13 @@ namespace LastEpoch_Hud.Scripts
                     }
                     public static void SelectItem()
                     {
-                        if ((Type_Initialized) && (forcedrop_items_dropdown is not null))
+                        if ((Type_Initialized) && (!forcedrop_items_dropdown.IsNullOrDestroyed()))
                         {
                             int index = forcedrop_items_dropdown.value;
                             if (index < forcedrop_items_dropdown.options.Count)
                             {
                                 string item_str = forcedrop_items_dropdown.options[forcedrop_items_dropdown.value].text;
-                                //Main.logger_instance?.Msg("Select : Item = " + item_str);
+                                //Main.logger_instance.Msg("Select : Item = " + item_str);
 
                                 item_subtype = -1;
                                 item_unique_id = 0;
@@ -3587,9 +3587,9 @@ namespace LastEpoch_Hud.Scripts
                     public static readonly System.Action Drop_OnClick_Action = new System.Action(Drop);
                     public static void Drop()
                     {
-                        if ((btn_enable) && (forcedrop_quantity_slider is not null))
+                        if ((btn_enable) && (!forcedrop_quantity_slider.IsNullOrDestroyed()))
                         {
-                            if ((Refs_Manager.ground_item_manager is not null) && (Refs_Manager.player_actor is not null))
+                            if ((!Refs_Manager.ground_item_manager.IsNullOrDestroyed()) && (!Refs_Manager.player_actor.IsNullOrDestroyed()))
                             {
                                 for (int i = 0; i < forcedrop_quantity_slider.value; i++)
                                 {
@@ -3631,114 +3631,114 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public class CraftingSlot
                 {
-                    public static Toggle? enable_mod = null;
+                    public static Toggle enable_mod = null;
 
-                    public static Toggle? forgin_potencial_toggle = null;
-                    public static Text? forgin_potencial_text = null;
-                    public static Slider? forgin_potencial_slider = null;
+                    public static Toggle forgin_potencial_toggle = null;
+                    public static Text forgin_potencial_text = null;
+                    public static Slider forgin_potencial_slider = null;
 
-                    public static Toggle? implicit_0_toggle = null;
-                    public static Text? implicit_0_text = null;
-                    public static Slider? implicit_0_slider = null;
+                    public static Toggle implicit_0_toggle = null;
+                    public static Text implicit_0_text = null;
+                    public static Slider implicit_0_slider = null;
 
-                    public static Toggle? implicit_1_toggle = null;
-                    public static Text? implicit_1_text = null;
-                    public static Slider? implicit_1_slider = null;
+                    public static Toggle implicit_1_toggle = null;
+                    public static Text implicit_1_text = null;
+                    public static Slider implicit_1_slider = null;
 
-                    public static Toggle? implicit_2_toggle = null;
-                    public static Text? implicit_2_text = null;
-                    public static Slider? implicit_2_slider = null;
+                    public static Toggle implicit_2_toggle = null;
+                    public static Text implicit_2_text = null;
+                    public static Slider implicit_2_slider = null;
 
-                    public static Toggle? seal_tier_toggle = null;
-                    public static Text? seal_tier_text = null;
-                    public static Slider? seal_tier_slider = null;
+                    public static Toggle seal_tier_toggle = null;
+                    public static Text seal_tier_text = null;
+                    public static Slider seal_tier_slider = null;
 
-                    public static Toggle? seal_value_toggle = null;
-                    public static Text? seal_value_text = null;
-                    public static Slider? seal_value_slider = null;
+                    public static Toggle seal_value_toggle = null;
+                    public static Text seal_value_text = null;
+                    public static Slider seal_value_slider = null;
 
-                    public static Toggle? affix_0_tier_toggle = null;
-                    public static Text? affix_0_tier_text = null;
-                    public static Slider? affix_0_tier_slider = null;
+                    public static Toggle affix_0_tier_toggle = null;
+                    public static Text affix_0_tier_text = null;
+                    public static Slider affix_0_tier_slider = null;
 
-                    public static Toggle? affix_0_value_toggle = null;
-                    public static Text? affix_0_value_text = null;
-                    public static Slider? affix_0_value_slider = null;
+                    public static Toggle affix_0_value_toggle = null;
+                    public static Text affix_0_value_text = null;
+                    public static Slider affix_0_value_slider = null;
 
-                    public static Toggle? affix_1_tier_toggle = null;
-                    public static Text? affix_1_tier_text = null;
-                    public static Slider? affix_1_tier_slider = null;
+                    public static Toggle affix_1_tier_toggle = null;
+                    public static Text affix_1_tier_text = null;
+                    public static Slider affix_1_tier_slider = null;
 
-                    public static Toggle? affix_1_value_toggle = null;
-                    public static Text? affix_1_value_text = null;
-                    public static Slider? affix_1_value_slider = null;
+                    public static Toggle affix_1_value_toggle = null;
+                    public static Text affix_1_value_text = null;
+                    public static Slider affix_1_value_slider = null;
 
-                    public static Toggle? affix_2_tier_toggle = null;
-                    public static Text? affix_2_tier_text = null;
-                    public static Slider? affix_2_tier_slider = null;
+                    public static Toggle affix_2_tier_toggle = null;
+                    public static Text affix_2_tier_text = null;
+                    public static Slider affix_2_tier_slider = null;
 
-                    public static Toggle? affix_2_value_toggle = null;
-                    public static Text? affix_2_value_text = null;
-                    public static Slider? affix_2_value_slider = null;
+                    public static Toggle affix_2_value_toggle = null;
+                    public static Text affix_2_value_text = null;
+                    public static Slider affix_2_value_slider = null;
 
-                    public static Toggle? affix_3_tier_toggle = null;
-                    public static Text? affix_3_tier_text = null;
-                    public static Slider? affix_3_tier_slider = null;
+                    public static Toggle affix_3_tier_toggle = null;
+                    public static Text affix_3_tier_text = null;
+                    public static Slider affix_3_tier_slider = null;
 
-                    public static Toggle? affix_3_value_toggle = null;
-                    public static Text? affix_3_value_text = null;
-                    public static Slider? affix_3_value_slider = null;
+                    public static Toggle affix_3_value_toggle = null;
+                    public static Text affix_3_value_text = null;
+                    public static Slider affix_3_value_slider = null;
 
-                    public static Toggle? uniquemod_0_value_toggle = null;
-                    public static Text? uniquemod_0_value_text = null;
-                    public static Slider? uniquemod_0_value_slider = null;
+                    public static Toggle uniquemod_0_value_toggle = null;
+                    public static Text uniquemod_0_value_text = null;
+                    public static Slider uniquemod_0_value_slider = null;
 
-                    public static Toggle? uniquemod_1_value_toggle = null;
-                    public static Text? uniquemod_1_value_text = null;
-                    public static Slider? uniquemod_1_value_slider = null;
+                    public static Toggle uniquemod_1_value_toggle = null;
+                    public static Text uniquemod_1_value_text = null;
+                    public static Slider uniquemod_1_value_slider = null;
 
-                    public static Toggle? uniquemod_2_value_toggle = null;
-                    public static Text? uniquemod_2_value_text = null;
-                    public static Slider? uniquemod_2_value_slider = null;
+                    public static Toggle uniquemod_2_value_toggle = null;
+                    public static Text uniquemod_2_value_text = null;
+                    public static Slider uniquemod_2_value_slider = null;
 
-                    public static Toggle? uniquemod_3_value_toggle = null;
-                    public static Text? uniquemod_3_value_text = null;
-                    public static Slider? uniquemod_3_value_slider = null;
+                    public static Toggle uniquemod_3_value_toggle = null;
+                    public static Text uniquemod_3_value_text = null;
+                    public static Slider uniquemod_3_value_slider = null;
 
-                    public static Toggle? uniquemod_4_value_toggle = null;
-                    public static Text? uniquemod_4_value_text = null;
-                    public static Slider? uniquemod_4_value_slider = null;
+                    public static Toggle uniquemod_4_value_toggle = null;
+                    public static Text uniquemod_4_value_text = null;
+                    public static Slider uniquemod_4_value_slider = null;
 
-                    public static Toggle? uniquemod_5_value_toggle = null;
-                    public static Text? uniquemod_5_value_text = null;
-                    public static Slider? uniquemod_5_value_slider = null;
+                    public static Toggle uniquemod_5_value_toggle = null;
+                    public static Text uniquemod_5_value_text = null;
+                    public static Slider uniquemod_5_value_slider = null;
 
-                    public static Toggle? uniquemod_6_value_toggle = null;
-                    public static Text? uniquemod_6_value_text = null;
-                    public static Slider? uniquemod_6_value_slider = null;
+                    public static Toggle uniquemod_6_value_toggle = null;
+                    public static Text uniquemod_6_value_text = null;
+                    public static Slider uniquemod_6_value_slider = null;
 
-                    public static Toggle? uniquemod_7_value_toggle = null;
-                    public static Text? uniquemod_7_value_text = null;
-                    public static Slider? uniquemod_7_value_slider = null;
+                    public static Toggle uniquemod_7_value_toggle = null;
+                    public static Text uniquemod_7_value_text = null;
+                    public static Slider uniquemod_7_value_slider = null;
 
-                    public static Toggle? legendary_potencial_toggle = null;
-                    public static Text? legendary_potencial_text = null;
-                    public static Slider? legendary_potencial_slider = null;
+                    public static Toggle legendary_potencial_toggle = null;
+                    public static Text legendary_potencial_text = null;
+                    public static Slider legendary_potencial_slider = null;
 
-                    public static Toggle? weaver_will_toggle = null;
-                    public static Text? weaver_will_text = null;
-                    public static Slider? weaver_will_slider = null;
+                    public static Toggle weaver_will_toggle = null;
+                    public static Text weaver_will_text = null;
+                    public static Slider weaver_will_slider = null;
                 }
             }
             public class Scenes
             {
-                public static GameObject? content_obj = null;
+                public static GameObject content_obj = null;
                 public static bool controls_initialized = false;
                 public static bool enable = false;
 
                 public static void Get_Refs()
                 {
-                    if (Content.content_obj is not null)
+                    if (!Content.content_obj.IsNullOrDestroyed())
                     {
                         content_obj = Functions.GetChild(Content.content_obj, "Scenes_Content");
                         if (!content_obj.IsNullOrDestroyed())
@@ -3831,7 +3831,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void Set_Active(bool show)
                 {
-                    if (content_obj is not null)
+                    if (!content_obj.IsNullOrDestroyed())
                     {
                         content_obj.active = show;
                         enable = show;
@@ -3839,7 +3839,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void Toggle_Active()
                 {
-                    if (content_obj is not null)
+                    if (!content_obj.IsNullOrDestroyed())
                     {
                         bool show = !content_obj.active;
                         content_obj.active = show;
@@ -3849,7 +3849,7 @@ namespace LastEpoch_Hud.Scripts
                 public static bool Init_UserData()
                 {
                     bool result = false;
-                    if (Save_Manager.instance is not null)
+                    if (!Save_Manager.instance.IsNullOrDestroyed())
                     {
                         if ((Save_Manager.instance.initialized) && (!Save_Manager.instance.data.IsNullOrDestroyed()))
                         {
@@ -3913,7 +3913,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void UpdateVisuals()
                 {
-                    if ((Save_Manager.instance is not null) && (controls_initialized))
+                    if ((!Save_Manager.instance.IsNullOrDestroyed()) && (controls_initialized))
                     {
                         if ((Save_Manager.instance.initialized) && (!Save_Manager.instance.data.IsNullOrDestroyed()))
                         {
@@ -3935,44 +3935,44 @@ namespace LastEpoch_Hud.Scripts
 
                 public class Camera
                 {
-                    public static Toggle? enable_mod = null;
+                    public static Toggle enable_mod = null;
 
-                    public static Toggle? zoom_minimum_toggle = null;
-                    public static Text? zoom_minimum_text = null;
-                    public static Slider? zoom_minimum_slider = null;
+                    public static Toggle zoom_minimum_toggle = null;
+                    public static Text zoom_minimum_text = null;
+                    public static Slider zoom_minimum_slider = null;
 
-                    public static Toggle? zoom_per_scroll_toggle = null;
-                    public static Text? zoom_per_scroll_text = null;
-                    public static Slider? zoom_per_scroll_slider = null;
+                    public static Toggle zoom_per_scroll_toggle = null;
+                    public static Text zoom_per_scroll_text = null;
+                    public static Slider zoom_per_scroll_slider = null;
 
-                    public static Toggle? zoom_speed_toggle = null;
-                    public static Text? zoom_speed_text = null;
-                    public static Slider? zoom_speed_slider = null;
+                    public static Toggle zoom_speed_toggle = null;
+                    public static Text zoom_speed_text = null;
+                    public static Slider zoom_speed_slider = null;
 
-                    public static Toggle? default_rotation_toggle = null;
-                    public static Text? default_rotation_text = null;
-                    public static Slider? default_rotation_slider = null;
+                    public static Toggle default_rotation_toggle = null;
+                    public static Text default_rotation_text = null;
+                    public static Slider default_rotation_slider = null;
 
-                    public static Toggle? offset_minimum_toggle = null;
-                    public static Text? offset_minimum_text = null;
-                    public static Slider? offset_minimum_slider = null;
+                    public static Toggle offset_minimum_toggle = null;
+                    public static Text offset_minimum_text = null;
+                    public static Slider offset_minimum_slider = null;
 
-                    public static Toggle? offset_maximum_toggle = null;
-                    public static Text? offset_maximum_text = null;
-                    public static Slider? offset_maximum_slider = null;
+                    public static Toggle offset_maximum_toggle = null;
+                    public static Text offset_maximum_text = null;
+                    public static Slider offset_maximum_slider = null;
 
-                    public static Toggle? angle_minimum_toggle = null;
-                    public static Text? angle_minimum_text = null;
-                    public static Slider? angle_minimum_slider = null;
+                    public static Toggle angle_minimum_toggle = null;
+                    public static Text angle_minimum_text = null;
+                    public static Slider angle_minimum_slider = null;
 
-                    public static Toggle? angle_maximum_toggle = null;
-                    public static Text? angle_maximum_text = null;
-                    public static Slider? angle_maximum_slider = null;
+                    public static Toggle angle_maximum_toggle = null;
+                    public static Text angle_maximum_text = null;
+                    public static Slider angle_maximum_slider = null;
 
-                    public static Toggle? zoom_load_on_start_toggle = null;
+                    public static Toggle zoom_load_on_start_toggle = null;
 
-                    public static Button? reset_button = null;
-                    public static Button? set_button = null;
+                    public static Button reset_button = null;
+                    public static Button set_button = null;
 
                     public static readonly System.Action Reset_OnClick_Action = new System.Action(Reset);
                     public static void Reset()
@@ -3987,47 +3987,47 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public class Minimap
                 {
-                    public static Toggle? max_zoom_out_toggle = null;
-                    public static Toggle? remove_fog_of_war_toggle = null;
+                    public static Toggle max_zoom_out_toggle = null;
+                    public static Toggle remove_fog_of_war_toggle = null;
                 }
                 public class Dungeons
                 {
-                    public static Toggle? enter_without_key_toggle = null;
+                    public static Toggle enter_without_key_toggle = null;
                 }
                 public class Monoliths
                 {
-                    public static Toggle? max_stability_toggle = null;
-                    public static Text? max_stability_text = null;
-                    public static Slider? max_stability_slider = null;
+                    public static Toggle max_stability_toggle = null;
+                    public static Text max_stability_text = null;
+                    public static Slider max_stability_slider = null;
 
-                    public static Toggle? mob_density_toggle = null;
-                    public static Text? mob_density_text = null;
-                    public static Slider? mob_density_slider = null;
+                    public static Toggle mob_density_toggle = null;
+                    public static Text mob_density_text = null;
+                    public static Slider mob_density_slider = null;
 
-                    public static Toggle? mob_defeat_toggle = null;
-                    public static Text? mob_defeat_text = null;
-                    public static Slider? mob_defeat_slider = null;
+                    public static Toggle mob_defeat_toggle = null;
+                    public static Text mob_defeat_text = null;
+                    public static Slider mob_defeat_slider = null;
 
-                    public static Toggle? blessing_slot_toggle = null;
-                    public static Text? blessing_slot_text = null;
-                    public static Slider? blessing_slot_slider = null;
+                    public static Toggle blessing_slot_toggle = null;
+                    public static Text blessing_slot_text = null;
+                    public static Slider blessing_slot_slider = null;
 
-                    public static Toggle? max_stability_on_start_toggle = null;
-                    public static Toggle? max_stability_on_stability_changed_toggle = null;
-                    public static Toggle? objective_reveal_toggle = null;
-                    public static Toggle? complete_objective_toggle = null;
-                    public static Toggle? no_lost_when_die_toggle = null;
+                    public static Toggle max_stability_on_start_toggle = null;
+                    public static Toggle max_stability_on_stability_changed_toggle = null;
+                    public static Toggle objective_reveal_toggle = null;
+                    public static Toggle complete_objective_toggle = null;
+                    public static Toggle no_lost_when_die_toggle = null;
                 }
             }            
             public class Skills
             {
-                public static GameObject? content_obj = null;
+                public static GameObject content_obj = null;
                 public static bool controls_initialized = false;
                 public static bool enable = false;
 
                 public static void Get_Refs()
                 {
-                    if (Content.content_obj is not null)
+                    if (!Content.content_obj.IsNullOrDestroyed())
                     {
                         content_obj = Functions.GetChild(Content.content_obj, "Skill_Tree_Content");
                         if (!content_obj.IsNullOrDestroyed())
@@ -4059,7 +4059,7 @@ namespace LastEpoch_Hud.Scripts
                                 SkillTree.enable_movement_immune_toggle = Functions.Get_ToggleInPanel(skills_content, "ImmuneDuringMovement", "Toggle_ImmuneDuringMovement");
                                 SkillTree.enable_movement_simple_path_toggle = Functions.Get_ToggleInPanel(skills_content, "DisableSimplePath", "Toggle_DisableSimplePath");
                             }
-                            else { Main.logger_instance?.Error("Skills content is null"); }
+                            else { Main.logger_instance.Error("Skills content is null"); }
 
                             GameObject companions_content = Functions.GetViewportContent(content_obj, "Center", "Companions_Content");
                             if (!companions_content.IsNullOrDestroyed())
@@ -4082,7 +4082,7 @@ namespace LastEpoch_Hud.Scripts
                                 Companions.scorpion_summon_limit_text = Functions.Get_TextInToggle(companions_content, "Scorpions_SummonLimit", "Toggle_Scorpions_SummonLimit", "Value");
                                 Companions.scorpion_summon_limit_slider = Functions.Get_SliderInPanel(companions_content, "Scorpions_SummonLimit", "Slider_Scorpions_SummonLimit");
                             }
-                            else { Main.logger_instance?.Error("Companions content is null"); }
+                            else { Main.logger_instance.Error("Companions content is null"); }
 
                             GameObject minions_content = Functions.GetViewportContent(content_obj, "Right", "Minions_Content");
                             if (!minions_content.IsNullOrDestroyed())
@@ -4210,14 +4210,14 @@ namespace LastEpoch_Hud.Scripts
                                 Minions.enable_dreadShades_summon_limit_toggle = Functions.Get_ToggleInPanel(minions_content, "DreadShades_DisableLimit", "Toggle_DreadShades_DisableLimit");
                                 Minions.enable_dreadShades_health_drain_toggle = Functions.Get_ToggleInPanel(minions_content, "DreadShades_DisableHealthDrain", "Toggle_DreadShades_DisableHealthDrain");
                             }
-                            else { Main.logger_instance?.Error("Minions content is null"); }
+                            else { Main.logger_instance.Error("Minions content is null"); }
                         }
-                        else { Main.logger_instance?.Error("Skill Tree content is null"); }
+                        else { Main.logger_instance.Error("Skill Tree content is null"); }
                     }
                 }
                 public static void Set_Active(bool show)
                 {
-                    if (content_obj is not null)
+                    if (!content_obj.IsNullOrDestroyed())
                     {
                         content_obj.active = show;
                         enable = show;
@@ -4225,7 +4225,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void Toggle_Active()
                 {
-                    if (content_obj is not null)
+                    if (!content_obj.IsNullOrDestroyed())
                     {
                         bool show = !content_obj.active;
                         content_obj.active = show;
@@ -4235,7 +4235,7 @@ namespace LastEpoch_Hud.Scripts
                 public static bool Init_UserData()
                 {
                     bool result = false;
-                    if (Save_Manager.instance is not null)
+                    if (!Save_Manager.instance.IsNullOrDestroyed())
                     {
                         if ((Save_Manager.instance.initialized) && (!Save_Manager.instance.data.IsNullOrDestroyed()))
                         {
@@ -4381,7 +4381,7 @@ namespace LastEpoch_Hud.Scripts
                 }
                 public static void UpdateVisuals()
                 {
-                    if ((Save_Manager.instance is not null) && (controls_initialized))
+                    if ((!Save_Manager.instance.IsNullOrDestroyed()) && (controls_initialized))
                     {
                         if ((Save_Manager.instance.initialized) && (!Save_Manager.instance.data.IsNullOrDestroyed()))
                         {
@@ -4429,174 +4429,174 @@ namespace LastEpoch_Hud.Scripts
 
                 public class SkillTree
                 {
-                    public static Toggle? enable_remove_mana_cost_toggle = null;
-                    public static Toggle? enable_remove_channel_cost_toggle = null;
-                    public static Toggle? enable_mana_regen_when_channeling_toggle = null;
-                    public static Toggle? enable_dont_stop_oom_toggle = null;
-                    public static Toggle? enable_no_cooldown_toggle = null;
-                    public static Toggle? enable_unlock_all_skills_toggle = null;
-                    public static Toggle? enable_remove_node_req_toggle = null;
+                    public static Toggle enable_remove_mana_cost_toggle = null;
+                    public static Toggle enable_remove_channel_cost_toggle = null;
+                    public static Toggle enable_mana_regen_when_channeling_toggle = null;
+                    public static Toggle enable_dont_stop_oom_toggle = null;
+                    public static Toggle enable_no_cooldown_toggle = null;
+                    public static Toggle enable_unlock_all_skills_toggle = null;
+                    public static Toggle enable_remove_node_req_toggle = null;
 
-                    public static Toggle? enable_specialization_slots_toggle = null;
-                    public static Text? specialization_slots_text = null;
-                    public static Slider? specialization_slots_slider = null;
+                    public static Toggle enable_specialization_slots_toggle = null;
+                    public static Text specialization_slots_text = null;
+                    public static Slider specialization_slots_slider = null;
 
-                    public static Toggle? enable_skill_level_toggle = null;
-                    public static Text? skill_level_text = null;
-                    public static Slider? skill_level_slider = null;
+                    public static Toggle enable_skill_level_toggle = null;
+                    public static Text skill_level_text = null;
+                    public static Slider skill_level_slider = null;
 
-                    public static Toggle? enable_passive_points_toggle = null;
-                    public static Text? passive_points_text = null;
-                    public static Slider? passive_points_slider = null;
+                    public static Toggle enable_passive_points_toggle = null;
+                    public static Text passive_points_text = null;
+                    public static Slider passive_points_slider = null;
 
-                    public static Toggle? enable_movement_no_target_toggle = null;
-                    public static Toggle? enable_movement_immune_toggle = null;
-                    public static Toggle? enable_movement_simple_path_toggle = null;
+                    public static Toggle enable_movement_no_target_toggle = null;
+                    public static Toggle enable_movement_immune_toggle = null;
+                    public static Toggle enable_movement_simple_path_toggle = null;
                 }
                 public class Companions
                 {
-                    public static Toggle? enable_maximum_companions_toggle = null;
-                    public static Text? maximum_companions_text = null;
-                    public static Slider? maximum_companions_slider = null;
+                    public static Toggle enable_maximum_companions_toggle = null;
+                    public static Text maximum_companions_text = null;
+                    public static Slider maximum_companions_slider = null;
 
                     //wolf
-                    public static Toggle? enable_wolf_summon_maximum_toggle = null;
+                    public static Toggle enable_wolf_summon_maximum_toggle = null;
 
-                    public static Toggle? enable_wolf_summon_limit_toggle = null;
-                    public static Text? wolf_summon_limit_text = null;
-                    public static Slider? wolf_summon_limit_slider = null;
+                    public static Toggle enable_wolf_summon_limit_toggle = null;
+                    public static Text wolf_summon_limit_text = null;
+                    public static Slider wolf_summon_limit_slider = null;
 
-                    public static Toggle? enable_wolf_stun_immunity_toggle = null;
+                    public static Toggle enable_wolf_stun_immunity_toggle = null;
 
                     //Scorpions
-                    public static Toggle? enable_scorpion_summon_limit_toggle = null;
-                    public static Text? scorpion_summon_limit_text = null;
-                    public static Slider? scorpion_summon_limit_slider = null;
+                    public static Toggle enable_scorpion_summon_limit_toggle = null;
+                    public static Text scorpion_summon_limit_text = null;
+                    public static Slider scorpion_summon_limit_slider = null;
                 }
                 public class Minions
                 {
                     //Skeletons
-                    public static Toggle? enable_skeleton_passive_summon_toggle = null;
-                    public static Text? skeleton_passive_summon_text = null;
-                    public static Slider? skeleton_passive_summon_slider = null;
+                    public static Toggle enable_skeleton_passive_summon_toggle = null;
+                    public static Text skeleton_passive_summon_text = null;
+                    public static Slider skeleton_passive_summon_slider = null;
 
-                    public static Toggle? enable_skeleton_skilltree_summon_toggle = null;
-                    public static Text? skeleton_skilltree_summon_text = null;
-                    public static Slider? skeleton_skilltree_summon_slider = null;
+                    public static Toggle enable_skeleton_skilltree_summon_toggle = null;
+                    public static Text skeleton_skilltree_summon_text = null;
+                    public static Slider skeleton_skilltree_summon_slider = null;
 
-                    public static Toggle? enable_skeleton_quantity_per_cast_toggle = null;
-                    public static Text? skeleton_quantity_per_cast_text = null;
-                    public static Slider? skeleton_quantity_per_cast_slider = null;
+                    public static Toggle enable_skeleton_quantity_per_cast_toggle = null;
+                    public static Text skeleton_quantity_per_cast_text = null;
+                    public static Slider skeleton_quantity_per_cast_slider = null;
 
-                    public static Toggle? enable_skeleton_resummon_on_death_toggle = null;
-                    public static Text? skeleton_resummon_on_death_text = null;
-                    public static Slider? skeleton_resummon_on_death_slider = null;
+                    public static Toggle enable_skeleton_resummon_on_death_toggle = null;
+                    public static Text skeleton_resummon_on_death_text = null;
+                    public static Slider skeleton_resummon_on_death_slider = null;
 
-                    public static Toggle? enable_skeleton_force_archer_toggle = null;
-                    public static Toggle? enable_skeleton_force_brawler_toggle = null;
-                    public static Toggle? enable_skeleton_force_warrior_toggle = null;
+                    public static Toggle enable_skeleton_force_archer_toggle = null;
+                    public static Toggle enable_skeleton_force_brawler_toggle = null;
+                    public static Toggle enable_skeleton_force_warrior_toggle = null;
 
                     //Wraiths
-                    public static Toggle? enable_wraith_summon_limit_toggle = null;
-                    public static Text? wraith_summon_limit_text = null;
-                    public static Slider? wraith_summon_limit_slider = null;
+                    public static Toggle enable_wraith_summon_limit_toggle = null;
+                    public static Text wraith_summon_limit_text = null;
+                    public static Slider wraith_summon_limit_slider = null;
 
-                    public static Toggle? enable_wraith_delay_toggle = null;
-                    public static Text? wraith_delay_text = null;
-                    public static Slider? wraith_delay_slider = null;
+                    public static Toggle enable_wraith_delay_toggle = null;
+                    public static Text wraith_delay_text = null;
+                    public static Slider wraith_delay_slider = null;
 
-                    public static Toggle? enable_wraith_cast_speed_toggle = null;
-                    public static Text? wraith_cast_speed_text = null;
-                    public static Slider? wraith_cast_speed_slider = null;
+                    public static Toggle enable_wraith_cast_speed_toggle = null;
+                    public static Text wraith_cast_speed_text = null;
+                    public static Slider wraith_cast_speed_slider = null;
 
-                    public static Toggle? enable_wraith_no_limit_toggle = null;
-                    public static Toggle? enable_wraith_no_decay_toggle = null;
+                    public static Toggle enable_wraith_no_limit_toggle = null;
+                    public static Toggle enable_wraith_no_decay_toggle = null;
 
                     //Mage
-                    public static Toggle? enable_mage_passive_summon_toggle = null;
-                    public static Text? mage_passive_summon_text = null;
-                    public static Slider? mage_passive_summon_slider = null;
+                    public static Toggle enable_mage_passive_summon_toggle = null;
+                    public static Text mage_passive_summon_text = null;
+                    public static Slider mage_passive_summon_slider = null;
 
-                    public static Toggle? enable_mage_items_summon_toggle = null;
-                    public static Text? mage_items_summon_text = null;
-                    public static Slider? mage_items_summon_slider = null;
+                    public static Toggle enable_mage_items_summon_toggle = null;
+                    public static Text mage_items_summon_text = null;
+                    public static Slider mage_items_summon_slider = null;
 
-                    public static Toggle? enable_mage_skilltree_summon_toggle = null;
-                    public static Text? mage_skilltree_summon_text = null;
-                    public static Slider? mage_skilltree_summon_slider = null;
+                    public static Toggle enable_mage_skilltree_summon_toggle = null;
+                    public static Text mage_skilltree_summon_text = null;
+                    public static Slider mage_skilltree_summon_slider = null;
 
-                    public static Toggle? enable_mage_per_cast_summon_toggle = null;
-                    public static Text? mage_per_cast_summon_text = null;
-                    public static Slider? mage_per_cast_summon_slider = null;
+                    public static Toggle enable_mage_per_cast_summon_toggle = null;
+                    public static Text mage_per_cast_summon_text = null;
+                    public static Slider mage_per_cast_summon_slider = null;
 
-                    public static Toggle? enable_mage_projectile_chance_toggle = null;
-                    public static Text? mage_projectile_chance_text = null;
-                    public static Slider? mage_projectile_chance_slider = null;
+                    public static Toggle enable_mage_projectile_chance_toggle = null;
+                    public static Text mage_projectile_chance_text = null;
+                    public static Slider mage_projectile_chance_slider = null;
 
-                    public static Toggle? enable_mage_force_cryomancer_toggle = null;
-                    public static Toggle? enable_mage_force_deathknight_toggle = null;
-                    public static Toggle? enable_mage_force_pyromancer_toggle = null;
+                    public static Toggle enable_mage_force_cryomancer_toggle = null;
+                    public static Toggle enable_mage_force_deathknight_toggle = null;
+                    public static Toggle enable_mage_force_pyromancer_toggle = null;
 
                     //Bone Golem
-                    public static Toggle? enable_bonegolem_per_skeleton_toggle = null;
-                    public static Text? bonegolem_per_skeleton_text = null;
-                    public static Slider? bonegolem_per_skeleton_slider = null;
+                    public static Toggle enable_bonegolem_per_skeleton_toggle = null;
+                    public static Text bonegolem_per_skeleton_text = null;
+                    public static Slider bonegolem_per_skeleton_slider = null;
 
-                    public static Toggle? enable_bonegolem_resurect_chance_toggle = null;
-                    public static Text? bonegolem_resurect_chance_text = null;
-                    public static Slider? bonegolem_resurect_chance_slider = null;
+                    public static Toggle enable_bonegolem_resurect_chance_toggle = null;
+                    public static Text bonegolem_resurect_chance_text = null;
+                    public static Slider bonegolem_resurect_chance_slider = null;
 
-                    public static Toggle? enable_bonegolem_fire_aura_toggle = null;
-                    public static Text? bonegolem_fire_aura_text = null;
-                    public static Slider? bonegolem_fire_aura_slider = null;
+                    public static Toggle enable_bonegolem_fire_aura_toggle = null;
+                    public static Text bonegolem_fire_aura_text = null;
+                    public static Slider bonegolem_fire_aura_slider = null;
 
-                    public static Toggle? enable_bonegolem_armor_aura_toggle = null;
-                    public static Text? bonegolem_armor_aura_text = null;
-                    public static Slider? bonegolem_armor_aura_slider = null;
+                    public static Toggle enable_bonegolem_armor_aura_toggle = null;
+                    public static Text bonegolem_armor_aura_text = null;
+                    public static Slider bonegolem_armor_aura_slider = null;
 
-                    public static Toggle? enable_bonegolem_movespeed_aura_toggle = null;
-                    public static Text? bonegolem_movespeed_aura_text = null;
-                    public static Slider? bonegolem_movespeed_aura_slider = null;
+                    public static Toggle enable_bonegolem_movespeed_aura_toggle = null;
+                    public static Text bonegolem_movespeed_aura_text = null;
+                    public static Slider bonegolem_movespeed_aura_slider = null;
 
-                    public static Toggle? enable_bonegolem_move_speed_toggle = null;
-                    public static Text? bonegolem_move_speed_text = null;
-                    public static Slider? bonegolem_move_speed_slider = null;
+                    public static Toggle enable_bonegolem_move_speed_toggle = null;
+                    public static Text bonegolem_move_speed_text = null;
+                    public static Slider bonegolem_move_speed_slider = null;
 
-                    public static Toggle? enable_bonegolem_twins_toggle = null;
-                    public static Toggle? enable_bonegolem_slam_toggle = null;
+                    public static Toggle enable_bonegolem_twins_toggle = null;
+                    public static Toggle enable_bonegolem_slam_toggle = null;
 
                     //Volatile Zombies
-                    public static Toggle? enable_volatilezombie_cast_on_death_toggle = null;
-                    public static Text? volatilezombie_cast_on_death_text = null;
-                    public static Slider? volatilezombie_cast_on_death_slider = null;
+                    public static Toggle enable_volatilezombie_cast_on_death_toggle = null;
+                    public static Text volatilezombie_cast_on_death_text = null;
+                    public static Slider volatilezombie_cast_on_death_slider = null;
 
-                    public static Toggle? enable_volatilezombie_infernal_shade_toggle = null;
-                    public static Text? volatilezombie_infernal_shade_text = null;
-                    public static Slider? volatilezombie_infernal_shade_slider = null;
+                    public static Toggle enable_volatilezombie_infernal_shade_toggle = null;
+                    public static Text volatilezombie_infernal_shade_text = null;
+                    public static Slider volatilezombie_infernal_shade_slider = null;
 
-                    public static Toggle? enable_volatilezombie_marrow_shards_toggle = null;
-                    public static Text? volatilezombie_marrow_shards_text = null;
-                    public static Slider? volatilezombie_marrow_shards_slider = null;
+                    public static Toggle enable_volatilezombie_marrow_shards_toggle = null;
+                    public static Text volatilezombie_marrow_shards_text = null;
+                    public static Slider volatilezombie_marrow_shards_slider = null;
 
                     //DreadShades
-                    public static Toggle? enable_dreadShades_duration_toggle = null;
-                    public static Text? dreadShades_duration_text = null;
-                    public static Slider? dreadShades_duration_slider = null;
+                    public static Toggle enable_dreadShades_duration_toggle = null;
+                    public static Text dreadShades_duration_text = null;
+                    public static Slider dreadShades_duration_slider = null;
 
-                    public static Toggle? enable_dreadShades_max_toggle = null;
-                    public static Text? dreadShades_max_text = null;
-                    public static Slider? dreadShades_max_slider = null;
+                    public static Toggle enable_dreadShades_max_toggle = null;
+                    public static Text dreadShades_max_text = null;
+                    public static Slider dreadShades_max_slider = null;
 
-                    public static Toggle? enable_dreadShades_decay_toggle = null;
-                    public static Text? dreadShades_decay_text = null;
-                    public static Slider? dreadShades_decay_slider = null;
+                    public static Toggle enable_dreadShades_decay_toggle = null;
+                    public static Text dreadShades_decay_text = null;
+                    public static Slider dreadShades_decay_slider = null;
 
-                    public static Toggle? enable_dreadShades_radius_toggle = null;
-                    public static Text? dreadShades_radius_text = null;
-                    public static Slider? dreadShades_radius_slider = null;
+                    public static Toggle enable_dreadShades_radius_toggle = null;
+                    public static Text dreadShades_radius_text = null;
+                    public static Slider dreadShades_radius_slider = null;
 
-                    public static Toggle? enable_dreadShades_summon_limit_toggle = null;
-                    public static Toggle? enable_dreadShades_health_drain_toggle = null;
+                    public static Toggle enable_dreadShades_summon_limit_toggle = null;
+                    public static Toggle enable_dreadShades_health_drain_toggle = null;
                 }
             }
             public class OdlForceDrop
@@ -4604,25 +4604,25 @@ namespace LastEpoch_Hud.Scripts
                 public static bool initialized = false;
                 public static bool enable = false;
 
-                public static GameObject? content_obj = null;
-                public static GameObject? left_base_content = null;
-                public static GameObject? center_content = null;
+                public static GameObject content_obj = null;
+                public static GameObject left_base_content = null;
+                public static GameObject center_content = null;
 
                 //Type
                 public static int type_size = 24;
-                public static Dropdown? type_dropdown = null;
+                public static Dropdown type_dropdown = null;
                 public static int item_type = -1;               
                 public static bool Type_Initialized = false;
                 public static bool Initializing_type = false;
 
                 //Rarity
                 public static int rarity_size = 24;
-                public static Dropdown? rarity_dropdown = null;
+                public static Dropdown rarity_dropdown = null;
                 public static int item_rarity = -1;
 
                 //Items
                 public static int items_size = 24;
-                public static Dropdown? items_dropdown = null;
+                public static Dropdown items_dropdown = null;
                 public static int item_subtype = -1;
                 public static int item_unique_id = -1;
 
@@ -4631,23 +4631,23 @@ namespace LastEpoch_Hud.Scripts
                 public static int implicits_size = 24;
                 public static bool implicits_roll = false;
                 public static int implicits_roll_size = 44;
-                public static GameObject? implicits = null;
-                public static GameObject? implicits_border = null;
-                public static Dropdown? implicits_dropdown = null;
+                public static GameObject implicits = null;
+                public static GameObject implicits_border = null;
+                public static Dropdown implicits_dropdown = null;
 
-                public static GameObject? implicit_0 = null;
-                public static Text? implicit_0_Text = null;
-                public static Slider? implicit_0_slider = null;
+                public static GameObject implicit_0 = null;
+                public static Text implicit_0_Text = null;
+                public static Slider implicit_0_slider = null;
                 public static readonly System.Action<float> implicit_0_Action = new System.Action<float>(SetImplicit_0);
 
-                public static GameObject? implicit_1 = null;
-                public static Text? implicit_1_Text = null;
-                public static Slider? implicit_1_slider = null;
+                public static GameObject implicit_1 = null;
+                public static Text implicit_1_Text = null;
+                public static Slider implicit_1_slider = null;
                 public static readonly System.Action<float> implicit_1_Action = new System.Action<float>(SetImplicit_1);
 
-                public static GameObject? implicit_2 = null;
-                public static Text? implicit_2_Text = null;
-                public static Slider? implicit_2_slider = null;
+                public static GameObject implicit_2 = null;
+                public static Text implicit_2_Text = null;
+                public static Slider implicit_2_slider = null;
                 public static readonly System.Action<float> implicit_2_Action = new System.Action<float>(SetImplicit_2);
 
                 //Forgin potencial
@@ -4655,13 +4655,13 @@ namespace LastEpoch_Hud.Scripts
                 public static int forgin_potencial_size = 24;
                 public static bool forgin_potencial_roll = false;
                 public static int forgin_potencial_roll_size = 42;
-                public static GameObject? forgin_potencial = null;
-                public static GameObject? forgin_potencial_border = null;
-                public static Dropdown? forgin_potencial_dropdown = null;
+                public static GameObject forgin_potencial = null;
+                public static GameObject forgin_potencial_border = null;
+                public static Dropdown forgin_potencial_dropdown = null;
 
-                public static GameObject? forgin_potencial_value = null;
-                public static Text? forgin_potencial_text = null;
-                public static Slider? forgin_potencial_slider = null;
+                public static GameObject forgin_potencial_value = null;
+                public static Text forgin_potencial_text = null;
+                public static Slider forgin_potencial_slider = null;
                 public static readonly System.Action<float> forgin_potencial_Action = new System.Action<float>(SetForginPotencial);
 
                 public static string select_affix = "Select Affix";
@@ -4671,209 +4671,209 @@ namespace LastEpoch_Hud.Scripts
                 public static int seal_id = -1;
                 public static string seal_name = "";
                 public static bool seal_roll = false;
-                public static GameObject? seal = null;
-                public static GameObject? seal_border = null;
-                public static Dropdown? seal_dropdown = null;
+                public static GameObject seal = null;
+                public static GameObject seal_border = null;
+                public static Dropdown seal_dropdown = null;
 
-                public static GameObject? seal_shard = null;
-                public static Button? seal_select_btn = null;
-                public static Text? seal_select_text = null;
+                public static GameObject seal_shard = null;
+                public static Button seal_select_btn = null;
+                public static Text seal_select_text = null;
                 public static readonly System.Action Seal_OnClick_Action = new System.Action(SelectSeal);
 
-                public static GameObject? seal_tier = null;
-                public static Text? seal_tier_text = null;
-                public static Slider? seal_tier_slider = null;
+                public static GameObject seal_tier = null;
+                public static Text seal_tier_text = null;
+                public static Slider seal_tier_slider = null;
                 public static readonly System.Action<float> seal_tier_Action = new System.Action<float>(SetSealTier);
 
-                public static GameObject? seal_value = null;
-                public static Text? seal_value_text = null;
-                public static Slider? seal_value_slider = null;
+                public static GameObject seal_value = null;
+                public static Text seal_value_text = null;
+                public static Slider seal_value_slider = null;
                 public static readonly System.Action<float> seal_value_Action = new System.Action<float>(SetSealValue);
 
                 //Affix
                 public static bool affixs_enable = false;
                 public static bool affixs_roll = false;
-                public static GameObject? affixs = null;
-                public static GameObject? affixs_border = null;
-                public static Dropdown? affixs_dropdown = null;
+                public static GameObject affixs = null;
+                public static GameObject affixs_border = null;
+                public static Dropdown affixs_dropdown = null;
 
-                public static GameObject? affixs_numbers = null;
-                public static Text? affixs_numbers_text = null;
-                public static Slider? affixs_numbers_slider = null;
+                public static GameObject affixs_numbers = null;
+                public static Text affixs_numbers_text = null;
+                public static Slider affixs_numbers_slider = null;
 
                 public static bool affix_0_enable = false;
                 public static int affix_0_id = -1;
                 public static string affix_0_name = "";
-                public static Text? affix_0_select_text = null;
-                public static GameObject? affix_0 = null;
-                public static Button? affix_0_button = null;
+                public static Text affix_0_select_text = null;
+                public static GameObject affix_0 = null;
+                public static Button affix_0_button = null;
                 public static readonly System.Action affix_0_OnClick_Action = new System.Action(SelectAffix_0);
-                public static Text? affix_0_tier_text = null;
-                public static Slider? affix_0_tier_slider = null;
+                public static Text affix_0_tier_text = null;
+                public static Slider affix_0_tier_slider = null;
                 public static readonly System.Action<float> affix_0_tier_Action = new System.Action<float>(SetAffix_0_Tier);
-                public static Text? affix_0_value_text = null;
-                public static Slider? affix_0_value_slider = null;
+                public static Text affix_0_value_text = null;
+                public static Slider affix_0_value_slider = null;
                 public static readonly System.Action<float> affix_0_value_Action = new System.Action<float>(SetAffix_0_Value);
 
                 public static bool affix_1_enable = false;
                 public static int affix_1_id = -1;
                 public static string affix_1_name = "";
-                public static Text? affix_1_select_text = null;
-                public static GameObject? affix_1 = null;
-                public static Button? affix_1_button = null;
+                public static Text affix_1_select_text = null;
+                public static GameObject affix_1 = null;
+                public static Button affix_1_button = null;
                 public static readonly System.Action affix_1_OnClick_Action = new System.Action(SelectAffix_1);
-                public static Text? affix_1_tier_text = null;
-                public static Slider? affix_1_tier_slider = null;
+                public static Text affix_1_tier_text = null;
+                public static Slider affix_1_tier_slider = null;
                 public static readonly System.Action<float> affix_1_tier_Action = new System.Action<float>(SetAffix_1_Tier);
-                public static Text? affix_1_value_text = null;
-                public static Slider? affix_1_value_slider = null;
+                public static Text affix_1_value_text = null;
+                public static Slider affix_1_value_slider = null;
                 public static readonly System.Action<float> affix_1_value_Action = new System.Action<float>(SetAffix_1_Value);
 
                 public static bool affix_2_enable = false;
                 public static int affix_2_id = -1;
                 public static string affix_2_name = "";
-                public static Text? affix_2_select_text = null;
-                public static GameObject? affix_2 = null;
-                public static Button? affix_2_button = null;
+                public static Text affix_2_select_text = null;
+                public static GameObject affix_2 = null;
+                public static Button affix_2_button = null;
                 public static readonly System.Action affix_2_OnClick_Action = new System.Action(SelectAffix_2);
-                public static Text? affix_2_tier_text = null;
-                public static Slider? affix_2_tier_slider = null;
+                public static Text affix_2_tier_text = null;
+                public static Slider affix_2_tier_slider = null;
                 public static readonly System.Action<float> affix_2_tier_Action = new System.Action<float>(SetAffix_2_Tier);
-                public static Text? affix_2_value_text = null;
-                public static Slider? affix_2_value_slider = null;
+                public static Text affix_2_value_text = null;
+                public static Slider affix_2_value_slider = null;
                 public static readonly System.Action<float> affix_2_value_Action = new System.Action<float>(SetAffix_2_Value);
 
                 public static bool affix_3_enable = false;
                 public static int affix_3_id = -1;
                 public static string affix_3_name = "";
-                public static Text? affix_3_select_text = null;
-                public static GameObject? affix_3 = null;
-                public static Button? affix_3_button = null;
+                public static Text affix_3_select_text = null;
+                public static GameObject affix_3 = null;
+                public static Button affix_3_button = null;
                 public static readonly System.Action affix_3_OnClick_Action = new System.Action(SelectAffix_3);
-                public static Text? affix_3_tier_text = null;
-                public static Slider? affix_3_tier_slider = null;
+                public static Text affix_3_tier_text = null;
+                public static Slider affix_3_tier_slider = null;
                 public static readonly System.Action<float> affix_3_tier_Action = new System.Action<float>(SetAffix_3_Tier);
-                public static Text? affix_3_value_text = null;
-                public static Slider? affix_3_value_slider = null;
+                public static Text affix_3_value_text = null;
+                public static Slider affix_3_value_slider = null;
                 public static readonly System.Action<float> affix_3_value_Action = new System.Action<float>(SetAffix_3_Value);
 
                 public static bool affix_4_enable = false;
                 public static int affix_4_id = -1;
                 public static string affix_4_name = "";
-                public static Text? affix_4_select_text = null;
-                public static GameObject? affix_4 = null;
-                public static Button? affix_4_button = null;
+                public static Text affix_4_select_text = null;
+                public static GameObject affix_4 = null;
+                public static Button affix_4_button = null;
                 public static readonly System.Action affix_4_OnClick_Action = new System.Action(SelectAffix_4);
-                public static Text? affix_4_tier_text = null;
-                public static Slider? affix_4_tier_slider = null;
+                public static Text affix_4_tier_text = null;
+                public static Slider affix_4_tier_slider = null;
                 public static readonly System.Action<float> affix_4_tier_Action = new System.Action<float>(SetAffix_4_Tier);
-                public static Text? affix_4_value_text = null;
-                public static Slider? affix_4_value_slider = null;
+                public static Text affix_4_value_text = null;
+                public static Slider affix_4_value_slider = null;
                 public static readonly System.Action<float> affix_4_value_Action = new System.Action<float>(SetAffix_4_Value);
 
                 public static bool affix_5_enable = false;
                 public static int affix_5_id = -1;
                 public static string affix_5_name = "";
-                public static Text? affix_5_select_text = null;
-                public static GameObject? affix_5 = null;
-                public static Button? affix_5_button = null;
+                public static Text affix_5_select_text = null;
+                public static GameObject affix_5 = null;
+                public static Button affix_5_button = null;
                 public static readonly System.Action affix_5_OnClick_Action = new System.Action(SelectAffix_5);
-                public static Text? affix_5_tier_text = null;
-                public static Slider? affix_5_tier_slider = null;
+                public static Text affix_5_tier_text = null;
+                public static Slider affix_5_tier_slider = null;
                 public static readonly System.Action<float> affix_5_tier_Action = new System.Action<float>(SetAffix_5_Tier);
-                public static Text? affix_5_value_text = null;
-                public static Slider? affix_5_value_slider = null;
+                public static Text affix_5_value_text = null;
+                public static Slider affix_5_value_slider = null;
                 public static readonly System.Action<float> affix_5_value_Action = new System.Action<float>(SetAffix_5_Value);
 
                 //Unique mods
                 public static bool unique_mods_enable = false;
                 public static bool unique_mods_roll = false;
-                public static GameObject? unique_mods = null;
-                public static GameObject? unique_mods_border = null;
-                public static Dropdown? unique_mods_dropdown = null;
+                public static GameObject unique_mods = null;
+                public static GameObject unique_mods_border = null;
+                public static Dropdown unique_mods_dropdown = null;
 
-                public static GameObject? unique_mod_0 = null;
-                public static Text? unique_mod_0_Text = null;
-                public static Slider? unique_mod_0_slider = null;
+                public static GameObject unique_mod_0 = null;
+                public static Text unique_mod_0_Text = null;
+                public static Slider unique_mod_0_slider = null;
                 public static readonly System.Action<float> unique_mod_0_Action = new System.Action<float>(SetUniqueMod_0);
 
-                public static GameObject? unique_mod_1 = null;
-                public static Text? unique_mod_1_Text = null;
-                public static Slider? unique_mod_1_slider = null;
+                public static GameObject unique_mod_1 = null;
+                public static Text unique_mod_1_Text = null;
+                public static Slider unique_mod_1_slider = null;
                 public static readonly System.Action<float> unique_mod_1_Action = new System.Action<float>(SetUniqueMod_1);
 
-                public static GameObject? unique_mod_2 = null;
-                public static Text? unique_mod_2_Text = null;
-                public static Slider? unique_mod_2_slider = null;
+                public static GameObject unique_mod_2 = null;
+                public static Text unique_mod_2_Text = null;
+                public static Slider unique_mod_2_slider = null;
                 public static readonly System.Action<float> unique_mod_2_Action = new System.Action<float>(SetUniqueMod_2);
 
-                public static GameObject? unique_mod_3 = null;
-                public static Text? unique_mod_3_Text = null;
-                public static Slider? unique_mod_3_slider = null;
+                public static GameObject unique_mod_3 = null;
+                public static Text unique_mod_3_Text = null;
+                public static Slider unique_mod_3_slider = null;
                 public static readonly System.Action<float> unique_mod_3_Action = new System.Action<float>(SetUniqueMod_3);
 
-                public static GameObject? unique_mod_4 = null;
-                public static Text? unique_mod_4_Text = null;
-                public static Slider? unique_mod_4_slider = null;
+                public static GameObject unique_mod_4 = null;
+                public static Text unique_mod_4_Text = null;
+                public static Slider unique_mod_4_slider = null;
                 public static readonly System.Action<float> unique_mod_4_Action = new System.Action<float>(SetUniqueMod_4);
 
-                public static GameObject? unique_mod_5 = null;
-                public static Text? unique_mod_5_Text = null;
-                public static Slider? unique_mod_5_slider = null;
+                public static GameObject unique_mod_5 = null;
+                public static Text unique_mod_5_Text = null;
+                public static Slider unique_mod_5_slider = null;
                 public static readonly System.Action<float> unique_mod_5_Action = new System.Action<float>(SetUniqueMod_5);
 
-                public static GameObject? unique_mod_6 = null;
-                public static Text? unique_mod_6_Text = null;
-                public static Slider? unique_mod_6_slider = null;
+                public static GameObject unique_mod_6 = null;
+                public static Text unique_mod_6_Text = null;
+                public static Slider unique_mod_6_slider = null;
                 public static readonly System.Action<float> unique_mod_6_Action = new System.Action<float>(SetUniqueMod_6);
 
-                public static GameObject? unique_mod_7 = null;
-                public static Text? unique_mod_7_Text = null;
-                public static Slider? unique_mod_7_slider = null;
+                public static GameObject unique_mod_7 = null;
+                public static Text unique_mod_7_Text = null;
+                public static Slider unique_mod_7_slider = null;
                 public static readonly System.Action<float> unique_mod_7_Action = new System.Action<float>(SetUniqueMod_7);
                                 
                 public static UniqueList.LegendaryType item_legendary_type = UniqueList.LegendaryType.LegendaryPotential;
 
                 public static bool legenday_potencial_enable = false;
                 public static bool legenday_potencial_roll = false;
-                public static GameObject? legenday_potencial = null;
-                public static GameObject? legenday_potencial_border = null;
-                public static Dropdown? legenday_potencial_dropdown = null;
-                public static GameObject? legenday_potencial_value = null;
-                public static Text? legenday_potencial_Text = null;
-                public static Slider? legenday_potencial_slider = null;
+                public static GameObject legenday_potencial = null;
+                public static GameObject legenday_potencial_border = null;
+                public static Dropdown legenday_potencial_dropdown = null;
+                public static GameObject legenday_potencial_value = null;
+                public static Text legenday_potencial_Text = null;
+                public static Slider legenday_potencial_slider = null;
                 public static readonly System.Action<float> legenday_potencial_Action = new System.Action<float>(SetLegendayPotencial);
 
                 public static bool weaver_will_enable = false;
                 public static bool weaver_will_roll = false;
-                public static GameObject? weaver_will = null;
-                public static GameObject? weaver_will_border = null;
-                public static Dropdown? weaver_will_dropdown = null;
-                public static GameObject? weaver_will_value = null;
-                public static Text? weaver_will_Text = null;
-                public static Slider? weaver_will_slider = null;
+                public static GameObject weaver_will = null;
+                public static GameObject weaver_will_border = null;
+                public static Dropdown weaver_will_dropdown = null;
+                public static GameObject weaver_will_value = null;
+                public static Text weaver_will_Text = null;
+                public static Slider weaver_will_slider = null;
                 public static readonly System.Action<float> weaver_will_Action = new System.Action<float>(SetWeaverWill);
 
                 public static bool quantity_enable = false;
-                public static GameObject? quantity = null;
-                public static GameObject? quantity_border = null;
-                public static Text? quantity_text = null;
-                public static Slider? forcedrop_quantity_slider = null;
+                public static GameObject quantity = null;
+                public static GameObject quantity_border = null;
+                public static Text quantity_text = null;
+                public static Slider forcedrop_quantity_slider = null;
 
-                public static Button? forcedrop_drop_button = null;
+                public static Button forcedrop_drop_button = null;
                 public static bool btn_enable = false;
                 public static readonly System.Action Drop_OnClick_Action = new System.Action(Drop);
 
                 //Shards Filters
-                public static GameObject? shard_filters = null;
-                public static Dropdown? shards_filter_type = null;
-                public static Dropdown? shards_filter_class = null;
-                public static InputField? shards_filter_name = null;
-                public static Button? shards_filters_button = null;
+                public static GameObject shard_filters = null;
+                public static Dropdown shards_filter_type = null;
+                public static Dropdown shards_filter_class = null;
+                public static InputField shards_filter_name = null;
+                public static Button shards_filters_button = null;
                 public static readonly System.Action Resfresh_OnClick_Action = new System.Action(InitializeShardsView);
 
                 //Shards View
-                public static GameObject? shard_prefab = null;
+                public static GameObject shard_prefab = null;
                 public static readonly string shard_btn_name = "ShardBtn_";
                 public static bool shard_initialized = false;
                 public static bool shard_seal = false;
@@ -4882,7 +4882,7 @@ namespace LastEpoch_Hud.Scripts
 
                 public static void Get_Refs()
                 {
-                    if (Content.content_obj is not null)
+                    if (!Content.content_obj.IsNullOrDestroyed())
                     {
                         bool error = false;
                         content_obj = Functions.GetChild(Content.content_obj, "Old_ForceDrop_Content");
@@ -4892,18 +4892,18 @@ namespace LastEpoch_Hud.Scripts
                             if (!left_base_content.IsNullOrDestroyed())
                             {
                                 type_dropdown = Functions.Get_DopboxInPanel(left_base_content, "Type", "Dropdown_Items_ForceDrop_Type", new System.Action<int>((_) => { SelectType(); }));
-                                if (type_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance?.Error("Error type_dropdown not found"); }
+                                if (type_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error type_dropdown not found"); }
 
                                 rarity_dropdown = Functions.Get_DopboxInPanel(left_base_content, "Rarity", "Dropdown_Items_ForceDrop_Rarity", new System.Action<int>((_) => { SelectRarity(); }));
-                                if (rarity_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance?.Error("Error rarity_dropdown not found"); }
+                                if (rarity_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error rarity_dropdown not found"); }
 
                                 items_dropdown = Functions.Get_DopboxInPanel(left_base_content, "Item", "Dropdown_Items_ForceDrop_Item", new System.Action<int>((_) => { SelectItem(); }));
-                                if (items_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance?.Error("Error items_dropdown not found"); }
+                                if (items_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error items_dropdown not found"); }
 
                                 implicits = Functions.GetChild(left_base_content, "EnableImplicits");
                                 implicits_border = Functions.GetChild(left_base_content, "ImplicitsBorder");
                                 implicits_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableImplicits", "Dropdown", new System.Action<int>((_) => { EnableImplicits(); }));
-                                if (implicits_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance?.Error("Error implicits_dropdown not found"); }
+                                if (implicits_dropdown.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error implicits_dropdown not found"); }
 
                                 implicit_0 = Functions.GetChild(left_base_content, "Implicit_0");
                                 implicit_0_Text = Functions.Get_TextInPanel(left_base_content, "Implicit_0", "Value");
@@ -4938,17 +4938,17 @@ namespace LastEpoch_Hud.Scripts
                                 seal_value_slider = Functions.Get_SliderInPanel(left_base_content, "SealValue", "Slider");
 
                                 affixs = Functions.GetChild(left_base_content, "EnableAffixs");
-                                if (affixs.IsNullOrDestroyed()) { Main.logger_instance?.Error("affixs is null"); }
+                                if (affixs.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs is null"); }
                                 affixs_border = Functions.GetChild(left_base_content, "AffixsBorder");
-                                if (affixs_border.IsNullOrDestroyed()) { Main.logger_instance?.Error("seal_border is null"); }
+                                if (affixs_border.IsNullOrDestroyed()) { Main.logger_instance.Error("seal_border is null"); }
                                 affixs_dropdown = Functions.Get_DopboxInPanel(left_base_content, "EnableAffixs", "Dropdown", new System.Action<int>((_) => { EnableAffixs(); }));
-                                if (affixs_dropdown.IsNullOrDestroyed()) { Main.logger_instance?.Error("affixs_dropdown is null"); }
+                                if (affixs_dropdown.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs_dropdown is null"); }
                                 affixs_numbers = Functions.GetChild(left_base_content, "AffixsNb");
-                                if (affixs_numbers.IsNullOrDestroyed()) { Main.logger_instance?.Error("affixs_numbers is null"); }
+                                if (affixs_numbers.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs_numbers is null"); }
                                 affixs_numbers_text = Functions.Get_TextInPanel(left_base_content, "AffixsNb", "Value");
-                                if (affixs_numbers_text.IsNullOrDestroyed()) { Main.logger_instance?.Error("affixs_numbers_text is null"); }
+                                if (affixs_numbers_text.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs_numbers_text is null"); }
                                 affixs_numbers_slider = Functions.Get_SliderInPanel(left_base_content, "AffixsNb", "Slider");
-                                if (affixs_numbers_slider.IsNullOrDestroyed()) { Main.logger_instance?.Error("affixs_numbers_slider is null"); }
+                                if (affixs_numbers_slider.IsNullOrDestroyed()) { Main.logger_instance.Error("affixs_numbers_slider is null"); }
                                 affix_0 = Functions.GetChild(left_base_content, "Affix_0");
                                 affix_0_button = Functions.Get_ButtonInPanel(affix_0, "Button");
                                 affix_0_select_text = Functions.Get_TextInButton(affix_0, "Button", "Text");
@@ -5037,10 +5037,10 @@ namespace LastEpoch_Hud.Scripts
                                 quantity = Functions.GetChild(left_base_content, "Quantity");
                                 quantity_border = Functions.GetChild(left_base_content, "QuantityBorder");
                                 forcedrop_quantity_slider = Functions.Get_SliderInPanel(left_base_content, "Quantity", "Slider_Items_ForceDrop_Quantity");
-                                if (forcedrop_quantity_slider.IsNullOrDestroyed()) { error = true; Main.logger_instance?.Error("Error forcedrop_quantity_slider not found"); }
+                                if (forcedrop_quantity_slider.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error forcedrop_quantity_slider not found"); }
                                 quantity_text = Functions.Get_TextInPanel(left_base_content, "Quantity", "Value");
                             }
-                            else { error = true; Main.logger_instance?.Error("left_content not found"); }
+                            else { error = true; Main.logger_instance.Error("left_content not found"); }
 
                             //Shards filters
                             GameObject center = Functions.GetChild(content_obj, "Center");
@@ -5055,7 +5055,7 @@ namespace LastEpoch_Hud.Scripts
                                         shards_filter_type = Functions.Get_DopboxInPanel(line_0, "Type", "Dropdown", new System.Action<int>((value) => { }));
                                         shards_filter_class = Functions.Get_DopboxInPanel(line_0, "Class", "Dropdown", new System.Action<int>((_) => { }));
                                     }
-                                    else { error = true; Main.logger_instance?.Error("line_0 not found"); }
+                                    else { error = true; Main.logger_instance.Error("line_0 not found"); }
 
                                     GameObject line_1 = Functions.GetChild(shard_filters, "Line_1");
                                     if (!line_1.IsNullOrDestroyed())
@@ -5065,24 +5065,24 @@ namespace LastEpoch_Hud.Scripts
                                         {
                                             GameObject g = Functions.GetChild(name, "InputField");
                                             if (!g.IsNullOrDestroyed()) { shards_filter_name = g.GetComponent<InputField>(); }
-                                            else { error = true; Main.logger_instance?.Error("g_name not found"); }
+                                            else { error = true; Main.logger_instance.Error("g_name not found"); }
                                         }
-                                        else { error = true; Main.logger_instance?.Error("name not found"); }
+                                        else { error = true; Main.logger_instance.Error("name not found"); }
 
                                         GameObject refresh = Functions.GetChild(line_1, "Refresh");
                                         if (!refresh.IsNullOrDestroyed())
                                         {
                                             GameObject g = Functions.GetChild(refresh, "Button");
                                             if (!g.IsNullOrDestroyed()) { shards_filters_button = g.GetComponent<Button>(); }
-                                            else { error = true; Main.logger_instance?.Error("g_refresh not found"); }
+                                            else { error = true; Main.logger_instance.Error("g_refresh not found"); }
                                         }
-                                        else { error = true; Main.logger_instance?.Error("refresh not found"); }
+                                        else { error = true; Main.logger_instance.Error("refresh not found"); }
                                     }
-                                    else { error = true; Main.logger_instance?.Error("line_1 not found"); }
+                                    else { error = true; Main.logger_instance.Error("line_1 not found"); }
                                 }
-                                else { error = true; Main.logger_instance?.Error("shard_filters not found"); }
+                                else { error = true; Main.logger_instance.Error("shard_filters not found"); }
                             }
-                            else { error = true; Main.logger_instance?.Error("center not found"); }
+                            else { error = true; Main.logger_instance.Error("center not found"); }
 
                             //Shards
                             center_content = Functions.GetViewportContent(content_obj, "Center", "Content");
@@ -5090,7 +5090,7 @@ namespace LastEpoch_Hud.Scripts
                             {
 
                             }
-                            else { error = true; Main.logger_instance?.Error("center_content not found"); }
+                            else { error = true; Main.logger_instance.Error("center_content not found"); }
 
                             //Drop button
                             GameObject left_obj = Functions.GetChild(content_obj, "Left");
@@ -5100,13 +5100,13 @@ namespace LastEpoch_Hud.Scripts
                                 if (!new_obj.IsNullOrDestroyed())
                                 {
                                     forcedrop_drop_button = Functions.Get_ButtonInPanel(new_obj, "Btn_Drop");
-                                    if (forcedrop_drop_button.IsNullOrDestroyed()) { error = true; Main.logger_instance?.Error("Error forcedrop_drop_button not found"); }
+                                    if (forcedrop_drop_button.IsNullOrDestroyed()) { error = true; Main.logger_instance.Error("Error forcedrop_drop_button not found"); }
                                 }
-                                else { error = true; Main.logger_instance?.Error("left Btn panel not found"); }
+                                else { error = true; Main.logger_instance.Error("left Btn panel not found"); }
                             }
-                            else { error = true; Main.logger_instance?.Error("left_obj not found"); }
+                            else { error = true; Main.logger_instance.Error("left_obj not found"); }
                         }
-                        else { error = true; Main.logger_instance?.Error("content_obj is null"); }
+                        else { error = true; Main.logger_instance.Error("content_obj is null"); }
 
                         if (!error) { initialized = true; }
                     }
@@ -5311,7 +5311,7 @@ namespace LastEpoch_Hud.Scripts
                         //(!forcedrop_rarity_dropdown.IsNullOrDestroyed()) &&
                         (!items_dropdown.IsNullOrDestroyed()))
                     {
-                        //Main.logger_instance?.Msg("Update Items : Type = " + item_type + ", Rarity = " + item_rarity);
+                        //Main.logger_instance.Msg("Update Items : Type = " + item_type + ", Rarity = " + item_rarity);
                         items_dropdown.ClearOptions();
 
                         Il2CppSystem.Collections.Generic.List<Dropdown.OptionData> options = new Il2CppSystem.Collections.Generic.List<Dropdown.OptionData>();
@@ -5385,7 +5385,7 @@ namespace LastEpoch_Hud.Scripts
                         if (index < items_dropdown.options.Count)
                         {
                             string item_str = items_dropdown.options[items_dropdown.value].text;
-                            //Main.logger_instance?.Msg("Select : Item = " + item_str);
+                            //Main.logger_instance.Msg("Select : Item = " + item_str);
 
                             item_subtype = -1;
                             item_unique_id = 0;
@@ -5897,7 +5897,7 @@ namespace LastEpoch_Hud.Scripts
                                         an = 1; //Set affix number
                                         af.Add(affix);
                                     }
-                                    else { Main.logger_instance?.Error("Seal is null"); }
+                                    else { Main.logger_instance.Error("Seal is null"); }
                                 }                                
                             }
                             if (affixs_roll)

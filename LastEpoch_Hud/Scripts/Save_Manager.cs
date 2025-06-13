@@ -9,7 +9,7 @@ namespace LastEpoch_Hud.Scripts
     public class Save_Manager : MonoBehaviour
     {
         public Save_Manager(System.IntPtr ptr) : base(ptr) { }
-        public static Save_Manager? instance { get; private set; }
+        public static Save_Manager instance { get; private set; }
 
         public string path = Directory.GetCurrentDirectory() + @"\Mods\" + Main.mod_name + @"\";
         string filename = "Save.json";

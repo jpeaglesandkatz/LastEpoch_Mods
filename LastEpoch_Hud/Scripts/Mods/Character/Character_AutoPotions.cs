@@ -6,7 +6,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
     [RegisterTypeInIl2Cpp]
     public class Character_AutoPotions : MonoBehaviour
     {
-        public static Character_AutoPotions? instance { get; private set; }
+        public static Character_AutoPotions instance { get; private set; }
         public Character_AutoPotions(System.IntPtr ptr) : base(ptr) { }
 
         void Awake()
@@ -15,7 +15,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Character
         }
         void Update()
         {
-            if ((Scenes.IsGameScene()) && (Refs_Manager.player_health is not null) && (Refs_Manager.health_potion is not null) && (Save_Manager.instance is not null))
+            if ((Scenes.IsGameScene()) && (!Refs_Manager.player_health.IsNullOrDestroyed()) && (!Refs_Manager.health_potion.IsNullOrDestroyed()) && (!Save_Manager.instance.IsNullOrDestroyed()))
             {
                 if (Save_Manager.instance.data.Character.Cheats.Enable_AutoPot)
                 {

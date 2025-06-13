@@ -22,8 +22,8 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                         __1.RefreshIDAndValues();
                     }
                     //AutoPickup / AutoSell                    
-                    ItemDataUnpacked? item = __1.TryCast<ItemDataUnpacked>();
-                    if ((Save_Manager.instance is not null) && (item is not null))
+                    ItemDataUnpacked item = __1.TryCast<ItemDataUnpacked>();
+                    if ((!Save_Manager.instance.IsNullOrDestroyed()) && (!item.IsNullOrDestroyed()))
                     {
                         if (((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_Keys) && (Item.isKey(__1.itemType))) ||
                             ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_WovenEchoes) && (__1.itemType == 107)) ||
@@ -33,11 +33,11 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                             if (pickup) { result = false; }
                         }
                         else if ((__1.itemType < 34) &&
-                            (Refs_Manager.filter_manager is not null) &&
+                            (!Refs_Manager.filter_manager.IsNullOrDestroyed()) &&
                             ((Save_Manager.instance.data.Items.Pickup.Enable_AutoPickup_FromFilter) ||
                             (Save_Manager.instance.data.Items.Pickup.Enable_AutoSell_Hide)))
                         {
-                            if (Refs_Manager.filter_manager.Filter is not null)
+                            if (!Refs_Manager.filter_manager.Filter.IsNullOrDestroyed())
                             {
                                 bool FilterShow = false;
                                 foreach (Rule rule in Refs_Manager.filter_manager.Filter.rules)

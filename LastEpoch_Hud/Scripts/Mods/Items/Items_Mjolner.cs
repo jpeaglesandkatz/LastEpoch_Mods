@@ -13,7 +13,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
     [RegisterTypeInIl2Cpp]
     public class Items_Mjolner : MonoBehaviour
     {
-        public static Items_Mjolner? instance { get; private set; }
+        public static Items_Mjolner instance { get; private set; }
         public Items_Mjolner(System.IntPtr ptr) : base(ptr) { }
 
         private bool InGame = false;
@@ -143,7 +143,7 @@ namespace LastEpoch_Hud.Scripts.Mods.Items
                 {
                     try
                     {
-                        UniqueList.Entry? item = null;
+                        UniqueList.Entry item = null;
                         if (Refs_Manager.unique_list.uniques.Count > 1)
                         {
                             foreach (UniqueList.Entry unique in Refs_Manager.unique_list.uniques)

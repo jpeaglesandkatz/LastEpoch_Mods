@@ -7,27 +7,27 @@ namespace LastEpoch_Hud.Scripts
     public class Mods_Manager : MonoBehaviour
     {
         public Mods_Manager(System.IntPtr ptr) : base(ptr) { }
-        public static Mods_Manager? instance { get; private set; }
+        public static Mods_Manager instance { get; private set; }
 
-        GameObject? cosmetics_skins_obj = null;
-        GameObject? character_autopotion_obj = null;
-        GameObject? character_potionreplenishment_obj = null;
-        GameObject? character_blessings_obj = null;
-        GameObject? character_godmode_obj = null;
-        GameObject? character_lowlife_obj = null;
-        GameObject? character_masteries_obj = null;
-        GameObject? character_bank_from_anywhere = null;
-        GameObject? character_permanentbuffs_obj = null;
-        //GameObject? character_dps_obj = null;
-        GameObject? character_safetp_obj = null;
-        GameObject? items_nbsocket_obj = null;
-        GameObject? items_autosell_timer_obj = null;
-        GameObject? items_headhunter_obj = null;
-        GameObject? items_mjolner_obj = null;
-        GameObject? items_crafting_obj = null;
-        GameObject? items_crafting_eternal = null; //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
-        GameObject? minimap_icons_obj = null;
-        GameObject? monoliths_complete_objectives_obj = null;
+        GameObject cosmetics_skins_obj = null;
+        GameObject character_autopotion_obj = null;
+        GameObject character_potionreplenishment_obj = null;
+        GameObject character_blessings_obj = null;
+        GameObject character_godmode_obj = null;
+        GameObject character_lowlife_obj = null;
+        GameObject character_masteries_obj = null;
+        GameObject character_bank_from_anywhere = null;
+        GameObject character_permanentbuffs_obj = null;
+        //GameObject character_dps_obj = null;
+        GameObject character_safetp_obj = null;
+        GameObject items_nbsocket_obj = null;
+        GameObject items_autosell_timer_obj = null;
+        GameObject items_headhunter_obj = null;
+        GameObject items_mjolner_obj = null;
+        GameObject items_crafting_obj = null;
+        GameObject items_crafting_eternal = null; //Items_Crafting_Eternity_Anywhere mod from https://github.com/RolandSolymosi
+        GameObject minimap_icons_obj = null;
+        GameObject monoliths_complete_objectives_obj = null;
 
         bool initialized = false;
         
